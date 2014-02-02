@@ -1,0 +1,71 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ Assembly Name="CrmCodeGenerator.Core.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="CrmCodeGenerator.Core" #>
+<#@ import namespace="CrmCodeGenerator.Core.Model" #>
+<#@ import namespace="CrmCodeGenerator.Core.Naming" #>
+<#@ import namespace="CrmCodeGenerator.Core.T4" #>
+<#@ property processor="PropertyProcessor" type="CrmCodeGenerator.Core.Model.Context" name="Context" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xrm.Sdk;
+using System.ComponentModel.DataAnnotations;
+
+namespace <#= Context.Namespace #>
+{
+<# foreach (var entity in Context.Entities)
+{
+#>
+    public partial class <#=entity.DisplayName#>
+    {
+        public class Enums
+        {
+<#foreach(var enm in entity.Enums){#>
+            public enum <#=enm.DisplayName#> 
+            {
+<#foreach(var item in enm.Items){#>
+                <#= item.Name #> = <#= item.Value #>,
+<#}#>
+            }		
+<#}#>
+        }
+
+        public class Fields
+        {
+            public const string SchemaName = "<#=entity.Attribute.LogicalName#>";
+			
+<#foreach(var f in entity.Fields){#>
+            public const string <#=f.DisplayName#> = "<#=f.Attribute.LogicalName#>";
+<#}#>
+        }
+
+        public Guid PrimaryKey
+        {
+            get { return <#=entity.PrimaryKeyProperty#>; }
+        }
+
+<#
+	foreach(var attribute in entity.Fields)	{#>
+<# if (attribute.IsRequired) {#>
+        [Required]
+<#}#>
+<# if (attribute.MaxLength != null) {#>
+        [StringLength(<#=attribute.MaxLength#>)]
+<#}#>
+<# if (attribute.Min != null) {#>
+        [Range(<#=attribute.Min#>, <#=attribute.Max#>)]
+<#}#>
+        public virtual <#=attribute.TargetType#> <#=attribute.DisplayName#> { get; set; }
+<#}#>
+	}
+<#}#>
+}

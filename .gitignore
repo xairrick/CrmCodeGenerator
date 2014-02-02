@@ -1,0 +1,41 @@
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.scc
+*.rdl.data
+[Bb]in
+[Db]ebug*/
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+
+# windows system files
+thumbs.db
+
+# diskstation system file
+.DS_Store
+
+# emacs backup files
+*~
+
+#NuGet Ignore packages  be sure to enable NuGet Package restore in Visual Studio and on your Solution
+packages*/

@@ -1,0 +1,20 @@
+﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
+Template is saved to project so that you modify it as needed. 
+Version 0.7.0
+[REFACTOR] Removed alot of un-needed code/files/folders from solution
+Version 0.6.4.1
+[BUG] - template was using HybridName for the base class, it should have be set to use LogicalName
+Version 0.6.4
+[UPDATE] Fetching Orgs & Entities is done in the background
+[UPDATE] Generate Schema button is disabled until user has filled out Url, User, & Org.
+Version 0.6.3
+[UPDATE] - Replaced textbox for entities to include/exclude to be combobox
+[UPDATE] - auto save template if you have it open in a template
+Version 0.6.2 -
+[UPDATE] - added PrimaryKey (mapping field) to the enity classs
+[BUG] - was not prompting to save solution after running the tool
+Verision 0.6 -
+[UPDATE] Added HybridName to use Display for standard entities and Logical for custom entities
+Version 0.5.2  - 
+[BUG FIX] if error in template, no longs locks keyboard
+[CHANGE] custom entities will use the logical name for the class

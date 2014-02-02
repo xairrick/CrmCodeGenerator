@@ -1,0 +1,178 @@
+﻿<Window x:Class="Labshosky.CrmCodeGenerator_VSPackage.Main"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:control="clr-namespace:CrmCodeGenerator.Controls;assembly=CrmCodeGenerator.Controls"
+        xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.11.0"
+        Title="CRM Code Generator" Width="600" SizeToContent="Height" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style TargetType="Grid" >
+            <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>
+            <!--<Setter Property="Background"  Value="Blue"></Setter>-->
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="1,5,0,-4" />
+        </Style>
+        <Style TargetType="TextBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="PasswordBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Padding" Value="5" />
+            <!--<Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowButtonInactiveBrushKey}}" />-->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarBorderBrushKey}}" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarMouseOverBackgroundGradientBrushKey}}" />
+                    <!--<Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarTextHoverBrushKey}}"/>-->
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="Cancel_Click" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="225" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="Inputs" Grid.Column="0" Grid.Row="0" >
+            <StackPanel x:Name="Login"  >
+                <Label Content="Discorvy URL" />
+                <TextBox  Name="DiscoryURL" Text="{Binding Path=CrmSdkUrl, Mode=TwoWay}" GotFocus="DiscoryURL_GotFocus" />
+                <Label Content="Username" />
+                <TextBox Text="{Binding Path=Username, Mode=TwoWay}" Name="Username"  GotFocus="Username_GotFocus" />
+                <Label Content="Password"  />
+                <TextBox Text="{Binding Path=Password, Mode=TwoWay}" Name="Password"  GotFocus="Password_GotFocus" />
+                <Label Content="Domain" />
+                <TextBox Text="{Binding Path=Domain, Mode=TwoWay}" Name="Domain" GotFocus="Domain_GotFocus" />
+                <Label Content="Organization" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0"  
+                          IsTextSearchEnabled="True" 
+                          IsEditable="True" 
+                          ItemsSource="{Binding Path=OrgList, Mode=TwoWay}"
+                          Text="{Binding Path=CrmOrg, Mode=TwoWay}"
+                          GotFocus="Organization_GotFocus"     
+                          Name="Organization" />
+                    <!--ItemsSource="{Binding Items}" 
+                          SelectedValuePath="Text"
+                          Text="{Binding SelectedItemText, Mode=TwoWay}"-->
+                    <Button Grid.Column="1" x:Name="Logon"  HorizontalAlignment="Right" Content="Refresh" Click="Logon_Click"></Button>
+                </Grid>
+            </StackPanel>
+            <!--<Label Content="T4Path"/>
+            <Grid Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="40" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding ElementName=T4Path, Path=FileName, UpdateSourceTrigger=PropertyChanged}"  Margin="5,0,5,0" GotFocus="TextBox_GotFocus" />
+                <files:FileSelector x:Name="T4Path"
+                                    Grid.Column="1"
+                                    FileFilter="Executable Files (*.tt)|*.tt"
+                                    Mode="Open"
+                                    FileName="{Binding Path=T4Path, Mode=TwoWay}"/>
+            </Grid>-->
+            <Label Content="Template"/>
+            <Grid Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="40" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding ElementName=Template, Path=FileName, UpdateSourceTrigger=PropertyChanged}"  Margin="5,0,5,0" GotFocus="TextBox_GotFocus" />
+                <control:FileSelector x:Name="Template"
+                                    Grid.Column="1"
+                                    FileFilter="Executable Files (*.tt)|*.tt"
+                                    Mode="Save" 
+                                    Folder="{Binding Path=Folder, Mode=OneWay}"
+                                    FileName="{Binding Path=Template, Mode=TwoWay}"/>
+            </Grid>
+            <Label Content="Copy template from" IsEnabled="{Binding Path=NewTemplate,Mode=OneWay}" />
+            <ComboBox x:Name="DefaultTemplate" ItemsSource="{Binding Path=TemplateList, Mode=TwoWay}" IsEnabled="{Binding Path=NewTemplate,Mode=OneWay}" />
+                
+
+            <!--<Label Content="Output" />
+            <TextBox Text="OutputFile" Name="OutputFile" GotFocus="OutputFile_GotFocus" />-->
+            
+            <Label Content="Include Entities" />
+            <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <control:MultiSelectComboBox Grid.Column="0" Width="auto" ItemsSource="{Binding Path=EntityList, Mode=TwoWay}" SelectedItems="{Binding Path=EntitiesSelected, Mode=TwoWay}" x:Name="Entities" ToolTip="{Binding Path=Text, RelativeSource={RelativeSource Self}}"/>
+                <Button Grid.Column="1" x:Name="EntitiesRefresh"  HorizontalAlignment="Right" Content="Refresh" Click="EntitiesRefresh_Click"></Button>
+            </Grid>
+            
+            <!--<Label Content="Include Entities" />
+            <TextBox Text="{Binding Path=EntitiesToIncludeString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Name="IncludeEntities"  GotFocus="IncludeEntities_GotFocus"  />
+            <Label Content="Exclude Entities" IsEnabled="{Binding Path=EnableExclude, Mode=OneWay}" />
+            <TextBox Text="{Binding Path=EntitiesToExcludeString, Mode=TwoWay}" Name="ExcludeEntities" IsEnabled="{Binding Path=EnableExclude, Mode=OneWay}" GotFocus="ExcludeEntities_GotFocus" />-->
+            <Label Content="Namespace"  />
+            <TextBox Text="{Binding Path=Namespace, Mode=TwoWay}" Name="Namespace" GotFocus="Namespace_GotFocus"/>
+            <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Right">
+                <Button Name="GenerateSchemButton" IsEnabled="False" Content="Generate Schema" HorizontalAlignment="Left" IsDefault="True" Click="Next_Click"  GotFocus="Button_GotFocus"/>
+                <!--<Button Content="Cancel" HorizontalAlignment="Left"  IsCancel="True" Click="Cancel_Click" Margin="10,10,10,10"  GotFocus="Button_GotFocus" />-->
+            </StackPanel>
+
+            
+
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="0" >
+            <TextBlock TextWrapping="Wrap" x:Name="Help" Margin="5,5,5,5">
+                This tool will automatically generate code that can be used to early bind entity in CRM 2011/2013.    
+                <LineBreak/>
+                <LineBreak/>
+                Click on a field to get help.
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="Beige">
+            <StackPanel  Background="LightGray" Visibility="Visible"  >
+                <Label x:Name="Status" Content="Status" Margin="1,1,1,1" BorderThickness="1" BorderBrush="Black"  />
+            </StackPanel>
+            
+        </StackPanel>
+    </Grid>
+</Window>
