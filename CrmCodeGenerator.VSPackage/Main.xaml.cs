@@ -49,7 +49,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
 
             var defaultTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates");
             var dir = new DirectoryInfo(defaultTemplatePath);
-            settings.TemplateList = new ObservableCollection<String>(dir.GetFiles().Select(x => x.Name).ToArray());
+            settings.TemplateList = new ObservableCollection<String>(dir.GetFiles().Select(x => x.Name).Where(x => !x.Equals("Blank.tt")).ToArray());
 
             settings.Folder = project.GetProjectDirectory();
         }
@@ -170,6 +170,8 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
         private string AddTemplateToProject()
         {
             var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), settings.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
+            var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
+
             if (!System.IO.File.Exists(templatePath))
             {
                 var defaultTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\" + this.DefaultTemplate.SelectedValue);
@@ -183,16 +185,25 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
                 {
                     System.IO.Directory.CreateDirectory(dir);
                 }
-                System.IO.File.Copy(defaultTemplatePath, templatePath);
-            }
 
-            if (!project.HasProjectItem(settings.Template))
-            {
-                // TODO need to disable the default code generate message box and set output to none  (i tried adding a file without extension, but when I switched it wanted to compile it)
+
+                // When you add a TT file to visual studio, it will try to automatically compile it, 
+                // if there is error (and there will be error because we have custom generator) 
+                // the error will persit until you close Visual Studio. The solution is to add 
+                // a blank file, then overwrite it
+                // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
+                System.IO.File.Copy(blankTemplatePath, templatePath);
+
                 Console.Write("Adding " + templatePath + " to project");
                 var p = project.ProjectItems.AddFromFile(templatePath);
                 p.Properties.SetValue("CustomTool", "");
+
+                System.IO.File.Copy(defaultTemplatePath, templatePath, true);
             }
+
+            // If the project gets out of sync with what on disk, this will correct it.
+            project.ProjectItems.AddFromFile(templatePath);
+
             var projectItem = project.GetProjectItem(settings.Template);
             if (projectItem.IsOpen)
                 projectItem.Save();
