@@ -71,20 +71,20 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
             //settings.EntitiesToInclude = this.IncludeEntities.Text.Split(',');
             settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
 
-            UpdateStatus("Saving Template...");
+            UpdateStatus("Saving Template...", true);
             string templatePath = AddTemplateToProject();
 
-            UpdateStatus("Connecting...");
+            UpdateStatus("Connecting...", true);
             if (settings.CrmConnection == null)
             {
                 settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
             }
 
             var mapper = new CrmCodeGenerator.VSPackage.Mapper(settings);
-            UpdateStatus("Mapping....");
+            UpdateStatus("Mapping....", true);
             var context = mapper.MapContext();
 
-            UpdateStatus("Generating....");
+            UpdateStatus("Generating....", true);
             var errorMessage = ProcessTemplate(templatePath, context);
 
             AddNewlyCreatedFileToProject();
@@ -126,7 +126,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
 
 
             // Write the processed output to file:
-            UpdateStatus("Writing......");
+            UpdateStatus("Writing......", true);
             System.IO.File.WriteAllText(OutputFullPath, result, cb.outputEncoding);
 
             // Append any error messages:
@@ -170,7 +170,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
         private string AddTemplateToProject()
         {
             var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), settings.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
-            var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
+            
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -179,7 +179,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
                 {
                     throw new UserException("T4Path: " + defaultTemplatePath + " is missing or you can access it.");
                 }
-                UpdateStatus("Copying Template to project....");
+                UpdateStatus("Copying Template to project....", true);
                 var dir = System.IO.Path.GetDirectoryName(templatePath);
                 if (!System.IO.Directory.Exists(dir))
                 {
@@ -192,6 +192,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
                 // the error will persit until you close Visual Studio. The solution is to add 
                 // a blank file, then overwrite it
                 // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
+                var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
                 System.IO.File.Copy(blankTemplatePath, templatePath);
 
                 Console.Write("Adding " + templatePath + " to project");
@@ -202,7 +203,11 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
             }
 
             // If the project gets out of sync with what on disk, this will correct it.
-            project.ProjectItems.AddFromFile(templatePath);
+            if (!project.HasProjectItem(templatePath))
+            {
+                var p = project.ProjectItems.AddFromFile(templatePath);
+                p.Properties.SetValue("CustomTool", "");
+            }
 
             var projectItem = project.GetProjectItem(settings.Template);
             if (projectItem.IsOpen)
@@ -227,10 +232,9 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
 
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
-            UpdateStatus("Getting Organizations...");
-
             var origCursor = this.Cursor;
-            this.Cursor = Cursors.Wait;
+            UpdateStatus("Getting Organizations...", true);
+
             var prevOrg = this.Organization.Text;
 
             var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
@@ -253,14 +257,13 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
             //    this.Organization.SelectedIndex = 0;
             //}
             this.Cursor = origCursor;
-            UpdateStatus("Waiting for you!!");
+            UpdateStatus("");
         }
 
         private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
         {
-            UpdateStatus("Getting Entities...");
             var origCursor = this.Cursor;
-            this.Cursor = Cursors.Wait;
+            UpdateStatus("Refreshing Entities...", true);
 
             var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
 
@@ -282,11 +285,14 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
             settings.EntitiesToIncludeString = origSelection;
 
             this.Cursor = origCursor;
-            UpdateStatus("Entities list have been updated, pick away");
+            UpdateStatus("");
         }
 
-        private void UpdateStatus(string message)
+        private void UpdateStatus(string message, bool working = false)
         {
+            if(working)
+                Dispatcher.BeginInvoke(new Action(() => {this.Cursor = Cursors.Wait;}));
+                
             Dispatcher.BeginInvoke(new Action(() => { this.Status.Content = message; }));
             System.Windows.Forms.Application.DoEvents();
         }
@@ -358,15 +364,15 @@ namespace Labshosky.CrmCodeGenerator_VSPackage
 
         private void EntitiesSelected_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            SettingChagned("EntitiesSelected");  
+            SettingChanged("EntitiesSelected");  
         }
         private void settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            SettingChagned(e.PropertyName);
+            SettingChanged(e.PropertyName);
         }
 
 
-        private void SettingChagned(string propertyName)
+        private void SettingChanged(string propertyName)
         {
             UpdateStatus(propertyName);
             switch (propertyName)
