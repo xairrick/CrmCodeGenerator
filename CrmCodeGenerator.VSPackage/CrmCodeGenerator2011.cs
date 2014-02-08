@@ -89,19 +89,32 @@ namespace CrmCodeGenerator.VSPackage
 
             //System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
 
-
-            //var m = new Login(settings);
-            //m.Show();
+            try
+            {
+               var  m = new Login(settings);
+                m.ShowDialog();
+            }
+            catch (UserException e)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                rgbOutputFileContents[0] = IntPtr.Zero;
+                pcbOutput = 0;
+                return 1;
+            }
+            catch (Exception e)
+            {
+                var error = e.Message + "\n" + e.StackTrace;
+                System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                rgbOutputFileContents[0] = IntPtr.Zero;
+                pcbOutput = 0;
+                return 1;
+            }
             
-            var m = new Login(settings);
-            m.ShowDialog();
 
             if (Configuration.Instance.Settings.Dirty)
             {
                 // TODO force save of custom setting in solution 
             }
-            m.Close();
-            m = null;
 
 
 

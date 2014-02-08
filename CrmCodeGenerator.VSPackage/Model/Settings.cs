@@ -41,7 +41,6 @@ namespace CrmCodeGenerator.VSPackage.Model
         
         private string _OutputPath;
         private string _Namespace;
-        private string _EntitiesToExcludeString;
         private string _EntitiesToIncludeString;
         private string _CrmOrg;
         private string _Password;

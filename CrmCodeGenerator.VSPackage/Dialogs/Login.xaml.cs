@@ -43,13 +43,14 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void RefreshOrgs(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
-            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
+            this.Cursor = Cursors.Wait;
+            System.Windows.Forms.Application.DoEvents();
+            ///Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
 
             var prevOrg = this.Organization.Text;
             var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
             var newOrgs = new ObservableCollection<String>(orgs);
             settings.OrgList = newOrgs;
-
 
             this.Cursor = origCursor;
         }
@@ -59,7 +60,9 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
 
             settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-            // TODO what if there is a login error???
+            if (settings.CrmConnection == null)
+                throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
+            
 
             this.Cursor = origCursor;
             this.Close();
