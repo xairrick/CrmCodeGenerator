@@ -39,7 +39,7 @@ namespace CrmCodeGenerator.VSPackage
     [ProvideObject(typeof(CrmCodeGenerator2011))]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVCSProject, GeneratesDesignTimeSource = true)]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVBProject, GeneratesDesignTimeSource = true)]
-    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite
+    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite, IDisposable
     {
         private object site = null;
         private CodeDomProvider codeDomProvider = null;
@@ -71,6 +71,20 @@ namespace CrmCodeGenerator.VSPackage
                     serviceProvider = new ServiceProvider(oleServiceProvider);
                 }
                 return serviceProvider;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (codeDomProvider != null)
+            {
+                codeDomProvider.Dispose();
+                codeDomProvider = null;
+            }
+            if (serviceProvider != null)
+            {
+                serviceProvider.Dispose();
+                serviceProvider = null;
             }
         }
 

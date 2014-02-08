@@ -37,10 +37,10 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             settings.OrgList.Add(settings.CrmOrg);
             this.Organization.SelectedIndex = 0;
-            this.DialogResult = false;
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = false;
             this.Close();
         }
 
