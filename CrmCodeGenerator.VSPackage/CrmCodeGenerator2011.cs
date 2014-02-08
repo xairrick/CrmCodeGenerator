@@ -101,8 +101,6 @@ namespace CrmCodeGenerator.VSPackage
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
 
-            //System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-
             int exit = 0;
             try
             {
@@ -152,12 +150,7 @@ namespace CrmCodeGenerator.VSPackage
             //UpdateStatus("Generating....", true);
             string content = Processor.ProcessTemplateCore(wszInputFilePath, context);   // TODO convert to just send the bstrInputFileContents
 
-            //////// generate our comment string based on the programming language used 
-            //////string comment = string.Empty;
-            //////if (CodeProvider.FileExtension == "cs")
-            //////    comment = "// " + "SimpleGenerator invoked on : " + DateTime.Now.ToString();
-            //////if (CodeProvider.FileExtension == "vb")
-            //////    comment = "' " + "SimpleGenerator invoked on: " + DateTime.Now.ToString();
+            
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)

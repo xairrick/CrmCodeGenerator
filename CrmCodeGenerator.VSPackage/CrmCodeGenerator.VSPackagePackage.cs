@@ -356,8 +356,8 @@ namespace CrmCodeGenerator.VSPackage
 
             if (System.IO.File.Exists(templatePath))
             {
-                var results = VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, templatePath + " already exists, are you sure you want to overwrite?", "Overwrite", OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                if (results != 1)
+                var results = VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "'" + templatePath + "' already exists, are you sure you want to overwrite?", "Overwrite", OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (results != 6)
                     return;
             }
 
