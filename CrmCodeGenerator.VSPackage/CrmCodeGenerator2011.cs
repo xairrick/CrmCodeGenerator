@@ -17,7 +17,8 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using CrmCodeGenerator.VSPackage.Model;
-using CrmCodeGenerator.VSPackage.T4; 
+using CrmCodeGenerator.VSPackage.T4;
+using CrmCodeGenerator.VSPackage.Dialogs; 
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -86,7 +87,22 @@ namespace CrmCodeGenerator.VSPackage
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
 
-            System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            //System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+
+
+            //var m = new Login(settings);
+            //m.Show();
+            
+            var m = new Login(settings);
+            m.ShowDialog();
+
+            if (Configuration.Instance.Settings.Dirty)
+            {
+                // TODO force save of custom setting in solution 
+            }
+            m.Close();
+            m = null;
+
 
 
             //connecting

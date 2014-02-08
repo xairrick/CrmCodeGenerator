@@ -141,6 +141,12 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="deviceidmanager.cs" />
+    <Compile Include="Dialogs\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\Login_ORIG.xaml.cs">
+      <DependentUpon>Login_ORIG.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\DteHelper.cs" />
     <Compile Include="Helpers\PropertyBagExtensions.cs" />
     <Compile Include="Guids.cs" />
@@ -238,6 +244,14 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Dialogs\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\Login_ORIG.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Main.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

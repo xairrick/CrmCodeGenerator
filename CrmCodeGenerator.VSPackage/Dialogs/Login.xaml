@@ -1,0 +1,115 @@
+﻿<Window x:Class="CrmCodeGenerator.VSPackage.Dialogs.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.11.0"
+        Title="CRM Code Generator" Width="300" SizeToContent="Height" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style TargetType="Grid" >
+            <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>
+            <!--<Setter Property="Background"  Value="Blue"></Setter>-->
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="1,5,0,-4" />
+        </Style>
+        <Style TargetType="TextBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="PasswordBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
+            <Setter Property="Padding" Value="5" />
+            <!--<Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowButtonInactiveBrushKey}}" />-->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarBorderBrushKey}}" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarMouseOverBackgroundGradientBrushKey}}" />
+                    <!--<Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarTextHoverBrushKey}}"/>-->
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="Cancel_Click" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
+    
+    <StackPanel x:Name="Inputs" Grid.Column="0" Grid.Row="0" >
+
+        <Label Content="Discorvy URL" />
+        <TextBox  Name="DiscoryURL" Text="{Binding Path=CrmSdkUrl, Mode=TwoWay}" />
+        <Label Content="Username" />
+        <TextBox Text="{Binding Path=Username, Mode=TwoWay}" Name="Username"   />
+        <Label Content="Password"  />
+        <TextBox Text="{Binding Path=Password, Mode=TwoWay}" Name="Password"   />
+        <Label Content="Domain" />
+        <TextBox Text="{Binding Path=Domain, Mode=TwoWay}" Name="Domain"  />
+        <Label Content="Organization" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0"  
+                          IsTextSearchEnabled="True" 
+                          IsEditable="True" 
+                          ItemsSource="{Binding Path=OrgList, Mode=TwoWay}"
+                          Text="{Binding Path=CrmOrg, Mode=TwoWay}"
+                          Name="Organization" />
+            <!--ItemsSource="{Binding Items}" 
+                          SelectedValuePath="Text"
+                          Text="{Binding SelectedItemText, Mode=TwoWay}"-->
+            <Button Grid.Column="1" x:Name="Logon"  HorizontalAlignment="Right" Content="Refresh" Click="RefreshOrgs"></Button>
+        </Grid>
+
+
+        <Grid Margin="0,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="40" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+
+        <!--<Label Content="Output" />
+            <TextBox Text="OutputFile" Name="OutputFile" GotFocus="OutputFile_GotFocus" />-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Right">
+            <Button Click="Logon_Click">Generate Code</Button>
+        </StackPanel>
+    </StackPanel>
+</Window>
