@@ -25,26 +25,27 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     /// </summary>
     public partial class AddTemplate : System.Windows.Window
     {
-        private EnvDTE80.DTE2 dte; 
-        private EnvDTE.Project project;
-        private string templateSamplesPath;
-        private AddTemplateProp props;
+        private AddTemplateProp _Props;
+        public AddTemplateProp Props
+        {
+            get
+            {
+                return _Props;
+            }
+        }
 
         public AddTemplate(EnvDTE80.DTE2 dte, Project project)
         {
             InitializeComponent();
-            this.dte = dte;
-            this.project = project;
 
+            _Props = new AddTemplateProp();
+            this.DataContext = Props;
 
-            props = new AddTemplateProp();
-            this.DataContext = props;
-
-            templateSamplesPath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates");
-            var dir = new DirectoryInfo(templateSamplesPath);
-            props.TemplateList = new ObservableCollection<String>(dir.GetFiles().Select(x => x.Name).Where(x => !x.Equals("Blank.tt")).ToArray());
-            props.Template = "CrmSchema.tt";
-            props.Folder = project.GetProjectDirectory();
+            var samplesPath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates");
+            var dir = new DirectoryInfo(samplesPath);
+            Props.TemplateList = new ObservableCollection<String>(dir.GetFiles().Select(x => x.Name).Where(x => !x.Equals("Blank.tt")).ToArray());
+            Props.Template = "CrmSchema.tt";
+            Props.Folder = project.GetProjectDirectory();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -58,42 +59,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), props.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
-
-
-            //if (System.IO.File.Exists(templatePath))
-            
-           var defaultTemplatePath = System.IO.Path.Combine(templateSamplesPath, this.DefaultTemplate.SelectedValue.ToString());
-            if (!System.IO.File.Exists(defaultTemplatePath))
-            {
-                throw new UserException("T4Path: " + defaultTemplatePath + " is missing or you can access it.");
-            }
-            UpdateStatus("Copying Template to project....", true);
-            var dir = System.IO.Path.GetDirectoryName(templatePath);
-            if (!System.IO.Directory.Exists(dir))
-            {
-                System.IO.Directory.CreateDirectory(dir);
-            }
-
-            // When you add a TT file to visual studio, it will try to automatically compile it, 
-            // if there is error (and there will be error because we have custom generator) 
-            // the error will persit until you close Visual Studio. The solution is to add 
-            // a blank file, then overwrite it
-            // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
-            var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
-            System.IO.File.Copy(blankTemplatePath, templatePath, true);
-
-            Console.Write("Adding " + templatePath + " to project");
-            var p = project.ProjectItems.AddFromFile(templatePath);
-            p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
-
-            System.IO.File.Copy(defaultTemplatePath, templatePath, true);
-
-            this.Close();
-        }
-        private void UpdateStatus(string param1, bool param2)
-        {
-            // Blah
+             this.Close();
         }
     }
 
