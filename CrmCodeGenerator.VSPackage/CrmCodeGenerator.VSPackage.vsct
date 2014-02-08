@@ -69,7 +69,13 @@
         </Strings>
       </Button>
 
-
+      <Button guid="guidCrmCodeGenerator_VSPackageCmdSet" id="cmdidAddTemplate" priority="0x0100" type="Button">
+        <Parent guid="guidCrmCodeGenerator_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic2" />
+        <Strings>
+          <ButtonText>CRM Add Template to Project</ButtonText>
+        </Strings>
+      </Button>
 
     </Buttons>
    
@@ -99,6 +105,7 @@
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidCrmCodeGenerator" value="0x0100" />
+      <IDSymbol name="cmdidAddTemplate" value="0x0200" />
     </GuidSymbol>
     
     

@@ -77,6 +77,12 @@ namespace CrmCodeGenerator.VSPackage
                 CommandID menuCommandID = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidCrmCodeGenerator);
                 MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
                 mcs.AddCommand(menuItem);
+
+
+                CommandID templateCmd = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidAddTemplate);
+                MenuCommand tempalteItem = new MenuCommand(AddTemplateCallback, templateCmd);
+                mcs.AddCommand(tempalteItem);
+
             }
             DefaultSettings();
             AdviseSolutionEvents();
@@ -279,6 +285,12 @@ namespace CrmCodeGenerator.VSPackage
 
         #endregion
 
+
+
+        private void AddTemplateCallback(object sender, EventArgs args)
+        {
+           VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "Time to do wom work", "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        }
 
         /// <summary>
         /// This function is the callback used to execute a command when the a menu item is clicked.
