@@ -1,4 +1,6 @@
 ﻿using CrmCodeGenerator.VSPackage.Model;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,6 +31,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             this.DataContext = settings;
         }
         
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             settings.OrgList.Add(settings.CrmOrg);
@@ -36,6 +39,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = false;
             this.Close();
         }
 
@@ -54,10 +58,39 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             this.Cursor = origCursor;
         }
+        private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
+        {
+            var origCursor = this.Cursor;
+            UpdateStatus("Refreshing Entities...", true);
+
+            var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+
+            RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
+            {
+                EntityFilters = EntityFilters.Default,
+                RetrieveAsIfPublished = true,
+            };
+            RetrieveAllEntitiesResponse response = (RetrieveAllEntitiesResponse)connection.Execute(request);
+
+            var origSelection = settings.EntitiesToIncludeString;
+            var newList = new ObservableCollection<string>();
+            foreach (var entity in response.EntityMetadata.OrderBy(e => e.LogicalName))
+            {
+                newList.Add(entity.LogicalName);
+            }
+
+            settings.EntityList = newList;
+            settings.EntitiesToIncludeString = origSelection;
+
+            this.Cursor = origCursor;
+            UpdateStatus("");
+        }
+
+
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
-            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
+            UpdateStatus("Logging in...", true);
 
             settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
             if (settings.CrmConnection == null)
@@ -66,6 +99,16 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             this.Cursor = origCursor;
             this.Close();
+        }
+        private void UpdateStatus(string message, bool working = false)
+        {
+            // Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
+            if(working)
+                this.Cursor = Cursors.Wait; 
+
+            System.Windows.Forms.Application.DoEvents();
+            
+            //TODO  something with the message
         }
 
     }

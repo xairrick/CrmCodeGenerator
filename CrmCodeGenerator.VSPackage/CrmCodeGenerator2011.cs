@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using CrmCodeGenerator.VSPackage.Model;
 using CrmCodeGenerator.VSPackage.T4;
-using CrmCodeGenerator.VSPackage.Dialogs; 
+using CrmCodeGenerator.VSPackage.Dialogs;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -89,27 +89,33 @@ namespace CrmCodeGenerator.VSPackage
 
             //System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
 
+            int exit = 0;
             try
             {
-               var  m = new Login(settings);
-                m.ShowDialog();
+                var m = new Login(settings);
+                var result = m.ShowDialog();
+                if (result == false)
+                    exit = 1;
             }
             catch (UserException e)
             {
                 VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                rgbOutputFileContents[0] = IntPtr.Zero;
-                pcbOutput = 0;
-                return 1;
+                exit = 1;
             }
             catch (Exception e)
             {
                 var error = e.Message + "\n" + e.StackTrace;
                 System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                exit = 1;
+            }
+
+            if (exit > 0)
+            {
                 rgbOutputFileContents[0] = IntPtr.Zero;
                 pcbOutput = 0;
-                return 1;
+                return exit;
             }
-            
+
 
             if (Configuration.Instance.Settings.Dirty)
             {
@@ -184,7 +190,7 @@ namespace CrmCodeGenerator.VSPackage
         }
 
         #endregion IObjectWithSite
-    } 
+    }
 
 
 
@@ -213,7 +219,7 @@ namespace CrmCodeGenerator.VSPackage
     //[ClassInterface(ClassInterfaceType.None)]
     //[Guid("BB69ADDB-6AB5-4E29-B263-F918D86D1CC0")]
     //[CodeGeneratorRegistration(typeof(MySampleGenerator), "My Sample Generator", new Guid("BB69ADDB-6AB5-4E29-B263-F918D86D1CC0"))]
-    
+
     //[ProvideObject(typeof(MySampleGenerator), RegisterUsing = RegistrationMethod.CodeBase)]
     //public class MySampleGenerator : IVsSingleFileGenerator
     //{
