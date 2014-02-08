@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage.Helpers
+namespace CrmCodeGenerator.VSPackage.Helpers
 {
     public static class PropertyBagExtensions
     {

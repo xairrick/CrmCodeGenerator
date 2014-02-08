@@ -15,7 +15,7 @@ using System.Text;
 using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage
+namespace CrmCodeGenerator.VSPackage
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     internal sealed class ProvideSolutionProps : RegistrationAttribute

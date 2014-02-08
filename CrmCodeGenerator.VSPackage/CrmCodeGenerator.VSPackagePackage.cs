@@ -9,11 +9,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE;
-using Labshosky.CrmCodeGenerator_VSPackage.Helpers;
 using Microsoft.VisualStudio.TextTemplating.VSHost;
 using Microsoft.VisualStudio.TextTemplating;
+using CrmCodeGenerator.VSPackage.Helpers;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage
+namespace CrmCodeGenerator.VSPackage
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.

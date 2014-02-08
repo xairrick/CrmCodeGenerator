@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Labshosky.CrmCodeGenerator_VSPackage {
+namespace CrmCodeGenerator.VSPackage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Labshosky.CrmCodeGenerator_VSPackage {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Labshosky.CrmCodeGenerator_VSPackage.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CrmCodeGenerator.VSPackage.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

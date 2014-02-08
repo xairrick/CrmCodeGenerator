@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage
+namespace CrmCodeGenerator.VSPackage
 {
     public class UserException : Exception
     {

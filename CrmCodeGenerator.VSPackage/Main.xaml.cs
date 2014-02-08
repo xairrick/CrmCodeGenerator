@@ -1,7 +1,7 @@
 ﻿using CrmCodeGenerator.VSPackage;
 using CrmCodeGenerator.VSPackage.Model;
 using EnvDTE;
-using Labshosky.CrmCodeGenerator_VSPackage.Helpers;
+using CrmCodeGenerator.VSPackage.Helpers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextTemplating;
@@ -27,7 +27,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CrmCodeGenerator.VSPackage.T4;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage
+namespace CrmCodeGenerator.VSPackage
 {
     /// <summary>
     /// Interaction logic for Main.xaml

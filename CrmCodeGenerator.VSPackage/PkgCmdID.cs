@@ -2,7 +2,7 @@
 // MUST match PkgCmdID.h
 using System;
 
-namespace Labshosky.CrmCodeGenerator_VSPackage
+namespace CrmCodeGenerator.VSPackage
 {
     static class PkgCmdIDList
     {

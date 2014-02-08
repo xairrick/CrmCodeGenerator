@@ -1,4 +1,4 @@
-﻿<Window x:Class="Labshosky.CrmCodeGenerator_VSPackage.Main"
+﻿<Window x:Class="CrmCodeGenerator.VSPackage.Main"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:control="clr-namespace:CrmCodeGenerator.Controls;assembly=CrmCodeGenerator.Controls"
