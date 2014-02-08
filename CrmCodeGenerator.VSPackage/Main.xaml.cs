@@ -85,7 +85,7 @@ namespace CrmCodeGenerator.VSPackage
             var context = mapper.MapContext();
 
             UpdateStatus("Generating....", true);
-            var errorMessage = ProcessTemplate(templatePath, context);
+            var errorMessage = Processor.ProcessTemplate(templatePath, context);
 
             AddNewlyCreatedFileToProject();
 
@@ -98,50 +98,7 @@ namespace CrmCodeGenerator.VSPackage
 
         }
 
-        private string ProcessTemplate(string templatePath, Context context)
-        {
-            // Get the text template service:
-            ITextTemplating t4 = Package.GetGlobalService(typeof(STextTemplating)) as ITextTemplating;
-            ITextTemplatingSessionHost sessionHost = t4 as ITextTemplatingSessionHost;
-
-            // Create a Session in which to pass parameters:
-            sessionHost.Session = sessionHost.CreateSession();
-            sessionHost.Session["Context"] = context;
-
-            string templateContent = System.IO.File.ReadAllText(templatePath);
-            Callback cb = new Callback();
-
-            // Process a text template:
-            string result = t4.ProcessTemplate(templatePath, templateContent, cb);
-
-            if (!string.IsNullOrWhiteSpace(cb.fileExtension))
-            {
-                // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
-                OutputFullPath = System.IO.Path.ChangeExtension(templatePath, cb.fileExtension);
-            }
-            else
-            {
-                OutputFullPath = System.IO.Path.ChangeExtension(templatePath, ".cs");
-            }
-
-
-            // Write the processed output to file:
-            UpdateStatus("Writing......", true);
-            System.IO.File.WriteAllText(OutputFullPath, result, cb.outputEncoding);
-
-            // Append any error messages:
-            if (cb.errorMessages.Count > 0)
-            {
-                System.IO.File.AppendAllLines(OutputFullPath, cb.errorMessages);
-            }
-
-            string errroMessage = null;
-            if (cb.errorMessages.Count > 0)
-            {
-                errroMessage = "Unable to generate file see " + OutputFullPath + " for more details ";
-            }
-            return errroMessage;
-        }
+        
         static string MakeRelative(string fromAbsolutePath, string toDirectory)
         {
             if (!System.IO.Path.IsPathRooted(fromAbsolutePath))

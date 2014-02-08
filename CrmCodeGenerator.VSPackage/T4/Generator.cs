@@ -17,7 +17,7 @@ namespace CrmCodeGenerator.VSPackage.T4
 
             try
             {
-                appDomain = AppDomain.CreateDomain("T4AppDomain Lagfhfgbashosky");
+                appDomain = AppDomain.CreateDomain("T4AppDomain Labashosky");
                 Compiler host = new Compiler(appDomain);
                 Engine engine = new Engine();
                 

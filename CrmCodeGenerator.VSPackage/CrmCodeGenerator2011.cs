@@ -15,12 +15,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 //using VSLangProj80;
 
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider; 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using CrmCodeGenerator.VSPackage.Model;
+using CrmCodeGenerator.VSPackage.T4; 
 
 namespace CrmCodeGenerator.VSPackage
 {
-
-
     public static class vsContextGuids
     {
         public const string vsContextGuidVCSProject = "{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}";
@@ -32,6 +32,7 @@ namespace CrmCodeGenerator.VSPackage
     }
 
 
+    // http://blogs.msdn.com/b/vsx/archive/2013/11/27/building-a-vsix-deployable-single-file-generator.aspx
     [ComVisible(true)]
     [Guid(GuidList.guidCrmCodeGenerator_SimpleGenerator)]
     [ProvideObject(typeof(CrmCodeGenerator2011))]
@@ -42,6 +43,8 @@ namespace CrmCodeGenerator.VSPackage
         private object site = null;
         private CodeDomProvider codeDomProvider = null;
         private ServiceProvider serviceProvider = null;
+        private Settings settings = Configuration.Instance.Settings;
+
 
         private CodeDomProvider CodeProvider
         {
@@ -83,13 +86,30 @@ namespace CrmCodeGenerator.VSPackage
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
 
-            // generate our comment string based on the programming language used 
-            string comment = string.Empty;
-            if (CodeProvider.FileExtension == "cs")
-                comment = "// " + "SimpleGenerator invoked on : " + DateTime.Now.ToString();
-            if (CodeProvider.FileExtension == "vb")
-                comment = "' " + "SimpleGenerator invoked on: " + DateTime.Now.ToString();
-            byte[] bytes = Encoding.UTF8.GetBytes(comment);
+            System.Windows.MessageBox.Show("Begin Generator", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+
+
+            //connecting
+            if (settings.CrmConnection == null)
+            {
+                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+            }
+
+            settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
+            var mapper = new CrmCodeGenerator.VSPackage.Mapper(settings);
+            ///UpdateStatus("Mapping....", true);
+            var context = mapper.MapContext();
+
+            //UpdateStatus("Generating....", true);
+            string content = Processor.ProcessTemplateCore(wszInputFilePath, context);   // TODO convert to just send the bstrInputFileContents
+
+            //////// generate our comment string based on the programming language used 
+            //////string comment = string.Empty;
+            //////if (CodeProvider.FileExtension == "cs")
+            //////    comment = "// " + "SimpleGenerator invoked on : " + DateTime.Now.ToString();
+            //////if (CodeProvider.FileExtension == "vb")
+            //////    comment = "' " + "SimpleGenerator invoked on: " + DateTime.Now.ToString();
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)
             {
@@ -102,6 +122,8 @@ namespace CrmCodeGenerator.VSPackage
                 Marshal.Copy(bytes, 0, rgbOutputFileContents[0], bytes.Length);
                 pcbOutput = (uint)bytes.Length;
             }
+
+            System.Windows.MessageBox.Show("Done!!!!!", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
 
             return VSConstants.S_OK;
         }

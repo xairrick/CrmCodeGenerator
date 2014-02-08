@@ -139,6 +139,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="deviceidmanager.cs" />
     <Compile Include="Helpers\DteHelper.cs" />
     <Compile Include="Helpers\PropertyBagExtensions.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="T4\Compiler.cs" />
     <Compile Include="T4\CustomDirective.cs" />
     <Compile Include="T4\Generator.cs" />
+    <Compile Include="T4\Processor.cs" />
     <Compile Include="UserException.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -125,7 +125,7 @@ namespace CrmCodeGenerator.VSPackage
 
         public bool SolutionHasDirtyProps { get; set; }
         //public Microsoft.Xrm.Sdk.IOrganizationService CachedCrmConnection { get; set; }
-        public CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
+        //public static CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
         private const string _strSolutionPersistanceKey = "CrmCodeGeneration";
         private const string _strSolutionBindingsProperty = "t4path";
 
@@ -146,19 +146,19 @@ namespace CrmCodeGenerator.VSPackage
 
         private void DefaultSettings()
         {
-            Settings = new CrmCodeGenerator.VSPackage.Model.Settings();
-            Settings.CrmSdkUrl = @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc";
-            Settings.ProjectName = "";
-            Settings.Domain = "";
-            Settings.T4Path = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt");
-            Settings.Template = "";
-            Settings.CrmOrg = "DEV-CRM";
-            //Settings.EntitiesToExcludeString = "";
-            Settings.EntitiesToIncludeString = "account, contact, systemuser";
-            Settings.OutputPath = "";
-            Settings.Username = "";
-            Settings.Password = "";
-            Settings.Namespace = "";
+            //Settings = new CrmCodeGenerator.VSPackage.Model.Settings();
+            //Settings.CrmSdkUrl = @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc";
+            //Settings.ProjectName = "";
+            //Settings.Domain = "";
+            //Settings.T4Path = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt");
+            //Settings.Template = "";
+            //Settings.CrmOrg = "DEV-CRM";
+            ////Settings.EntitiesToExcludeString = "";
+            //Settings.EntitiesToIncludeString = "account, contact, systemuser";
+            //Settings.OutputPath = "";
+            //Settings.Username = "";
+            //Settings.Password = "";
+            //Settings.Namespace = "";
         }
         public int SaveSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] IVsSolutionPersistence pPersistence)
         {
@@ -185,19 +185,19 @@ namespace CrmCodeGenerator.VSPackage
             //string strSolutionLocation = "\"This is the second key\"";
             //obj = strSolutionLocation;
             //pPropBag.Write(_strSolutionBindingsProperty, ref obj);
-            pPropBag.Write(_strProjectName, Settings.ProjectName.ToString());
-            pPropBag.Write(_strCrmUrl, Settings.CrmSdkUrl);
-            pPropBag.Write(_strDomain, Settings.Domain);
-            pPropBag.Write(_strT4Path, Settings.T4Path);
-            pPropBag.Write(_strTemplate, Settings.Template);
-            pPropBag.Write(_strOrganization, Settings.CrmOrg);
+            pPropBag.Write(_strProjectName, Configuration.Instance.Settings.ProjectName.ToString());
+            pPropBag.Write(_strCrmUrl, Configuration.Instance.Settings.CrmSdkUrl);
+            pPropBag.Write(_strDomain, Configuration.Instance.Settings.Domain);
+            pPropBag.Write(_strT4Path, Configuration.Instance.Settings.T4Path);
+            pPropBag.Write(_strTemplate, Configuration.Instance.Settings.Template);
+            pPropBag.Write(_strOrganization, Configuration.Instance.Settings.CrmOrg);
             //pPropBag.Write(_strExcludeEntities, Settings.EntitiesToExcludeString);
-            pPropBag.Write(_strIncludeEntities, Settings.EntitiesToIncludeString);
-            pPropBag.Write(_strOutputFile, Settings.OutputPath);
+            pPropBag.Write(_strIncludeEntities, Configuration.Instance.Settings.EntitiesToIncludeString);
+            pPropBag.Write(_strOutputFile, Configuration.Instance.Settings.OutputPath);
             // TODO move these two to the .sou file 
-            pPropBag.Write(_strUsername, Settings.Username);
-            pPropBag.Write(_strPassword, Settings.Password);
-            pPropBag.Write(_strNamespace, Settings.Namespace);
+            pPropBag.Write(_strUsername, Configuration.Instance.Settings.Username);
+            pPropBag.Write(_strPassword, Configuration.Instance.Settings.Password);
+            pPropBag.Write(_strNamespace, Configuration.Instance.Settings.Namespace);
 
             //pPropBag.Write(_strSolutionBindingsProperty, "\"This is the second key\"");
 
@@ -242,18 +242,18 @@ namespace CrmCodeGenerator.VSPackage
                 //object pVar;
                 //pPropBag.Read(_strCrmUrlKey, out pVar, null, 0, null);
                 //CrmUrl = pVar as string;
-                Settings.ProjectName = pPropBag.Read(_strProjectName, "");
-                Settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
-                Settings.Domain = pPropBag.Read(_strDomain, "");
-                Settings.T4Path = pPropBag.Read(_strT4Path, System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt"));  // TODO this doesn't need to be stored in the propbag
-                Settings.Template = pPropBag.Read(_strTemplate, "");
-                Settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
+                Configuration.Instance.Settings.ProjectName = pPropBag.Read(_strProjectName, "");
+                Configuration.Instance.Settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
+                Configuration.Instance.Settings.Domain = pPropBag.Read(_strDomain, "");
+                Configuration.Instance.Settings.T4Path = pPropBag.Read(_strT4Path, System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt"));  // TODO this doesn't need to be stored in the propbag
+                Configuration.Instance.Settings.Template = pPropBag.Read(_strTemplate, "");
+                Configuration.Instance.Settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 //Settings.EntitiesToExcludeString = pPropBag.Read(_strExcludeEntities, "");
-                Settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
-                Settings.OutputPath = pPropBag.Read(_strOutputFile, "");
-                Settings.Username = pPropBag.Read(_strUsername, "");
-                Settings.Password = pPropBag.Read(_strPassword, "");
-                Settings.Namespace = pPropBag.Read(_strNamespace, "");   // This will get defaulted to the project if the user doesn't enter anything the first it's executed.
+                Configuration.Instance.Settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
+                Configuration.Instance.Settings.OutputPath = pPropBag.Read(_strOutputFile, "");
+                Configuration.Instance.Settings.Username = pPropBag.Read(_strUsername, "");
+                Configuration.Instance.Settings.Password = pPropBag.Read(_strPassword, "");
+                Configuration.Instance.Settings.Namespace = pPropBag.Read(_strNamespace, "");   // This will get defaulted to the project if the user doesn't enter anything the first it's executed.
             }
             return VSConstants.S_OK;
         }
@@ -309,7 +309,7 @@ namespace CrmCodeGenerator.VSPackage
         private void OpenWindow()
         {
             var dte2 = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
-            Project project = dte2.GetProject(Settings.ProjectName);
+            Project project = dte2.GetProject(Configuration.Instance.Settings.ProjectName);
 
             if (project == null)
             {
@@ -319,21 +319,21 @@ namespace CrmCodeGenerator.VSPackage
                     System.Windows.MessageBox.Show("Please select a project first", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                     return;
                 }
-                Settings.ProjectName = project.UniqueName;
+                Configuration.Instance.Settings.ProjectName = project.UniqueName;
             }
 
-            if (string.IsNullOrWhiteSpace(Settings.OutputPath))
+            if (string.IsNullOrWhiteSpace(Configuration.Instance.Settings.OutputPath))
             {
-                Settings.OutputPath = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.cs");
+                Configuration.Instance.Settings.OutputPath = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.cs");
             }
-            if (string.IsNullOrWhiteSpace(Settings.Template))
+            if (string.IsNullOrWhiteSpace(Configuration.Instance.Settings.Template))
             {
-                Settings.Template = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.tt");
+                Configuration.Instance.Settings.Template = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.tt");
             }
 
-            var m = new Main(dte2, project, Settings);
+            var m = new Main(dte2, project, Configuration.Instance.Settings);
             m.ShowDialog();
-            if (Settings.Dirty)   
+            if (Configuration.Instance.Settings.Dirty)   
             {
                 SolutionHasDirtyProps = true;  // force save of custom setting in solution 
             }
