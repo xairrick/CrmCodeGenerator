@@ -12,6 +12,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.TextTemplating.VSHost;
 using Microsoft.VisualStudio.TextTemplating;
 using CrmCodeGenerator.VSPackage.Helpers;
+using CrmCodeGenerator.VSPackage.Dialogs;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -289,7 +290,19 @@ namespace CrmCodeGenerator.VSPackage
 
         private void AddTemplateCallback(object sender, EventArgs args)
         {
-           VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "Time to do wom work", "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            try
+            {
+                AddTemplate();
+            }
+            catch (UserException e)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
+            catch (Exception e)
+            {
+                var error = e.Message + "\n" + e.StackTrace;
+                System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
@@ -316,6 +329,27 @@ namespace CrmCodeGenerator.VSPackage
 
         }
 
+
+        private void AddTemplate()
+        {
+            var dte2 = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
+            Project project = dte2.GetProject(Configuration.Instance.Settings.ProjectName);
+
+            if (project == null)
+            {
+                project = dte2.GetSelectedProject();
+                if (project == null || string.IsNullOrWhiteSpace(project.FullName))
+                {
+                    throw new UserException("Please select a project first");
+                }
+                Configuration.Instance.Settings.ProjectName = project.UniqueName;
+            }
+
+            var m = new AddTemplate(dte2, project);
+            m.ShowDialog();
+            m.Close();
+            m = null;
+        }
 
 
         private void OpenWindow()

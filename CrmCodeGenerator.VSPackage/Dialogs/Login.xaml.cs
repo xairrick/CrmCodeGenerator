@@ -29,6 +29,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             InitializeComponent();
             this.settings = settings;
             this.DataContext = settings;
+            
         }
         
         
@@ -36,10 +37,10 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             settings.OrgList.Add(settings.CrmOrg);
             this.Organization.SelectedIndex = 0;
+            this.DialogResult = false;
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
             this.Close();
         }
 
@@ -98,6 +99,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             
 
             this.Cursor = origCursor;
+            this.DialogResult = true;
             this.Close();
         }
         private void UpdateStatus(string message, bool working = false)
