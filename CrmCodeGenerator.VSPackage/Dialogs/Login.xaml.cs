@@ -48,16 +48,13 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void RefreshOrgs(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
-            this.Cursor = Cursors.Wait;
-            System.Windows.Forms.Application.DoEvents();
-            ///Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
+            UpdateStatus("Refreshing Orgs", true);
 
-            var prevOrg = this.Organization.Text;
             var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
             var newOrgs = new ObservableCollection<String>(orgs);
             settings.OrgList = newOrgs;
 
-            this.Cursor = origCursor;
+            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
         }
         private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
         {
