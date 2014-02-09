@@ -45,6 +45,7 @@ namespace CrmCodeGenerator.VSPackage
         private CodeDomProvider codeDomProvider = null;
         private ServiceProvider serviceProvider = null;
         private Settings settings = Configuration.Instance.Settings;
+        private String extension = null;
 
         private CodeDomProvider CodeProvider
         {
@@ -72,6 +73,26 @@ namespace CrmCodeGenerator.VSPackage
                 return serviceProvider;
             }
         }
+        public CrmCodeGenerator2011()
+        {
+            //Configuration.Instance.DTE.ExecuteCommand("View.Output");
+            var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
+            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            win.Visible = true;
+
+
+            //System.Windows.Forms.Application.DoEvents();
+
+            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
+            IVsOutputWindowPane pane;
+            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
+            hr = outputWindow.GetPane(guidGeneral, out pane);
+            pane.Activate();
+            pane.Clear();
+            pane.FlushToTaskList();
+            System.Windows.Forms.Application.DoEvents();
+        }
 
         public void Dispose()
         {
@@ -92,6 +113,8 @@ namespace CrmCodeGenerator.VSPackage
         public int DefaultExtension(out string pbstrDefaultExtension)
         {
             pbstrDefaultExtension = "." + CodeProvider.FileExtension;
+            if (extension != null)
+                pbstrDefaultExtension = extension;
             return VSConstants.S_OK;
         }
 
@@ -102,8 +125,8 @@ namespace CrmCodeGenerator.VSPackage
 
             
             UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
-            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \r \n " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
-                                    
+            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
+                                                
             int exit = 0;
             try
             {
@@ -141,16 +164,16 @@ namespace CrmCodeGenerator.VSPackage
                 settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
             }
 
-            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... "); 
-            settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
-            var mapper = new CrmCodeGenerator.VSPackage.Mapper(settings);
+            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ");
+            settings.Context = new Context { Namespace = wszDefaultNamespace };
+            var mapper = new Mapper(settings);
             var context = mapper.MapContext();
 
-            UpdateStatus("Generating code from template... "); 
+            UpdateStatus("Generating code from template... ");
             pGenerateProgress.Progress(40, 100);
-            string content = Processor.ProcessTemplateCore(wszInputFilePath, context);   // TODO convert to just send the bstrInputFileContents
+            string content = Processor.ProcessTemplateCore(wszInputFilePath, bstrInputFileContents, context, out extension);
 
-            UpdateStatus("Writing code to disk... "); 
+            UpdateStatus("Writing code to disk... ");
             pGenerateProgress.Progress(50, 100);
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
@@ -166,8 +189,8 @@ namespace CrmCodeGenerator.VSPackage
                 pcbOutput = (uint)bytes.Length;
             }
 
-            UpdateStatus("Done!"); 
-            
+            UpdateStatus("Done!");
+
             return VSConstants.S_OK;
         }
 

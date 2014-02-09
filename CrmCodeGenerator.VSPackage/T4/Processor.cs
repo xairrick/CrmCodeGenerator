@@ -13,8 +13,10 @@ namespace CrmCodeGenerator.VSPackage.T4
     class Processor
     {
 
-        public static string ProcessTemplateCore(string templatePath, Context context)
+        public static string ProcessTemplateCore(string templatePath, string templateContent, Context context, out string extension)
         {
+            extension = null;
+
             // Get the text template service:
             ITextTemplating t4 = Package.GetGlobalService(typeof(STextTemplating)) as ITextTemplating;
             ITextTemplatingSessionHost sessionHost = t4 as ITextTemplatingSessionHost;
@@ -23,24 +25,17 @@ namespace CrmCodeGenerator.VSPackage.T4
             sessionHost.Session = sessionHost.CreateSession();
             sessionHost.Session["Context"] = context;
 
-            string templateContent = System.IO.File.ReadAllText(templatePath);
+            // string templateContent = System.IO.File.ReadAllText(templatePath);
             Callback cb = new Callback();
 
             // Process a text template:
             string result = t4.ProcessTemplate(templatePath, templateContent, cb);
 
-            
-            // TODO need to change the file output based on the extenstion defined in the TT template
-            //string OutputFullPath;
-            //if (!string.IsNullOrWhiteSpace(cb.fileExtension))
-            //{
-            //    // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
-            //    OutputFullPath = System.IO.Path.ChangeExtension(templatePath, cb.fileExtension);
-            //}
-            //else
-            //{
-            //    OutputFullPath = System.IO.Path.ChangeExtension(templatePath, ".cs");
-            //}
+            // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
+            if (!string.IsNullOrWhiteSpace(cb.fileExtension))
+            {
+                extension = cb.fileExtension;
+            }
 
 
             // Append any error messages:
