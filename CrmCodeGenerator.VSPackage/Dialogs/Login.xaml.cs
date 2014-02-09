@@ -83,7 +83,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             settings.EntityList = newList;
             settings.EntitiesToIncludeString = origSelection;
 
-            this.Cursor = origCursor;
+            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
             UpdateStatus("");
         }
 
@@ -104,9 +104,8 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void UpdateStatus(string message, bool working = false)
         {
-            // Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
             if(working)
-                this.Cursor = Cursors.Wait; 
+                Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
 
             System.Windows.Forms.Application.DoEvents();
             
