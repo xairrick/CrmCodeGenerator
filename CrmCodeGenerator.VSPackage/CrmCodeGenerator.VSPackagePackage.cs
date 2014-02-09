@@ -76,9 +76,9 @@ namespace CrmCodeGenerator.VSPackage
             if (null != mcs)
             {
                 // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidCrmCodeGenerator);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
-                mcs.AddCommand(menuItem);
+                //CommandID menuCommandID = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidCrmCodeGenerator);
+                //MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                //mcs.AddCommand(menuItem);
 
 
                 CommandID templateCmd = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidAddTemplate);

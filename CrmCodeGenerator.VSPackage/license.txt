@@ -1,20 +1,8 @@
-﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
-Template is saved to project so that you modify it as needed. 
-Version 0.7.0
-[REFACTOR] Removed alot of un-needed code/files/folders from solution
-Version 0.6.4.1
-[BUG] - template was using HybridName for the base class, it should have be set to use LogicalName
-Version 0.6.4
-[UPDATE] Fetching Orgs & Entities is done in the background
-[UPDATE] Generate Schema button is disabled until user has filled out Url, User, & Org.
-Version 0.6.3
-[UPDATE] - Replaced textbox for entities to include/exclude to be combobox
-[UPDATE] - auto save template if you have it open in a template
-Version 0.6.2 -
-[UPDATE] - added PrimaryKey (mapping field) to the enity classs
-[BUG] - was not prompting to save solution after running the tool
-Verision 0.6 -
-[UPDATE] Added HybridName to use Display for standard entities and Logical for custom entities
-Version 0.5.2  - 
-[BUG FIX] if error in template, no longs locks keyboard
-[CHANGE] custom entities will use the logical name for the class
+﻿The MIT License (MIT)
+Copyright (c) 2013 Eric Labashosky
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

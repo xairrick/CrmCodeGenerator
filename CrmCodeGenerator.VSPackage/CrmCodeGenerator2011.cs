@@ -106,6 +106,8 @@ namespace CrmCodeGenerator.VSPackage
 
             ClearStatus();
 
+            PromptToRefreshEntities();
+
             if (context == null)
             {
                 UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
@@ -179,6 +181,15 @@ namespace CrmCodeGenerator.VSPackage
             return VSConstants.S_OK;
         }
 
+        private void PromptToRefreshEntities()
+        {
+            if (context == null)
+                return;
+
+            var results = VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "Do you want to refresh the CRM Entities from the Server?", "Overwrite", OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            if (results == 6)
+                context = null;
+        }
         #endregion IVsSingleFileGenerator
 
         private void UpdateStatus(string message)
