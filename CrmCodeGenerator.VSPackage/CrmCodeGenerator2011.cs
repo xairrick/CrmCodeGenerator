@@ -73,26 +73,6 @@ namespace CrmCodeGenerator.VSPackage
                 return serviceProvider;
             }
         }
-        public CrmCodeGenerator2011()
-        {
-            //Configuration.Instance.DTE.ExecuteCommand("View.Output");
-            var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
-            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
-            win.Visible = true;
-
-
-            //System.Windows.Forms.Application.DoEvents();
-
-            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
-            IVsOutputWindowPane pane;
-            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
-            hr = outputWindow.GetPane(guidGeneral, out pane);
-            pane.Activate();
-            pane.Clear();
-            pane.FlushToTaskList();
-            System.Windows.Forms.Application.DoEvents();
-        }
 
         public void Dispose()
         {
@@ -123,6 +103,7 @@ namespace CrmCodeGenerator.VSPackage
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
 
+            ClearStatus();
             
             UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
             UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
@@ -214,6 +195,17 @@ namespace CrmCodeGenerator.VSPackage
             pane.Activate();
             pane.OutputString(message);
             pane.OutputString("\n");
+            pane.FlushToTaskList();
+            System.Windows.Forms.Application.DoEvents();
+        }
+        private void ClearStatus()
+        {
+            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
+            IVsOutputWindowPane pane;
+            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
+            hr = outputWindow.GetPane(guidGeneral, out pane);
+            pane.Clear();
             pane.FlushToTaskList();
             System.Windows.Forms.Application.DoEvents();
         }

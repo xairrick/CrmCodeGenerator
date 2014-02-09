@@ -140,7 +140,7 @@ namespace CrmCodeGenerator.Controls
         {
             foreach (var keyValue in SelectedItems)
             {
-                Node node = _nodeList.FirstOrDefault(i => i.Title == keyValue);
+                Node node = _nodeList.FirstOrDefault(i => i.Title == keyValue.Replace("_", "__"));
                 if (node != null)
                     node.IsSelected = true;
             }
