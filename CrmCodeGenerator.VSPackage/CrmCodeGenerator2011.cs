@@ -46,6 +46,7 @@ namespace CrmCodeGenerator.VSPackage
         private ServiceProvider serviceProvider = null;
         private Settings settings = Configuration.Instance.Settings;
         private String extension = null;
+        private Context context = null;
 
         private CodeDomProvider CodeProvider
         {
@@ -104,51 +105,54 @@ namespace CrmCodeGenerator.VSPackage
                 throw new ArgumentException(bstrInputFileContents);
 
             ClearStatus();
-            
-            UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
-            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
-                                                
-            int exit = 0;
-            try
+
+            if (context == null)
             {
-                var m = new Login(settings);
-                var result = m.ShowDialog();
-                if (result == false)
+                UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
+                UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
+
+                int exit = 0;
+                try
+                {
+                    var m = new Login(settings);
+                    var result = m.ShowDialog();
+                    if (result == false)
+                        exit = 1;
+                }
+                catch (UserException e)
+                {
+                    VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                     exit = 1;
-            }
-            catch (UserException e)
-            {
-                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                exit = 1;
-            }
-            catch (Exception e)
-            {
-                var error = e.Message + "\n" + e.StackTrace;
-                System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                exit = 1;
-            }
+                }
+                catch (Exception e)
+                {
+                    var error = e.Message + "\n" + e.StackTrace;
+                    System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    exit = 1;
+                }
 
-            if (exit > 0)
-            {
-                pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
-                // http://social.msdn.microsoft.com/Forums/vstudio/en-US/d8d72da3-ddb9-4811-b5da-2a167bbcffed/ivssinglefilegenerator-cancel-code-generation
-                // I don't think a login failure would be considered a invalid model.
-                // TODO read in original file and pass it back  (the extension need to be pulled from the template, so we need to process the template to see if the user specified a extension)
-                rgbOutputFileContents[0] = IntPtr.Zero;
-                pcbOutput = 0;
-                return exit;
-            }
+                if (exit > 0)
+                {
+                    pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
+                    // http://social.msdn.microsoft.com/Forums/vstudio/en-US/d8d72da3-ddb9-4811-b5da-2a167bbcffed/ivssinglefilegenerator-cancel-code-generation
+                    // I don't think a login failure would be considered a invalid model.
+                    // TODO read in original file and pass it back  (the extension need to be pulled from the template, so we need to process the template to see if the user specified a extension)
+                    rgbOutputFileContents[0] = IntPtr.Zero;
+                    pcbOutput = 0;
+                    return exit;
+                }
 
-            UpdateStatus("Connecting... ");
-            if (settings.CrmConnection == null)
-            {
-                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-            }
+                UpdateStatus("Connecting... ");
+                if (settings.CrmConnection == null)
+                {
+                    settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+                }
 
-            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ");
-            settings.Context = new Context { Namespace = wszDefaultNamespace };
-            var mapper = new Mapper(settings);
-            var context = mapper.MapContext();
+                UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ");
+                settings.Context = new Context { Namespace = wszDefaultNamespace };
+                var mapper = new Mapper(settings);
+                context = mapper.MapContext();
+            }
 
             UpdateStatus("Generating code from template... ");
             pGenerateProgress.Progress(40, 100);

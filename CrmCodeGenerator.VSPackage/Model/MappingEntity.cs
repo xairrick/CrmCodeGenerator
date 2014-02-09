@@ -13,6 +13,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public CrmEntityAttribute Attribute { get; set; }
 
         public MappingField[] Fields { get; set; }
+        public MappingEnum States { get; set; }
         public MappingEnum[] Enums { get; set; }
         public MappingRelationship1N[] RelationshipsOneToMany { get; set; }
         public MappingRelationshipN1[] RelationshipsManyToOne { get; set; }
@@ -120,7 +121,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
 
             entity.Fields = fields.ToArray();
-
+            entity.States = entityMetadata.Attributes.Where(a => a is StateAttributeMetadata).Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).FirstOrDefault();
             entity.Enums = entityMetadata.Attributes
                 .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata)
                 .Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).ToArray();

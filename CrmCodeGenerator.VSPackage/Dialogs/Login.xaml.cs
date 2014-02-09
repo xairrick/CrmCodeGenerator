@@ -97,7 +97,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             this.Cursor = origCursor;
             this.DialogResult = true;
-            settings.EntitiesToIncludeString = this.Entities.Text;  //  Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed
+            settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
             this.Close();
         }
         private void UpdateStatus(string message, bool working = false)
