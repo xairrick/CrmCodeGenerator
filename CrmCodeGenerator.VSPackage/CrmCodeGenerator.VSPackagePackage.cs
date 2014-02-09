@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TextTemplating.VSHost;
 using Microsoft.VisualStudio.TextTemplating;
 using CrmCodeGenerator.VSPackage.Helpers;
 using CrmCodeGenerator.VSPackage.Dialogs;
+using CrmCodeGenerator.VSPackage.Model;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -85,7 +86,6 @@ namespace CrmCodeGenerator.VSPackage
                 mcs.AddCommand(tempalteItem);
 
             }
-            DefaultSettings();
             AdviseSolutionEvents();
         }
 
@@ -130,6 +130,8 @@ namespace CrmCodeGenerator.VSPackage
 
         #region IVsPersistSolutionProps Implementation Code
 
+        private Settings settings = Configuration.Instance.Settings;
+
         public bool SolutionHasDirtyProps { get; set; }
         //public Microsoft.Xrm.Sdk.IOrganizationService CachedCrmConnection { get; set; }
         //public static CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
@@ -151,22 +153,6 @@ namespace CrmCodeGenerator.VSPackage
         private const string _strPassword = "Password";
         private const string _strNamespace = "Namespace";
 
-        private void DefaultSettings()
-        {
-            //Settings = new CrmCodeGenerator.VSPackage.Model.Settings();
-            //Settings.CrmSdkUrl = @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc";
-            //Settings.ProjectName = "";
-            //Settings.Domain = "";
-            //Settings.T4Path = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt");
-            //Settings.Template = "";
-            //Settings.CrmOrg = "DEV-CRM";
-            ////Settings.EntitiesToExcludeString = "";
-            //Settings.EntitiesToIncludeString = "account, contact, systemuser";
-            //Settings.OutputPath = "";
-            //Settings.Username = "";
-            //Settings.Password = "";
-            //Settings.Namespace = "";
-        }
         public int SaveSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] IVsSolutionPersistence pPersistence)
         {
             // This function gets called by the shell after determining the package has dirty props.
@@ -177,13 +163,17 @@ namespace CrmCodeGenerator.VSPackage
             // When the solution will be reopened, the IDE will call our package to load them back before the projects in the solution are actually open
             // This could help if the source control package needs to persist information like projects translation tables, that should be read from the suo file
             // and should be available by the time projects are opened and the shell start calling IVsSccEnlistmentPathTranslation functions.
-            pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
-
+            if (settings.Dirty)
+            {
+                pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
+                settings.Dirty = false;
+            }
             // Once we saved our props, the solution is not dirty anymore
             SolutionHasDirtyProps = false;
 
             return VSConstants.S_OK;
         }
+
 
         public int WriteSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] string pszKey, [InAttribute] IPropertyBag pPropBag)
         {
@@ -192,21 +182,23 @@ namespace CrmCodeGenerator.VSPackage
             //string strSolutionLocation = "\"This is the second key\"";
             //obj = strSolutionLocation;
             //pPropBag.Write(_strSolutionBindingsProperty, ref obj);
-            pPropBag.Write(_strProjectName, Configuration.Instance.Settings.ProjectName.ToString());
-            pPropBag.Write(_strCrmUrl, Configuration.Instance.Settings.CrmSdkUrl);
-            pPropBag.Write(_strDomain, Configuration.Instance.Settings.Domain);
-            pPropBag.Write(_strT4Path, Configuration.Instance.Settings.T4Path);
-            pPropBag.Write(_strTemplate, Configuration.Instance.Settings.Template);
-            pPropBag.Write(_strOrganization, Configuration.Instance.Settings.CrmOrg);
-            //pPropBag.Write(_strExcludeEntities, Settings.EntitiesToExcludeString);
-            pPropBag.Write(_strIncludeEntities, Configuration.Instance.Settings.EntitiesToIncludeString);
-            pPropBag.Write(_strOutputFile, Configuration.Instance.Settings.OutputPath);
-            // TODO move these two to the .sou file 
-            pPropBag.Write(_strUsername, Configuration.Instance.Settings.Username);
-            pPropBag.Write(_strPassword, Configuration.Instance.Settings.Password);
-            pPropBag.Write(_strNamespace, Configuration.Instance.Settings.Namespace);
 
-            //pPropBag.Write(_strSolutionBindingsProperty, "\"This is the second key\"");
+            //pPropBag.Write(settings.ProjectName.GetType().Name, settings.ProjectName);
+            pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
+            pPropBag.Write(_strDomain, settings.Domain);
+            pPropBag.Write(_strUsername, settings.Username);
+            pPropBag.Write(_strPassword, settings.Password);
+            pPropBag.Write(_strOrganization, settings.CrmOrg);
+            pPropBag.Write(_strIncludeEntities, settings.EntitiesToIncludeString);
+            settings.Dirty = false;
+
+            //pPropBag.Write(_strT4Path, settings.T4Path);
+            //pPropBag.Write(_strTemplate, settings.Template);
+            ////pPropBag.Write(_strExcludeEntities, Settings.EntitiesToExcludeString);
+            //pPropBag.Write(_strOutputFile, settings.OutputPath);
+            //// TODO move these two to the .sou file 
+            //pPropBag.Write(_strNamespace, settings.Namespace);
+            ////pPropBag.Write(_strSolutionBindingsProperty, "\"This is the second key\"");
 
             return VSConstants.S_OK;
         }
@@ -233,6 +225,10 @@ namespace CrmCodeGenerator.VSPackage
             {
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
             }
+            else if (settings.Dirty)
+            {
+                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
+            }
             else
             {
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoDirtyProps;
@@ -249,18 +245,19 @@ namespace CrmCodeGenerator.VSPackage
                 //object pVar;
                 //pPropBag.Read(_strCrmUrlKey, out pVar, null, 0, null);
                 //CrmUrl = pVar as string;
-                Configuration.Instance.Settings.ProjectName = pPropBag.Read(_strProjectName, "");
-                Configuration.Instance.Settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
-                Configuration.Instance.Settings.Domain = pPropBag.Read(_strDomain, "");
-                Configuration.Instance.Settings.T4Path = pPropBag.Read(_strT4Path, System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt"));  // TODO this doesn't need to be stored in the propbag
-                Configuration.Instance.Settings.Template = pPropBag.Read(_strTemplate, "");
-                Configuration.Instance.Settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
+
+                settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
+                settings.Username = pPropBag.Read(_strUsername, "");
+                settings.Password = pPropBag.Read(_strPassword, "");
+                settings.Domain = pPropBag.Read(_strDomain, "");
+                settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
+                settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
+                settings.Dirty = false;
+                //settings.T4Path = pPropBag.Read(_strT4Path, System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt"));  // TODO this doesn't need to be stored in the propbag
+                //settings.Template = pPropBag.Read(_strTemplate, "");
                 //Settings.EntitiesToExcludeString = pPropBag.Read(_strExcludeEntities, "");
-                Configuration.Instance.Settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
-                Configuration.Instance.Settings.OutputPath = pPropBag.Read(_strOutputFile, "");
-                Configuration.Instance.Settings.Username = pPropBag.Read(_strUsername, "");
-                Configuration.Instance.Settings.Password = pPropBag.Read(_strPassword, "");
-                Configuration.Instance.Settings.Namespace = pPropBag.Read(_strNamespace, "");   // This will get defaulted to the project if the user doesn't enter anything the first it's executed.
+                //settings.OutputPath = pPropBag.Read(_strOutputFile, "");
+                //settings.Namespace = pPropBag.Read(_strNamespace, "");   // This will get defaulted to the project if the user doesn't enter anything the first it's executed.
             }
             return VSConstants.S_OK;
         }
@@ -326,27 +323,17 @@ namespace CrmCodeGenerator.VSPackage
                 var error = e.Message + "\n" + e.StackTrace;
                 System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
-
-
-
-
-
         }
 
 
         private void AddTemplate()
         {
             var dte2 = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
-            Project project = dte2.GetProject(Configuration.Instance.Settings.ProjectName);
 
-            if (project == null)
+            var project = dte2.GetSelectedProject();
+            if (project == null || string.IsNullOrWhiteSpace(project.FullName))
             {
-                project = dte2.GetSelectedProject();
-                if (project == null || string.IsNullOrWhiteSpace(project.FullName))
-                {
-                    throw new UserException("Please select a project first");
-                }
-                Configuration.Instance.Settings.ProjectName = project.UniqueName;
+                throw new UserException("Please select a project first");
             }
 
             var m = new AddTemplate(dte2, project);
@@ -367,7 +354,7 @@ namespace CrmCodeGenerator.VSPackage
             {
                 throw new UserException("T4Path: " + defaultTemplatePath + " is missing or you can access it.");
             }
-            
+
             var dir = System.IO.Path.GetDirectoryName(templatePath);
             if (!System.IO.Directory.Exists(dir))
             {
@@ -382,10 +369,10 @@ namespace CrmCodeGenerator.VSPackage
             // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
             var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
             System.IO.File.Copy(blankTemplatePath, templatePath, true);
-                        
+
             var p = project.ProjectItems.AddFromFile(templatePath);
             p.Properties.SetValue("CustomTool", "");
-                        
+
             System.IO.File.Copy(defaultTemplatePath, templatePath, true);
             p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
 
@@ -420,7 +407,7 @@ namespace CrmCodeGenerator.VSPackage
 
             var m = new Main(dte2, project, Configuration.Instance.Settings);
             m.ShowDialog();
-            if (Configuration.Instance.Settings.Dirty)   
+            if (Configuration.Instance.Settings.Dirty)
             {
                 SolutionHasDirtyProps = true;  // force save of custom setting in solution 
             }
@@ -431,7 +418,6 @@ namespace CrmCodeGenerator.VSPackage
         #region SolutionEvents
         public int OnAfterCloseSolution(object pUnkReserved)
         {
-            DefaultSettings();
             return VSConstants.S_OK;
         }
         public int OnAfterClosingChildren(IVsHierarchy pHierarchy) { return VSConstants.S_OK; }

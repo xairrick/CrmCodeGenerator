@@ -47,6 +47,7 @@ namespace CrmCodeGenerator.VSPackage
             Settings.Username = "";
             Settings.Password = "";
             Settings.Namespace = "";
+            Settings.Dirty = false;
         }
         public CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
     }

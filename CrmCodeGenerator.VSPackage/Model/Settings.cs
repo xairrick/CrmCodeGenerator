@@ -19,10 +19,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             Dirty = false;
         }
 
-
-
-
-
         // boiler-plate
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
@@ -35,6 +31,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
+            Dirty = true;
             OnPropertyChanged(propertyName);
             return true;
         }

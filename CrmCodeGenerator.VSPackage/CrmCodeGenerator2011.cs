@@ -46,7 +46,6 @@ namespace CrmCodeGenerator.VSPackage
         private ServiceProvider serviceProvider = null;
         private Settings settings = Configuration.Instance.Settings;
 
-
         private CodeDomProvider CodeProvider
         {
             get
@@ -100,7 +99,7 @@ namespace CrmCodeGenerator.VSPackage
         {
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
-
+                                    
             int exit = 0;
             try
             {
@@ -198,58 +197,4 @@ namespace CrmCodeGenerator.VSPackage
 
         #endregion IObjectWithSite
     }
-
-
-
-    //// Note: the class name is used as the name of the Custom Tool from the end-user's perspective.
-    //[ComVisible(true)]
-    //[Guid("BB69ADDB-6AB5-4E29-B263-F918D86D1CC0")]
-    //[CodeGeneratorRegistration(typeof(ToUppercase), "Uppercasification!", vsContextGuids.vsContextGuidVCSProject, GeneratesDesignTimeSource = true)]
-    //[CodeGeneratorRegistration(typeof(ToUppercase), "Uppercasification!", vsContextGuids.vsContextGuidVBProject, GeneratesDesignTimeSource = true)]
-    //[CodeGeneratorRegistration(typeof(ToUppercase), "Uppercasification!", vsContextGuids.vsContextGuidVJSProject, GeneratesDesignTimeSource = true)]
-    ////[ProvideObject(typeof(ToUppercase))]
-    //public class ToUppercase : CustomToolBase
-    //{
-    //    protected override string DefaultExtension()
-    //    {
-    //        return ".txt";
-    //    }
-    //    protected override byte[] Generate(string inputFilePath, string inputFileContents,
-    //        string defaultNamespace, IVsGeneratorProgress progressCallback)
-    //    {
-    //        return Encoding.UTF8.GetBytes(inputFileContents.ToUpperInvariant());
-    //    }
-    //}
-
-
-    //[ComVisible(true)]
-    //[ClassInterface(ClassInterfaceType.None)]
-    //[Guid("BB69ADDB-6AB5-4E29-B263-F918D86D1CC0")]
-    //[CodeGeneratorRegistration(typeof(MySampleGenerator), "My Sample Generator", new Guid("BB69ADDB-6AB5-4E29-B263-F918D86D1CC0"))]
-
-    //[ProvideObject(typeof(MySampleGenerator), RegisterUsing = RegistrationMethod.CodeBase)]
-    //public class MySampleGenerator : IVsSingleFileGenerator
-    //{
-    //    public int DefaultExtension(out string pbstrDefaultExtension)
-    //    {
-    //        pbstrDefaultExtension = ".cs";
-    //        return pbstrDefaultExtension.Length;
-    //    }
-
-    //    public int Generate(string wszInputFilePath, string bstrInputFileContents, string wszDefaultNamespace, IntPtr[] rgbOutputFileContents, out uint pcbOutput, IVsGeneratorProgress pGenerateProgress)
-    //    {
-    //        int lineCount = bstrInputFileContents.Split('\n').Length;
-
-    //        byte[] bytes = Encoding.UTF8.GetBytes(lineCount.ToString());
-    //        int length = bytes.Length;
-
-    //        rgbOutputFileContents[0] = Marshal.AllocCoTaskMem(length);
-    //        Marshal.Copy(bytes, 0, rgbOutputFileContents[0], length);
-
-    //        pcbOutput = (uint)length;
-    //        return VSConstants.S_OK;
-
-    //        throw new Exception("It worked????");
-    //    }
-    //}
 }
