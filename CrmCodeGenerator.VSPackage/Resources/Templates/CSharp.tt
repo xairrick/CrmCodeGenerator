@@ -1,18 +1,4 @@
-﻿<#@ template debug="true" hostSpecific="true" #>
-<#@ output extension=".cs" #>
-<#@ Assembly Name="System.Core.dll" #>
-<#@ Assembly Name="System.Windows.Forms.dll" #>
-<#@ Assembly Name="CrmCodeGenerator.Core.dll" #>
-<#@ import namespace="System" #>
-<#@ import namespace="System.IO" #>
-<#@ import namespace="System.Diagnostics" #>
-<#@ import namespace="System.Collections" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="CrmCodeGenerator.Core" #>
-<#@ import namespace="CrmCodeGenerator.Core.Model" #>
-<#@ import namespace="CrmCodeGenerator.Core.Naming" #>
-<#@ import namespace="CrmCodeGenerator.Core.T4" #>
-<#@ property processor="PropertyProcessor" type="CrmCodeGenerator.Core.Model.Context" name="Context" #>
+﻿<#@ parameter type="CrmCodeGenerator.VSPackage.Model.Context" name="Context"#>
 using System;
 using System.Collections.Generic;
 using System.Linq;

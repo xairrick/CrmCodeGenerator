@@ -97,6 +97,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             this.Cursor = origCursor;
             this.DialogResult = true;
+            settings.EntitiesToIncludeString = this.Entities.Text;  //  Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed
             this.Close();
         }
         private void UpdateStatus(string message, bool working = false)

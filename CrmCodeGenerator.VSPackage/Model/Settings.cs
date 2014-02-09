@@ -131,7 +131,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
         }
 
-        // specify the connection details or specify the crmconnection property
         public string CrmSdkUrl
         {
             get
@@ -212,12 +211,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 SetField(ref _TemplateList, value);
             }
         }
-
-
         public IOrganizationService CrmConnection { get; set; }
-
-        //public string[] EntitiesToExclude { get; set; }
-        //public string[] EntitiesToInclude { get; set; }
 
         public string EntitiesToIncludeString
         {
@@ -231,7 +225,6 @@ namespace CrmCodeGenerator.VSPackage.Model
                     sb.Append(value);
                 }
                 return sb.ToString();
-                //return _EntitiesToIncludeString;
             }
             set
             {
@@ -248,24 +241,6 @@ namespace CrmCodeGenerator.VSPackage.Model
                 OnPropertyChanged("EnableExclude");
             }
         }
-        //public bool EnableExclude
-        //{
-        //    get
-        //    {
-        //        return String.IsNullOrWhiteSpace(_EntitiesToIncludeString);
-        //    }
-        //}
-        //public string EntitiesToExcludeString
-        //{
-        //    get
-        //    {
-        //        return _EntitiesToExcludeString;
-        //    }
-        //    set
-        //    {
-        //        SetField(ref _EntitiesToExcludeString, value);
-        //    }
-        //}
 
         public ObservableCollection<string> _EntityList;
         public ObservableCollection<string> EntityList
