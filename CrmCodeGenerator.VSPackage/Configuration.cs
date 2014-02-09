@@ -50,5 +50,6 @@ namespace CrmCodeGenerator.VSPackage
             Settings.Dirty = false;
         }
         public CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
+        public EnvDTE80.DTE2 DTE { get; set; }
     }
 }

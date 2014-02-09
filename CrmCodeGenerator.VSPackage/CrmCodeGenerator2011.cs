@@ -99,6 +99,10 @@ namespace CrmCodeGenerator.VSPackage
         {
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
+
+            
+            UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
+            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \r \n " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
                                     
             int exit = 0;
             try
@@ -122,34 +126,32 @@ namespace CrmCodeGenerator.VSPackage
 
             if (exit > 0)
             {
+                pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
+                // http://social.msdn.microsoft.com/Forums/vstudio/en-US/d8d72da3-ddb9-4811-b5da-2a167bbcffed/ivssinglefilegenerator-cancel-code-generation
+                // I don't think a login failure would be considered a invalid model.
+                // TODO read in original file and pass it back  (the extension need to be pulled from the template, so we need to process the template to see if the user specified a extension)
                 rgbOutputFileContents[0] = IntPtr.Zero;
                 pcbOutput = 0;
                 return exit;
             }
 
-
-            if (Configuration.Instance.Settings.Dirty)
-            {
-                // TODO force save of custom setting in solution 
-            }
-
-
-
-            //connecting
+            UpdateStatus("Connecting... ");
             if (settings.CrmConnection == null)
             {
                 settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
             }
 
+            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... "); 
             settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
             var mapper = new CrmCodeGenerator.VSPackage.Mapper(settings);
-            ///UpdateStatus("Mapping....", true);
             var context = mapper.MapContext();
 
-            //UpdateStatus("Generating....", true);
+            UpdateStatus("Generating code from template... "); 
+            pGenerateProgress.Progress(40, 100);
             string content = Processor.ProcessTemplateCore(wszInputFilePath, context);   // TODO convert to just send the bstrInputFileContents
 
-            
+            UpdateStatus("Writing code to disk... "); 
+            pGenerateProgress.Progress(50, 100);
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)
@@ -164,13 +166,34 @@ namespace CrmCodeGenerator.VSPackage
                 pcbOutput = (uint)bytes.Length;
             }
 
-            System.Windows.MessageBox.Show("Done!!!!!", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-
+            UpdateStatus("Done!"); 
+            
             return VSConstants.S_OK;
         }
 
         #endregion IVsSingleFileGenerator
 
+        private void UpdateStatus(string message)
+        {
+            //Configuration.Instance.DTE.ExecuteCommand("View.Output");
+            var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
+            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            win.Visible = true;
+
+
+            //System.Windows.Forms.Application.DoEvents();
+
+            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
+            IVsOutputWindowPane pane;
+            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
+            hr = outputWindow.GetPane(guidGeneral, out pane);
+            pane.Activate();
+            pane.OutputString(message);
+            pane.OutputString("\n");
+            pane.FlushToTaskList();
+            System.Windows.Forms.Application.DoEvents();
+        }
         #region IObjectWithSite
 
         public void GetSite(ref Guid riid, out IntPtr ppvSite)

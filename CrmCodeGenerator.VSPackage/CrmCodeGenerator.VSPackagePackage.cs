@@ -86,7 +86,9 @@ namespace CrmCodeGenerator.VSPackage
                 mcs.AddCommand(tempalteItem);
 
             }
+            Configuration.Instance.DTE = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
             AdviseSolutionEvents();
+
         }
 
         protected override void Dispose(bool disposing)

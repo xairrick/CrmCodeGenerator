@@ -306,7 +306,5 @@ namespace CrmCodeGenerator.VSPackage.Model
         }
 
         public bool Dirty { get; set; }
-
-
     }
 }
