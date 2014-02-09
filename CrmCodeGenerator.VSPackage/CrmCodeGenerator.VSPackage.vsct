@@ -61,13 +61,13 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
 
-      <Button guid="guidCrmCodeGenerator_VSPackageCmdSet" id="cmdidCrmCodeGenerator" priority="0x0100" type="Button">
+      <!--<Button guid="guidCrmCodeGenerator_VSPackageCmdSet" id="cmdidCrmCodeGenerator" priority="0x0100" type="Button">
         <Parent guid="guidCrmCodeGenerator_VSPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <ButtonText>CRM Code Generator</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
       <Button guid="guidCrmCodeGenerator_VSPackageCmdSet" id="cmdidAddTemplate" priority="0x0100" type="Button">
         <Parent guid="guidCrmCodeGenerator_VSPackageCmdSet" id="MyMenuGroup" />
