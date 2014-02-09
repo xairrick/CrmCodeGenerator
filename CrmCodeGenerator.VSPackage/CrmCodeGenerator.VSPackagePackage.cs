@@ -132,26 +132,15 @@ namespace CrmCodeGenerator.VSPackage
 
         private Settings settings = Configuration.Instance.Settings;
 
-        public bool SolutionHasDirtyProps { get; set; }
-        //public Microsoft.Xrm.Sdk.IOrganizationService CachedCrmConnection { get; set; }
-        //public static CrmCodeGenerator.VSPackage.Model.Settings Settings { get; set; }
         private const string _strSolutionPersistanceKey = "CrmCodeGeneration";
         private const string _strSolutionBindingsProperty = "t4path";
 
-
-        //TODO instead of magic strings, but an attribute on props or reflection on props
-        private const string _strProjectName = "ProjectName";
         private const string _strCrmUrl = "CrmUrl";
-        private const string _strDomain = "Domain";
-        private const string _strT4Path = "T4Path";
-        private const string _strTemplate = "Template";
-        private const string _strOrganization = "Organization";
-        private const string _strExcludeEntities = "ExcludeEntities";
-        private const string _strIncludeEntities = "IncludeEntities";
-        private const string _strOutputFile = "OutputFile";
         private const string _strUsername = "Username";
         private const string _strPassword = "Password";
-        private const string _strNamespace = "Namespace";
+        private const string _strDomain = "Domain";
+        private const string _strOrganization = "Organization";
+        private const string _strIncludeEntities = "IncludeEntities";
 
         public int SaveSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] IVsSolutionPersistence pPersistence)
         {
@@ -168,8 +157,6 @@ namespace CrmCodeGenerator.VSPackage
                 pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
                 settings.Dirty = false;
             }
-            // Once we saved our props, the solution is not dirty anymore
-            SolutionHasDirtyProps = false;
 
             return VSConstants.S_OK;
         }
@@ -177,13 +164,6 @@ namespace CrmCodeGenerator.VSPackage
 
         public int WriteSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] string pszKey, [InAttribute] IPropertyBag pPropBag)
         {
-            //object obj = CrmUrl;
-            //pPropBag.Write(_strCrmUrlKey, ref obj);
-            //string strSolutionLocation = "\"This is the second key\"";
-            //obj = strSolutionLocation;
-            //pPropBag.Write(_strSolutionBindingsProperty, ref obj);
-
-            //pPropBag.Write(settings.ProjectName.GetType().Name, settings.ProjectName);
             pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
             pPropBag.Write(_strUsername, settings.Username);
@@ -192,26 +172,16 @@ namespace CrmCodeGenerator.VSPackage
             pPropBag.Write(_strIncludeEntities, settings.EntitiesToIncludeString);
             settings.Dirty = false;
 
-            //pPropBag.Write(_strT4Path, settings.T4Path);
-            //pPropBag.Write(_strTemplate, settings.Template);
-            ////pPropBag.Write(_strExcludeEntities, Settings.EntitiesToExcludeString);
-            //pPropBag.Write(_strOutputFile, settings.OutputPath);
-            //// TODO move these two to the .sou file 
-            //pPropBag.Write(_strNamespace, settings.Namespace);
-            ////pPropBag.Write(_strSolutionBindingsProperty, "\"This is the second key\"");
-
             return VSConstants.S_OK;
         }
 
         public int LoadUserOptions(IVsSolutionPersistence pPersistence, uint grfLoadOpts)
         {
-            //throw new NotImplementedException();
             return VSConstants.S_OK;
         }
 
         public int OnProjectLoadFailure(IVsHierarchy pStubHierarchy, string pszProjectName, string pszProjectMk, string pszKey)
         {
-            //throw new NotImplementedException();
             return VSConstants.S_OK;
         }
 
@@ -220,10 +190,6 @@ namespace CrmCodeGenerator.VSPackage
             if (pHierarchy != null)  //if not null, then it's asking to save properties for solution item eg project.  for now we are only save to the solution
             {
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoProps;
-            }
-            else if (SolutionHasDirtyProps)
-            {
-                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
             }
             else if (settings.Dirty)
             {
@@ -240,12 +206,6 @@ namespace CrmCodeGenerator.VSPackage
         {
             if (_strSolutionPersistanceKey.CompareTo(pszKey) == 0)
             {
-                // Now we can read all the data and store it in memory
-                // The read data will be used when the solution has completed opening
-                //object pVar;
-                //pPropBag.Read(_strCrmUrlKey, out pVar, null, 0, null);
-                //CrmUrl = pVar as string;
-
                 settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
                 settings.Username = pPropBag.Read(_strUsername, "");
                 settings.Password = pPropBag.Read(_strPassword, "");
@@ -253,34 +213,24 @@ namespace CrmCodeGenerator.VSPackage
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
                 settings.Dirty = false;
-                //settings.T4Path = pPropBag.Read(_strT4Path, System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt"));  // TODO this doesn't need to be stored in the propbag
-                //settings.Template = pPropBag.Read(_strTemplate, "");
-                //Settings.EntitiesToExcludeString = pPropBag.Read(_strExcludeEntities, "");
-                //settings.OutputPath = pPropBag.Read(_strOutputFile, "");
-                //settings.Namespace = pPropBag.Read(_strNamespace, "");   // This will get defaulted to the project if the user doesn't enter anything the first it's executed.
             }
             return VSConstants.S_OK;
         }
 
         public int ReadUserOptions(IStream pOptionsStream, string pszKey)
         {
-            //throw new NotImplementedException();
             return VSConstants.S_OK;
         }
 
         public int SaveUserOptions(IVsSolutionPersistence pPersistence)
         {
-            //throw new NotImplementedException();
             return VSConstants.S_OK;
         }
 
         public int WriteUserOptions(IStream pOptionsStream, string pszKey)
         {
-            //throw new NotImplementedException();
             return VSConstants.S_OK;
         }
-
-
         #endregion
 
 
@@ -407,19 +357,12 @@ namespace CrmCodeGenerator.VSPackage
 
             var m = new Main(dte2, project, Configuration.Instance.Settings);
             m.ShowDialog();
-            if (Configuration.Instance.Settings.Dirty)
-            {
-                SolutionHasDirtyProps = true;  // force save of custom setting in solution 
-            }
             m.Close();
             m = null;
         }
 
         #region SolutionEvents
-        public int OnAfterCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
+        public int OnAfterCloseSolution(object pUnkReserved)  { return VSConstants.S_OK; }
         public int OnAfterClosingChildren(IVsHierarchy pHierarchy) { return VSConstants.S_OK; }
         public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) { return VSConstants.S_OK; }
         public int OnAfterMergeSolution(object pUnkReserved) { return VSConstants.S_OK; }
@@ -435,6 +378,5 @@ namespace CrmCodeGenerator.VSPackage
         public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel) { return VSConstants.S_OK; }
         public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel) { return VSConstants.S_OK; }
         #endregion
-
     }
 }
