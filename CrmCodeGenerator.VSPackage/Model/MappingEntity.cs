@@ -11,7 +11,7 @@ namespace CrmCodeGenerator.VSPackage.Model
     public class MappingEntity
     {
         public CrmEntityAttribute Attribute { get; set; }
-
+        public Nullable<int> TypeCode { get; set; }
         public MappingField[] Fields { get; set; }
         public MappingEnum States { get; set; }
         public MappingEnum[] Enums { get; set; }
@@ -53,7 +53,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             var entity = new MappingEntity();
 
             entity.Attribute = new CrmEntityAttribute();
-
+            entity.TypeCode = entityMetadata.ObjectTypeCode;
             entity.Attribute.LogicalName = entityMetadata.LogicalName;
             entity.Attribute.PrimaryKey = entityMetadata.PrimaryIdAttribute;
 

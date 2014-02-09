@@ -28,7 +28,7 @@ namespace CrmCodeGenerator.VSPackage.Helpers
 
                     for (int i = start; i < p.Length; i++)
                     {
-                        if ((char.IsDigit(p[i]) || char.IsLetter(p[i])) && !string.IsNullOrEmpty(p[i].ToString()))
+                        if ((char.IsDigit(p[i]) || char.IsLetter(p[i]) || p[i] == '_') && !string.IsNullOrEmpty(p[i].ToString()))
                         {
                             sb.Append(p[i]);
                         }
@@ -145,7 +145,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             if (string.IsNullOrWhiteSpace(p))
                 return "Empty";
 
-            return Clean(Capitalize(p, true));
+            //return Clean(Capitalize(p, true));
+            return Clean(p);
         }
 
         public static string GetPluralName(string p)

@@ -123,7 +123,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             get
             {
                 if (IsPrimaryKey)
-                    return "Guid";
+                    return "Nullable<Guid>";
 
                 switch (FieldType)
                 {

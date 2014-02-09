@@ -15,43 +15,77 @@ namespace <#= Context.Namespace #>
 <# foreach (var entity in Context.Entities)
 {
 #>
-
 <# if (entity.States != null) { #>
 	[System.Runtime.Serialization.DataContractAttribute()]
 	public enum <#=entity.HybridName#>State
 	{
 <# foreach (var itm in entity.States.Items) { #>
 		[System.Runtime.Serialization.EnumMemberAttribute()]
-		<#=itm.Name #> = <#=itm.Value #>,
+		<#=itm.Name#> = <#=itm.Value#>,
 <#}#>
 	}
 <#}#>
 
-
-
 	[System.Runtime.Serialization.DataContractAttribute()]
 	[EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
-	public partial class <#=entity.HybridName#> : Entity
+	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
 		public <#=entity.HybridName#>()
 			: base("<#=entity.LogicalName#>")
 		{
 		}
 
+		public const string EntityLogicalName = "<#=entity.LogicalName#>";
+		public const int EntityTypeCode = <#=entity.TypeCode#>;
+	
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
+	
+		private void OnPropertyChanged(string propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+	
+		private void OnPropertyChanging(string propertyName)
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, new System.ComponentModel.PropertyChangingEventArgs(propertyName));
+			}
+		}
+
 		[AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
 		public override Guid Id
 		{
 			get { return base.Id; }
-			set { <#=entity.PrimaryKey.HybridName#> = value; }
+			set { <#=entity.PrimaryKey.DisplayName#> = value; }
 		}
 
 <#
 	foreach(var attribute in entity.Fields)	{#>
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public virtual <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.HybridName#>
+        public virtual <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
-			set { this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); }
+			set 
+			{ 
+				this.OnPropertyChanging("<#=attribute.Attribute.LogicalName#>");
+				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
+<# if(attribute == entity.PrimaryKey) { #>
+				if (value.HasValue)
+				{
+					base.Id = value.Value;
+				}
+				else
+				{
+					base.Id = System.Guid.Empty;
+				}
+<#}#>
+				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
+			}
 		}
 <#}#>
 	}
