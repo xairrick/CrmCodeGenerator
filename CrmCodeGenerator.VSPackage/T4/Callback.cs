@@ -10,17 +10,31 @@ namespace CrmCodeGenerator.VSPackage.T4
 {
     class Callback : ITextTemplatingCallback
     {
-        public List<string> errorMessages = new List<string>();
-        public string fileExtension = ".txt";
-        public Encoding outputEncoding = Encoding.UTF8;
+        public List<ErrorMessage> ErrorMessages = new List<ErrorMessage>();
+        public string FileExtension = ".txt";
+        public Encoding OutputEncoding = Encoding.UTF8;
 
         public void ErrorCallback(bool warning, string message, int line, int column)
-        { errorMessages.Add(message); }
+        { 
+            ErrorMessages.Add(new ErrorMessage(){
+                Message = message,
+                Warning = warning,
+                Line = (uint)line,
+                Column = (uint)column
+            }); 
+        }
 
         public void SetFileExtension(string extension)
-        { fileExtension = extension; }
+        { FileExtension = extension; }
 
         public void SetOutputEncoding(Encoding encoding, bool fromOutputDirective)
-        { outputEncoding = encoding; }
+        { OutputEncoding = encoding; }
+    }
+    class ErrorMessage
+    {
+        public string Message { get; set; }
+        public uint Line { get; set;}
+        public uint Column { get; set; }
+        public bool Warning { get; set; }
     }
 }

@@ -19,6 +19,8 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using CrmCodeGenerator.VSPackage.Model;
 using CrmCodeGenerator.VSPackage.T4;
 using CrmCodeGenerator.VSPackage.Dialogs;
+using Microsoft.VisualStudio.TextTemplating.VSHost;
+using Microsoft.VisualStudio.TextTemplating;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -157,11 +159,29 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             UpdateStatus("Generating code from template... ");
-            pGenerateProgress.Progress(40, 100);
-            string content = Processor.ProcessTemplateCore(wszInputFilePath, bstrInputFileContents, context, out extension);
+
+
+            ITextTemplating t4 = Package.GetGlobalService(typeof(STextTemplating)) as ITextTemplating;
+            ITextTemplatingSessionHost sessionHost = t4 as ITextTemplatingSessionHost;
+
+            // Create a Session in which to pass parameters:
+            sessionHost.Session = sessionHost.CreateSession();
+            sessionHost.Session["Context"] = context;
+
+            Callback cb = new Callback();
+
+            // Process a text template:
+            string content = t4.ProcessTemplate(wszInputFilePath, bstrInputFileContents, cb);
+
+            // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
+            if (!string.IsNullOrWhiteSpace(cb.FileExtension))
+            {
+                extension = cb.FileExtension;
+            }
+
+
 
             UpdateStatus("Writing code to disk... ");
-            pGenerateProgress.Progress(50, 100);
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)
@@ -176,7 +196,18 @@ namespace CrmCodeGenerator.VSPackage
                 pcbOutput = (uint)bytes.Length;
             }
 
-            UpdateStatus("Done!");
+            // Append any error messages:
+            if (cb.ErrorMessages.Count == 0)
+            {
+                UpdateStatus("Done!");
+            } else
+            {
+                foreach (var err in cb.ErrorMessages)
+                {
+                    UpdateStatus(err.Message);
+                }
+                Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
+            }
 
             return VSConstants.S_OK;
         }

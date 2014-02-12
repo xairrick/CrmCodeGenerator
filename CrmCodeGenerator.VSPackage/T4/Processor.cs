@@ -32,16 +32,16 @@ namespace CrmCodeGenerator.VSPackage.T4
             string result = t4.ProcessTemplate(templatePath, templateContent, cb);
 
             // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
-            if (!string.IsNullOrWhiteSpace(cb.fileExtension))
+            if (!string.IsNullOrWhiteSpace(cb.FileExtension))
             {
-                extension = cb.fileExtension;
+                extension = cb.FileExtension;
             }
 
 
             // Append any error messages:
-            if (cb.errorMessages.Count > 0)
+            if (cb.ErrorMessages.Count > 0)
             {
-                result = cb.errorMessages.ToString();
+                result = cb.ErrorMessages.ToString();
             }
             return result;
 
@@ -63,10 +63,10 @@ namespace CrmCodeGenerator.VSPackage.T4
             // Process a text template:
             string result = t4.ProcessTemplate(templatePath, templateContent, cb);
             string OutputFullPath;
-            if (!string.IsNullOrWhiteSpace(cb.fileExtension))
+            if (!string.IsNullOrWhiteSpace(cb.FileExtension))
             {
                 // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
-                OutputFullPath = System.IO.Path.ChangeExtension(templatePath, cb.fileExtension);
+                OutputFullPath = System.IO.Path.ChangeExtension(templatePath, cb.FileExtension);
             }
             else
             {
@@ -76,16 +76,16 @@ namespace CrmCodeGenerator.VSPackage.T4
 
             // Write the processed output to file:
             // UpdateStatus("Writing......", true);
-            System.IO.File.WriteAllText(OutputFullPath, result, cb.outputEncoding);
+            System.IO.File.WriteAllText(OutputFullPath, result, cb.OutputEncoding);
 
             // Append any error messages:
-            if (cb.errorMessages.Count > 0)
+            if (cb.ErrorMessages.Count > 0)
             {
-                System.IO.File.AppendAllLines(OutputFullPath, cb.errorMessages);
+                System.IO.File.AppendAllLines(OutputFullPath, cb.ErrorMessages.Select(x => x.Message));
             }
 
             string errroMessage = null;
-            if (cb.errorMessages.Count > 0)
+            if (cb.ErrorMessages.Count > 0)
             {
                 errroMessage = "Unable to generate file see " + OutputFullPath + " for more details ";
             }
