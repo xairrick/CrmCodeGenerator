@@ -75,16 +75,9 @@ namespace CrmCodeGenerator.VSPackage
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
-                // Create the command for the menu item.
-                //CommandID menuCommandID = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidCrmCodeGenerator);
-                //MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
-                //mcs.AddCommand(menuItem);
-
-
                 CommandID templateCmd = new CommandID(GuidList.guidCrmCodeGenerator_VSPackageCmdSet, (int)PkgCmdIDList.cmdidAddTemplate);
                 MenuCommand tempalteItem = new MenuCommand(AddTemplateCallback, templateCmd);
                 mcs.AddCommand(tempalteItem);
-
             }
             Configuration.Instance.DTE = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
             AdviseSolutionEvents();
@@ -236,7 +229,11 @@ namespace CrmCodeGenerator.VSPackage
         #endregion
 
 
-
+        /// <summary>
+        /// This function is the callback used to execute a command when the a menu item is clicked.
+        /// See the Initialize method to see how the menu item is associated to this function using
+        /// the OleMenuCommandService service and the MenuCommand class.
+        /// </summary>
         private void AddTemplateCallback(object sender, EventArgs args)
         {
             try
@@ -253,30 +250,6 @@ namespace CrmCodeGenerator.VSPackage
                 System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
-
-        /// <summary>
-        /// This function is the callback used to execute a command when the a menu item is clicked.
-        /// See the Initialize method to see how the menu item is associated to this function using
-        /// the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void MenuItemCallback(object sender, EventArgs args)
-        {
-            //var dte = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
-            try
-            {
-                OpenWindow();
-            }
-            catch (UserException e)
-            {
-                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            }
-            catch (Exception e)
-            {
-                var error = e.Message + "\n" + e.StackTrace;
-                System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-            }
-        }
-
 
         private void AddTemplate()
         {
@@ -313,7 +286,7 @@ namespace CrmCodeGenerator.VSPackage
                 System.IO.Directory.CreateDirectory(dir);
             }
 
-            Console.Write("Adding " + templatePath + " to project");
+            Status.Update("Adding " + templatePath + " to project");
             // When you add a TT file to visual studio, it will try to automatically compile it, 
             // if there is error (and there will be error because we have custom generator) 
             // the error will persit until you close Visual Studio. The solution is to add 
@@ -328,38 +301,6 @@ namespace CrmCodeGenerator.VSPackage
             System.IO.File.Copy(defaultTemplatePath, templatePath, true);
             p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
 
-            m = null;
-        }
-
-
-        private void OpenWindow()
-        {
-            var dte2 = this.GetService(typeof(SDTE)) as EnvDTE80.DTE2;
-            Project project = dte2.GetProject(Configuration.Instance.Settings.ProjectName);
-
-            if (project == null)
-            {
-                project = dte2.GetSelectedProject();
-                if (project == null || string.IsNullOrWhiteSpace(project.FullName))
-                {
-                    System.Windows.MessageBox.Show("Please select a project first", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                    return;
-                }
-                Configuration.Instance.Settings.ProjectName = project.UniqueName;
-            }
-
-            if (string.IsNullOrWhiteSpace(Configuration.Instance.Settings.OutputPath))
-            {
-                Configuration.Instance.Settings.OutputPath = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.cs");
-            }
-            if (string.IsNullOrWhiteSpace(Configuration.Instance.Settings.Template))
-            {
-                Configuration.Instance.Settings.Template = System.IO.Path.Combine(project.GetProjectDirectory(), "CrmSchema.tt");
-            }
-
-            var m = new Main(dte2, project, Configuration.Instance.Settings);
-            m.ShowDialog();
-            m.Close();
             m = null;
         }
 
