@@ -38,6 +38,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             InitializeComponent();
 
+
             _Props = new AddTemplateProp();
             this.DataContext = Props;
 
@@ -46,6 +47,11 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             Props.TemplateList = new ObservableCollection<String>(dir.GetFiles().Select(x => x.Name).Where(x => !x.Equals("Blank.tt")).ToArray());
             Props.Template = "CrmSchema.tt";
             Props.Folder = project.GetProjectDirectory();
+        }
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            this.HideMinimizeAndMaximizeButtons();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -59,7 +65,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-             this.Close();
+            this.Close();
         }
     }
 
@@ -85,8 +91,8 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             OnPropertyChanged(propertyName);
             return true;
         }
-       
-        
+
+
         private string _Template;
         public string Template
         {
@@ -125,7 +131,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                 SetField(ref _NewTemplate, value);
             }
         }
-        
+
         private string _OutputPath;
         public string OutputPath
         {

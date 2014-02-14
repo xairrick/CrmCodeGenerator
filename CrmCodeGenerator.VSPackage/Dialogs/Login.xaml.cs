@@ -32,7 +32,11 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             this.settings = settings;
             this.DataContext = settings;
         }
-        
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            this.HideMinimizeAndMaximizeButtons();
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");

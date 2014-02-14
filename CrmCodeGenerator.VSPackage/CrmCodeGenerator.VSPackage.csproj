@@ -151,6 +151,7 @@
     <Compile Include="Helpers\PropertyBagExtensions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Helpers\Status.cs" />
+    <Compile Include="Helpers\WindowExtensions.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="MapperEventArgs.cs" />
     <Compile Include="Model\Context.cs" />
