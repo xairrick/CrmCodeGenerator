@@ -113,8 +113,6 @@ namespace CrmCodeGenerator.VSPackage
 
             if (context == null)
             {
-                Status.Update("In order to generate code from this template, you need to provide login credentials for your CRM system");
-                Status.Update("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
 
                 int exit = 0;
                 try
@@ -123,6 +121,8 @@ namespace CrmCodeGenerator.VSPackage
                     var result = m.ShowDialog();
                     if (result == false)
                         exit = 1;
+                    else
+                        context = m.Context;
                 }
                 catch (UserException e)
                 {
@@ -146,25 +146,14 @@ namespace CrmCodeGenerator.VSPackage
                     pcbOutput = 0;
                     return exit;
                 }
-
-                Status.Update("Connecting... ");
-                if (settings.CrmConnection == null)
-                {
-                    settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-                }
-
-                Status.Update("Mapping entities, this might take a while depending on CRM server/connection speed... ");
-                settings.Context = new Context { Namespace = wszDefaultNamespace };
-                var mapper = new Mapper(settings);
-                context = mapper.MapContext();
             }
 
             Status.Update("Generating code from template... ");
 
-
             ITextTemplating t4 = Package.GetGlobalService(typeof(STextTemplating)) as ITextTemplating;
             ITextTemplatingSessionHost sessionHost = t4 as ITextTemplatingSessionHost;
 
+            context.Namespace = wszDefaultNamespace;
             // Create a Session in which to pass parameters:
             sessionHost.Session = sessionHost.CreateSession();
             sessionHost.Session["Context"] = context;
@@ -179,8 +168,6 @@ namespace CrmCodeGenerator.VSPackage
             {
                 extension = cb.FileExtension;
             }
-
-
 
             Status.Update("Writing code to disk... ");
             byte[] bytes = Encoding.UTF8.GetBytes(content);

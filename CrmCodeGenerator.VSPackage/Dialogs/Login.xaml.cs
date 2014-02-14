@@ -1,4 +1,5 @@
-﻿using CrmCodeGenerator.VSPackage.Model;
+﻿using CrmCodeGenerator.VSPackage.Helpers;
+using CrmCodeGenerator.VSPackage.Model;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
@@ -23,18 +24,20 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     /// </summary>
     public partial class Login : Window
     {
+        public Context Context;
         Settings settings;
         public Login(Settings settings)
         {
             InitializeComponent();
             this.settings = settings;
             this.DataContext = settings;
-            
         }
-        
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
+            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
+
             settings.OrgList.Add(settings.CrmOrg);
             this.Organization.SelectedIndex = 0;
         }
@@ -88,15 +91,21 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
-            UpdateStatus("Logging in...", true);
-
-            settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+            UpdateStatus("Connection to CRM...", true);
             if (settings.CrmConnection == null)
-                throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
-            
+            {
+                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+                if (settings.CrmConnection == null)
+                    throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
+            }
+
+            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ", true);
+            var mapper = new Mapper(settings);
+            Context = mapper.MapContext();
 
             this.Cursor = origCursor;
             this.DialogResult = true;
+
             settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
             this.Close();
         }
@@ -105,10 +114,10 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             if(working)
                 Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
 
-            System.Windows.Forms.Application.DoEvents();
+            Dispatcher.BeginInvoke(new Action(() => { Status.Update(message); }));
             
+            System.Windows.Forms.Application.DoEvents();
             //TODO  something with the message
         }
-
     }
 }

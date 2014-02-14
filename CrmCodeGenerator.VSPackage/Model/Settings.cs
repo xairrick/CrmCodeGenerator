@@ -44,7 +44,6 @@ namespace CrmCodeGenerator.VSPackage.Model
         private string _Username;
         private string _Domain;
         private string _CrmSdkUrl;
-        private Context _Context;
         private string _Template;
         private string _T4Path;
         private string _ProjectName;
@@ -116,18 +115,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             set
             {
                 SetField(ref _OutputPath, value);
-            }
-        }
-
-        public Context Context
-        {
-            get
-            {
-                return _Context;
-            }
-            set
-            {
-                SetField(ref _Context, value);
             }
         }
 

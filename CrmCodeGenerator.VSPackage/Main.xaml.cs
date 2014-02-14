@@ -69,7 +69,7 @@ namespace CrmCodeGenerator.VSPackage
             settings.Template = MakeRelative(settings.Template, project.GetProjectDirectory());
             //settings.EntitiesToExclude = this.ExcludeEntities.Text.Split(',');
             //settings.EntitiesToInclude = this.IncludeEntities.Text.Split(',');
-            settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
+            //settings.Context = new CrmCodeGenerator.VSPackage.Model.Context { Namespace = settings.Namespace };  // TODO review namespace, it might be better to use the settings???
 
             UpdateStatus("Saving Template...", true);
             string templatePath = AddTemplateToProject();

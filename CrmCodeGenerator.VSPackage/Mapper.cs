@@ -38,21 +38,13 @@ namespace CrmCodeGenerator.VSPackage
             }
         }
         #endregion
-
-        public void MapEntities()
-        {
-            this.Settings.Context.Entities = GetEntities(GetConnection());
-            SortEntities();
-
-            var code = GetCode();
-            File.WriteAllText(this.Settings.OutputPath, code);
-            OnMessage(string.Format("Successfully generated {0}", Path.GetFileName(this.Settings.OutputPath)));
-        }
+        
         public Context MapContext()
         {
-            this.Settings.Context.Entities = GetEntities(GetConnection());
-            SortEntities();
-            return this.Settings.Context;
+            var context = new Context();
+            context.Entities = GetEntities(GetConnection());
+            SortEntities(context);
+            return context;
         }
 
 
@@ -86,17 +78,9 @@ namespace CrmCodeGenerator.VSPackage
             return sdk;
         }
 
-        internal string GetCode()
+
+        public void SortEntities(Context context)
         {
-            OnMessage("Generating code, please wait...");
-
-            return Generator.ProcessTemplateBasic(this.Settings.T4Path, this.Settings.Context);
-        }
-
-        public Context SortEntities()
-        {
-            var context = this.Settings.Context;
-
             context.Entities = context.Entities.OrderBy(e => e.DisplayName).ToArray();
 
             foreach (var e in context.Entities)
@@ -114,7 +98,7 @@ namespace CrmCodeGenerator.VSPackage
                 e.RelationshipsManyToOne =
                     e.RelationshipsManyToOne.Where(
                         r => context.Entities.Any(t => t.DisplayName == r.Type)).OrderBy(r => r.DisplayName).OrderBy(r => r.DisplayName).ToArray();
-            return context;
+            return;
         }
 
         internal MappingEntity[] GetEntities(IOrganizationService sdk)
