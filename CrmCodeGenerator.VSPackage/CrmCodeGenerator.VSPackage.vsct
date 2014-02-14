@@ -65,7 +65,7 @@
         <Parent guid="guidCrmCodeGenerator_VSPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>CRM Add Template to Project</ButtonText>
+          <ButtonText>Add CRM Code Generator Template...</ButtonText>
         </Strings>
       </Button>
 
