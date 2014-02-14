@@ -21,6 +21,7 @@ using CrmCodeGenerator.VSPackage.T4;
 using CrmCodeGenerator.VSPackage.Dialogs;
 using Microsoft.VisualStudio.TextTemplating.VSHost;
 using Microsoft.VisualStudio.TextTemplating;
+using CrmCodeGenerator.VSPackage.Helpers;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -106,14 +107,14 @@ namespace CrmCodeGenerator.VSPackage
             if (bstrInputFileContents == null)
                 throw new ArgumentException(bstrInputFileContents);
 
-            ClearStatus();
+            Status.Clear();
 
             PromptToRefreshEntities();
 
             if (context == null)
             {
-                UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
-                UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
+                Status.Update("In order to generate code from this template, you need to provide login credentials for your CRM system");
+                Status.Update("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
 
                 int exit = 0;
                 try
@@ -146,19 +147,19 @@ namespace CrmCodeGenerator.VSPackage
                     return exit;
                 }
 
-                UpdateStatus("Connecting... ");
+                Status.Update("Connecting... ");
                 if (settings.CrmConnection == null)
                 {
                     settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
                 }
 
-                UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ");
+                Status.Update("Mapping entities, this might take a while depending on CRM server/connection speed... ");
                 settings.Context = new Context { Namespace = wszDefaultNamespace };
                 var mapper = new Mapper(settings);
                 context = mapper.MapContext();
             }
 
-            UpdateStatus("Generating code from template... ");
+            Status.Update("Generating code from template... ");
 
 
             ITextTemplating t4 = Package.GetGlobalService(typeof(STextTemplating)) as ITextTemplating;
@@ -181,7 +182,7 @@ namespace CrmCodeGenerator.VSPackage
 
 
 
-            UpdateStatus("Writing code to disk... ");
+            Status.Update("Writing code to disk... ");
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)
@@ -199,12 +200,12 @@ namespace CrmCodeGenerator.VSPackage
             // Append any error messages:
             if (cb.ErrorMessages.Count == 0)
             {
-                UpdateStatus("Done!");
+                Status.Update("Done!");
             } else
             {
                 foreach (var err in cb.ErrorMessages)
                 {
-                    UpdateStatus(err.Message);
+                    Status.Update(err.Message);
                 }
                 Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
             }
@@ -223,38 +224,6 @@ namespace CrmCodeGenerator.VSPackage
         }
         #endregion IVsSingleFileGenerator
 
-        private void UpdateStatus(string message)
-        {
-            //Configuration.Instance.DTE.ExecuteCommand("View.Output");
-            var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
-            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
-            win.Visible = true;
-
-
-            //System.Windows.Forms.Application.DoEvents();
-
-            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
-            IVsOutputWindowPane pane;
-            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
-            hr = outputWindow.GetPane(guidGeneral, out pane);
-            pane.Activate();
-            pane.OutputString(message);
-            pane.OutputString("\n");
-            pane.FlushToTaskList();
-            System.Windows.Forms.Application.DoEvents();
-        }
-        private void ClearStatus()
-        {
-            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            Guid guidGeneral = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
-            IVsOutputWindowPane pane;
-            int hr = outputWindow.CreatePane(guidGeneral, "General", 1, 0);
-            hr = outputWindow.GetPane(guidGeneral, out pane);
-            pane.Clear();
-            pane.FlushToTaskList();
-            System.Windows.Forms.Application.DoEvents();
-        }
         #region IObjectWithSite
 
         public void GetSite(ref Guid riid, out IntPtr ppvSite)

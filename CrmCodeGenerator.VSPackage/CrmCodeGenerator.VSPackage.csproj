@@ -150,6 +150,7 @@
     <Compile Include="Helpers\DteHelper.cs" />
     <Compile Include="Helpers\PropertyBagExtensions.cs" />
     <Compile Include="Guids.cs" />
+    <Compile Include="Helpers\Status.cs" />
     <Compile Include="Main.xaml.cs">
       <DependentUpon>Main.xaml</DependentUpon>
     </Compile>
