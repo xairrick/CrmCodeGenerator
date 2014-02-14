@@ -262,7 +262,8 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             var m = new AddTemplate(dte2, project);
-            m.ShowDialog();
+            if(m.ShowDialog() == false)
+                return;
 
             var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), m.Props.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
 

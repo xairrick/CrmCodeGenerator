@@ -60,11 +60,13 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = false;
             this.Close();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = true;
             this.Close();
         }
     }
