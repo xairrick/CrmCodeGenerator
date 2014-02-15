@@ -147,11 +147,8 @@ namespace CrmCodeGenerator.VSPackage
             // When the solution will be reopened, the IDE will call our package to load them back before the projects in the solution are actually open
             // This could help if the source control package needs to persist information like projects translation tables, that should be read from the suo file
             // and should be available by the time projects are opened and the shell start calling IVsSccEnlistmentPathTranslation functions.
-            if (settings.Dirty)
-            {
-                pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
-                settings.Dirty = false;
-            }
+            pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
+            settings.Dirty = false;
 
             return VSConstants.S_OK;
         }
@@ -182,18 +179,12 @@ namespace CrmCodeGenerator.VSPackage
 
         public int QuerySaveSolutionProps(IVsHierarchy pHierarchy, VSQUERYSAVESLNPROPS[] pqsspSave)
         {
-            if (pHierarchy != null)  //if not null, then it's asking to save properties for solution item eg project.  for now we are only save to the solution
-            {
+            if (pHierarchy != null)   // if this contains something, then VS is asking for Solution Properties of a PROJECT,  
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoProps;
-            }
-            else if (settings.Dirty)
-            {
+            else if(settings.Dirty)
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
-            }
             else
-            {
                 pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoDirtyProps;
-            }
             return VSConstants.S_OK;
         }
 
@@ -262,7 +253,7 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             var m = new AddTemplate(dte2, project);
-            if(m.ShowDialog() == false)
+            if (m.ShowDialog() == false)
                 return;
 
             var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), m.Props.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
@@ -306,7 +297,7 @@ namespace CrmCodeGenerator.VSPackage
         }
 
         #region SolutionEvents
-        public int OnAfterCloseSolution(object pUnkReserved)  { return VSConstants.S_OK; }
+        public int OnAfterCloseSolution(object pUnkReserved) { return VSConstants.S_OK; }
         public int OnAfterClosingChildren(IVsHierarchy pHierarchy) { return VSConstants.S_OK; }
         public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) { return VSConstants.S_OK; }
         public int OnAfterMergeSolution(object pUnkReserved) { return VSConstants.S_OK; }
