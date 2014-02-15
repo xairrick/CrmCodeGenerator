@@ -132,10 +132,10 @@ namespace CrmCodeGenerator.VSPackage.Model
 
                     case AttributeTypeCode.BigInt:
                     case AttributeTypeCode.Integer:
-                        return "int";
+                        return "System.Nullable<int>";
 
                     case AttributeTypeCode.Boolean:
-                        return "bool";
+                        return "System.Nullable<bool>";
 
                     case AttributeTypeCode.DateTime:
                         return "DateTime";
@@ -145,7 +145,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         return "Money";
 
                     case AttributeTypeCode.Double:
-                        return "double";
+                        return "System.Nullable<double>";
 
                     case AttributeTypeCode.Uniqueidentifier:
                     case AttributeTypeCode.Lookup:

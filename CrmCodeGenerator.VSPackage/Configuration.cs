@@ -36,15 +36,15 @@ namespace CrmCodeGenerator.VSPackage
         public Configuration()
         {
             Settings = new CrmCodeGenerator.VSPackage.Model.Settings();
-            Settings.CrmSdkUrl = @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc";
+            Settings.CrmSdkUrl = @"https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc";
             Settings.ProjectName = "";
             Settings.Domain = "";
             Settings.T4Path = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\CrmSvcUtil.tt");
             Settings.Template = "";
             Settings.CrmOrg = "DEV-CRM";
-            Settings.EntitiesToIncludeString = "account, contact, systemuser";
+            Settings.EntitiesToIncludeString = "account,contact,lead,opportunity,systemuser";
             Settings.OutputPath = "";
-            Settings.Username = "";
+            Settings.Username = "@XXXXX.onmicrosoft.com";
             Settings.Password = "";
             Settings.Namespace = "";
             Settings.Dirty = false;

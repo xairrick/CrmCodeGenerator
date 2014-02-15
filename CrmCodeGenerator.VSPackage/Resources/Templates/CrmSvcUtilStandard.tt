@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
@@ -61,15 +60,16 @@ namespace <#= Context.Namespace #>
 		public override Guid Id
 		{
 			get { return base.Id; }
-			set { <#=entity.PrimaryKey.DisplayName#> = value; }
+			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
 		}
 
 <#
 	foreach(var attribute in entity.Fields)	{#>
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public virtual <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
+        public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
+<# if(!entity.IsIntersect || attribute == entity.PrimaryKey) { #>
 			set 
 			{ 
 				this.OnPropertyChanging("<#=attribute.Attribute.LogicalName#>");
@@ -86,6 +86,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
 			}
+<#}#>
 		}
 <#}#>
 	}
@@ -110,10 +111,6 @@ namespace <#= Context.Namespace #>
 <#}#>
 		}
 <#}#>
-
-
-
-
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{
 		public XrmServiceContext(Microsoft.Xrm.Sdk.IOrganizationService service) : 

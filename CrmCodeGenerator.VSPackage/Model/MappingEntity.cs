@@ -11,6 +11,7 @@ namespace CrmCodeGenerator.VSPackage.Model
     public class MappingEntity
     {
         public CrmEntityAttribute Attribute { get; set; }
+        public bool IsIntersect { get; set; }
         public Nullable<int> TypeCode { get; set; }
         public MappingField[] Fields { get; set; }
         public MappingEnum States { get; set; }
@@ -55,6 +56,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.Attribute = new CrmEntityAttribute();
             entity.TypeCode = entityMetadata.ObjectTypeCode;
             entity.Attribute.LogicalName = entityMetadata.LogicalName;
+            entity.IsIntersect = (bool)entityMetadata.IsIntersect;
             entity.Attribute.PrimaryKey = entityMetadata.PrimaryIdAttribute;
 
             // entity.DisplayName = Helper.GetProperVariableName(entityMetadata.SchemaName);
