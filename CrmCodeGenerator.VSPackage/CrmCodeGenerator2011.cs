@@ -109,42 +109,28 @@ namespace CrmCodeGenerator.VSPackage
 
             Status.Clear();
 
+            var originalFile = GetOriginalFile(wszInputFilePath);
+
+
             PromptToRefreshEntities();
 
             if (context == null)
             {
-
-                int exit = 0;
-                try
+                var m = new Login(settings);
+                m.ShowDialog();
+                context = m.Context;
+                if (context == null)
                 {
-                    var m = new Login(settings);
-                    var result = m.ShowDialog();
-                    if (result == false)
-                        exit = 1;
+                    // TODO  pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
+                    if (originalFile == null)
+                        SaveOutputContent(rgbOutputFileContents, out pcbOutput, "");
                     else
-                        context = m.Context;
-                }
-                catch (UserException e)
-                {
-                    VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, e.Message, "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                    exit = 1;
-                }
-                catch (Exception e)
-                {
-                    var error = e.Message + "\n" + e.StackTrace;
-                    System.Windows.MessageBox.Show(error, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                    exit = 1;
-                }
-
-                if (exit > 0)
-                {
-                    pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
-                    // http://social.msdn.microsoft.com/Forums/vstudio/en-US/d8d72da3-ddb9-4811-b5da-2a167bbcffed/ivssinglefilegenerator-cancel-code-generation
-                    // I don't think a login failure would be considered a invalid model.
-                    // TODO read in original file and pass it back  (the extension need to be pulled from the template, so we need to process the template to see if the user specified a extension)
-                    rgbOutputFileContents[0] = IntPtr.Zero;
-                    pcbOutput = 0;
-                    return exit;
+                    {
+                        // http://social.msdn.microsoft.com/Forums/vstudio/en-US/d8d72da3-ddb9-4811-b5da-2a167bbcffed/ivssinglefilegenerator-cancel-code-generation
+                        // I don't think a login failure would be considered a invalid model, so we'll restore what was there
+                        SaveOutputContent(rgbOutputFileContents, out pcbOutput, System.IO.File.ReadAllText(originalFile));
+                    }
+                    return VSConstants.S_OK;
                 }
             }
 
@@ -154,13 +140,11 @@ namespace CrmCodeGenerator.VSPackage
             ITextTemplatingSessionHost sessionHost = t4 as ITextTemplatingSessionHost;
 
             context.Namespace = wszDefaultNamespace;
-            // Create a Session in which to pass parameters:
             sessionHost.Session = sessionHost.CreateSession();
             sessionHost.Session["Context"] = context;
 
             Callback cb = new Callback();
 
-            // Process a text template:
             string content = t4.ProcessTemplate(wszInputFilePath, bstrInputFileContents, cb);
 
             // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
@@ -170,6 +154,27 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             Status.Update("Writing code to disk... ");
+            SaveOutputContent(rgbOutputFileContents, out pcbOutput, content);
+
+            // Append any error messages:
+            if (cb.ErrorMessages.Count == 0)
+            {
+                Status.Update("Done!");
+            }
+            else
+            {
+                foreach (var err in cb.ErrorMessages)
+                {
+                    Status.Update(err.Message);
+                }
+                Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
+            }
+
+            return VSConstants.S_OK;
+        }
+
+        private static void SaveOutputContent(IntPtr[] rgbOutputFileContents, out uint pcbOutput, string content)
+        {
             byte[] bytes = Encoding.UTF8.GetBytes(content);
 
             if (bytes == null)
@@ -183,23 +188,28 @@ namespace CrmCodeGenerator.VSPackage
                 Marshal.Copy(bytes, 0, rgbOutputFileContents[0], bytes.Length);
                 pcbOutput = (uint)bytes.Length;
             }
-
-            // Append any error messages:
-            if (cb.ErrorMessages.Count == 0)
-            {
-                Status.Update("Done!");
-            } else
-            {
-                foreach (var err in cb.ErrorMessages)
-                {
-                    Status.Update(err.Message);
-                }
-                Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
-            }
-
-            return VSConstants.S_OK;
         }
-
+        private static string GetOriginalFile(string wszInputFilePath)
+        {
+            string fullpath = null;
+            try
+            {
+                var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
+                var project = dte.GetSelectedProject();
+                var relFile = DteHelper.MakeRelative(wszInputFilePath, project.GetProjectDirectory());
+                var pi = project.GetProjectItem(relFile);
+                foreach (EnvDTE.ProjectItem item in pi.ProjectItems)
+                {
+                    fullpath = item.Document.FullName;
+                }
+            }
+            catch (Exception ex)
+            {
+                // It possible for the project item to be corrupt (has a reference to a file, but the file is gone)
+                Status.Update(ex.Message + "/n" + ex.StackTrace);   
+            }
+            return fullpath;
+        }
         private void PromptToRefreshEntities()
         {
             if (context == null)

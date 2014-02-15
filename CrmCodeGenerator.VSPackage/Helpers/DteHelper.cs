@@ -54,9 +54,9 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         }
         public static ProjectItem GetProjectItem(this Project project, string projectFile)
         {
-            return GetProjectItemRecusive(project.ProjectItems, projectFile);
+            return GetProjectItemRecursive(project.ProjectItems, projectFile);
         }
-        private static ProjectItem GetProjectItemRecusive(ProjectItems projectItems, string projectFile, string folder = "")
+        private static ProjectItem GetProjectItemRecursive(ProjectItems projectItems, string projectFile, string folder = "")
         {
             // initial value
             ProjectItem result = null;
@@ -66,19 +66,18 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             // iterate project items
             foreach (ProjectItem projectItem in projectItems)
             {
+                //var fullPath = GetFullPath(projectItem);
                 // if the name matches
+                Status.Update(folder + projectItem.Name);
                 if (folder + projectItem.Name == projectFile)
                 {
-                    // abort this add, file already exists
                     result = projectItem;
-
-                    // break out of loop
                     break;
                 }
                 else if ((projectItem.ProjectItems != null) && (projectItem.ProjectItems.Count > 0))
                 {
                     // check if the file exists in the project
-                    result = GetProjectItemRecusive(projectItem.ProjectItems, projectFile, folder + projectItem.Name + "/");
+                    result = GetProjectItemRecursive(projectItem.ProjectItems, projectFile, folder + projectItem.Name + "/");
 
                     // if the file does exist
                     if (result != null)
@@ -89,6 +88,45 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 }
             }
             return result;
+        }
+        private static object GetFullPath(ProjectItem projectItem)
+        {
+            if (projectItem.Document == null)
+                return null;
+
+            string fullname;
+            var myType = projectItem.Document.GetType();
+            try
+            {
+                fullname = projectItem.Document.FullName;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    fullname = System.IO.Path.Combine(projectItem.Document.Path, projectItem.Document.Name);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+                
+            }
+            return fullname;
+        }
+        public static string MakeRelative(string fromAbsolutePath, string toDirectory)
+        {
+            if (!System.IO.Path.IsPathRooted(fromAbsolutePath))
+                return fromAbsolutePath;  // we can't make a relative if it's not rooted(C:\)  so we'll assume we already have a relative path.
+
+            if (!toDirectory[toDirectory.Length - 1].Equals("\\"))
+                toDirectory += "\\";
+
+            System.Uri from = new Uri(fromAbsolutePath);
+            System.Uri to = new Uri(toDirectory);
+
+            Uri relativeUri = to.MakeRelativeUri(from);
+            return relativeUri.ToString();
         }
 
 
@@ -120,6 +158,15 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             return System.IO.Path.GetDirectoryName(project.FullName);
         }
         public static Project GetSelectedProject(this EnvDTE80.DTE2 dte)
+        {
+            Array projects = dte.ActiveSolutionProjects as Array;
+            if (projects.Length > 0)
+            {
+                return projects.GetValue(0) as Project;
+            }
+            return null;
+        }
+        public static Project GetSelectedProject(this EnvDTE.DTE dte)
         {
             Array projects = dte.ActiveSolutionProjects as Array;
             if (projects.Length > 0)

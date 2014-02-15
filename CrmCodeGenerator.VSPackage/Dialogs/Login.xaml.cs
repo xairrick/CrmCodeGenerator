@@ -95,17 +95,26 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
-            UpdateStatus("Connection to CRM...", true);
-            if (settings.CrmConnection == null)
-            {
-                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-                if (settings.CrmConnection == null)
-                    throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
-            }
 
-            UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ", true);
-            var mapper = new Mapper(settings);
-            Context = mapper.MapContext();
+            try
+            {
+                UpdateStatus("Connection to CRM...", true);
+                if (settings.CrmConnection == null)
+                {
+                    settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+                    if (settings.CrmConnection == null)
+                        throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
+                }
+
+                UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ", true);
+                var mapper = new Mapper(settings);
+                Context = mapper.MapContext();
+            }
+            catch (Exception ex)
+            {
+                var error = ex.Message + "\n" + ex.StackTrace;
+                UpdateStatus(error);
+            }
 
             this.Cursor = origCursor;
             this.DialogResult = true;
