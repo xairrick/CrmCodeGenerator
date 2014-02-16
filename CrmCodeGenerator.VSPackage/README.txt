@@ -1,6 +1,19 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.2
+[UPDATE] saving originally generated code so that is can be re-used if the developer cancels the login process the code generation does wipe out the file
+[REFACTOR] Cleaning up the code in DteHelper
+[UPDATE] Made Intersect Entities (aka Native N:N) readonly in the standard template
+[UPDATE] Changed the default URL to match CRM OnLine
+[BUG] Fixed bug that was causing the setting to get lost (ie not saved in the .SLN)
+[BUG] was defaulting to the last organization that was selected.
+[UPDATE] Better error handling for connection problems
+[BUG] fixed so that the ErrorList window would be cleared of any previous template errors
+[UPDATE] Username & Password (encrypted) now stored in the .SUO file
+[UPDATE] password input is now using a PasswordBox so the password is concealed.
+
+
 Version 0.8.1
 [UPDATE] updated wording of menu item
 [BUG] Template was being added if the developer hit cancel or close.
