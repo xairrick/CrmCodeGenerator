@@ -30,6 +30,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             InitializeComponent();
             this.settings = settings;
+            this.txtPassword.Password = settings.Password;  // PasswordBox doesn't allow 2 way binding
             this.DataContext = settings;
         }
         protected override void OnSourceInitialized(EventArgs e)
@@ -56,9 +57,10 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void RefreshOrgs(object sender, RoutedEventArgs e)
         {
+            settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Orgs", true);
-
+            
             try
             {
                 var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
@@ -76,6 +78,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
         {
+            settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Entities...", true);
 
@@ -118,6 +121,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
+            settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;   // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             var origCursor = this.Cursor;
 
             try
