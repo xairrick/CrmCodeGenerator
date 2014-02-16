@@ -41,9 +41,11 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
             UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
-
-            settings.OrgList.Add(settings.CrmOrg);
-            this.Organization.SelectedIndex = 0;
+            if (settings.OrgList.Contains(settings.CrmOrg) == false)
+            {
+                settings.OrgList.Add(settings.CrmOrg);
+            }
+            this.Organization.SelectedItem = settings.CrmOrg;
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
