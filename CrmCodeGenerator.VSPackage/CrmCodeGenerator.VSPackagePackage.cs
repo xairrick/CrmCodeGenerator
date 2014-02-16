@@ -40,7 +40,7 @@ namespace CrmCodeGenerator.VSPackage
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.guidCrmCodeGenerator_VSPackagePkgString)]
     [ProvideSolutionProps(_strSolutionPersistanceKey)]
-    public sealed class CrmCodeGenerator_VSPackagePackage : Package, IVsPersistSolutionProps, IVsSolutionEvents3
+    public sealed class CrmCodeGenerator_VSPackagePackage : Package, IVsPersistSolutionProps, IVsPersistSolutionOpts, IVsSolutionEvents3
     {
 
 
@@ -128,8 +128,6 @@ namespace CrmCodeGenerator.VSPackage
         private Settings settings = Configuration.Instance.Settings;
 
         private const string _strSolutionPersistanceKey = "CrmCodeGeneration";
-        private const string _strSolutionBindingsProperty = "t4path";
-
         private const string _strCrmUrl = "CrmUrl";
         private const string _strUsername = "Username";
         private const string _strPassword = "Password";
@@ -137,6 +135,17 @@ namespace CrmCodeGenerator.VSPackage
         private const string _strOrganization = "Organization";
         private const string _strIncludeEntities = "IncludeEntities";
 
+        #region Solution Properties
+        public int QuerySaveSolutionProps(IVsHierarchy pHierarchy, VSQUERYSAVESLNPROPS[] pqsspSave)
+        {
+            if (pHierarchy != null)   // if this contains something, then VS is asking for Solution Properties of a PROJECT,  
+                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoProps;
+            else if (settings.Dirty)
+                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
+            else
+                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoDirtyProps;
+            return VSConstants.S_OK;
+        }
         public int SaveSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] IVsSolutionPersistence pPersistence)
         {
             // This function gets called by the shell after determining the package has dirty props.
@@ -152,49 +161,25 @@ namespace CrmCodeGenerator.VSPackage
 
             return VSConstants.S_OK;
         }
-
-
         public int WriteSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] string pszKey, [InAttribute] IPropertyBag pPropBag)
         {
             pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
-            pPropBag.Write(_strUsername, settings.Username);
-            pPropBag.Write(_strPassword, settings.Password);
+            //pPropBag.Write(_strUsername, settings.Username);
+            //pPropBag.Write(_strPassword, settings.Password);
             pPropBag.Write(_strOrganization, settings.CrmOrg);
             pPropBag.Write(_strIncludeEntities, settings.EntitiesToIncludeString);
             settings.Dirty = false;
 
             return VSConstants.S_OK;
         }
-
-        public int LoadUserOptions(IVsSolutionPersistence pPersistence, uint grfLoadOpts)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnProjectLoadFailure(IVsHierarchy pStubHierarchy, string pszProjectName, string pszProjectMk, string pszKey)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int QuerySaveSolutionProps(IVsHierarchy pHierarchy, VSQUERYSAVESLNPROPS[] pqsspSave)
-        {
-            if (pHierarchy != null)   // if this contains something, then VS is asking for Solution Properties of a PROJECT,  
-                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoProps;
-            else if(settings.Dirty)
-                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasDirtyProps;
-            else
-                pqsspSave[0] = VSQUERYSAVESLNPROPS.QSP_HasNoDirtyProps;
-            return VSConstants.S_OK;
-        }
-
         public int ReadSolutionProps(IVsHierarchy pHierarchy, string pszProjectName, string pszProjectMk, string pszKey, int fPreLoad, IPropertyBag pPropBag)
         {
             if (_strSolutionPersistanceKey.CompareTo(pszKey) == 0)
             {
                 settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
-                settings.Username = pPropBag.Read(_strUsername, "");
-                settings.Password = pPropBag.Read(_strPassword, "");
+                //settings.Username = pPropBag.Read(_strUsername, "");
+                //settings.Password = pPropBag.Read(_strPassword, "");
                 settings.Domain = pPropBag.Read(_strDomain, "");
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
@@ -202,23 +187,99 @@ namespace CrmCodeGenerator.VSPackage
             }
             return VSConstants.S_OK;
         }
-
+        #endregion
+        #region User Options
+        public int LoadUserOptions(IVsSolutionPersistence pPersistence, uint grfLoadOpts)
+        {
+            pPersistence.LoadPackageUserOpts(this, _strSolutionPersistanceKey + _strUsername);
+            pPersistence.LoadPackageUserOpts(this, _strSolutionPersistanceKey + _strPassword);
+            return VSConstants.S_OK;
+        }
         public int ReadUserOptions(IStream pOptionsStream, string pszKey)
         {
-            return VSConstants.S_OK;
+            try
+            {
+                using (StreamEater wrapper = new StreamEater(pOptionsStream))
+                {
+                    string value;
+                    using (var bReader = new System.IO.BinaryReader(wrapper))
+                    {
+                        value = bReader.ReadString();
+                        using (var aes = new SimpleAES())
+                        {
+                            value = aes.Decrypt(value);
+                        }
+                    }
+
+                    switch (pszKey)
+                    {
+                        case _strSolutionPersistanceKey + _strUsername:
+                            settings.Username = value;
+                            break;
+                        case _strSolutionPersistanceKey + _strPassword:
+                            settings.Password = value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return VSConstants.S_OK;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(pOptionsStream);
+            }
         }
 
         public int SaveUserOptions(IVsSolutionPersistence pPersistence)
         {
+            pPersistence.SavePackageUserOpts(this, _strSolutionPersistanceKey + _strUsername);
+            pPersistence.SavePackageUserOpts(this, _strSolutionPersistanceKey + _strPassword);
             return VSConstants.S_OK;
         }
 
         public int WriteUserOptions(IStream pOptionsStream, string pszKey)
         {
-            return VSConstants.S_OK;
+            try
+            {
+                string value;
+                switch (pszKey)
+                {
+                    case _strSolutionPersistanceKey + _strUsername:
+                        value = settings.Username;
+                        break;
+                    case _strSolutionPersistanceKey + _strPassword:
+                        value = settings.Password;
+                        break;
+                    default:
+                        return VSConstants.S_OK;
+                }
+
+                using (var aes = new SimpleAES())
+                {
+                    value = aes.Encrypt(value);
+                    using (StreamEater wrapper = new StreamEater(pOptionsStream))
+                    {
+                        using (var bw = new System.IO.BinaryWriter(wrapper))
+                        {
+                            bw.Write(value);
+                        }
+                    }
+                }
+                return VSConstants.S_OK;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(pOptionsStream);
+            }
         }
         #endregion
+        public int OnProjectLoadFailure(IVsHierarchy pStubHierarchy, string pszProjectName, string pszProjectMk, string pszKey)
+        {
+            return VSConstants.S_OK;
+        }
 
+        #endregion
 
         /// <summary>
         /// This function is the callback used to execute a command when the a menu item is clicked.
