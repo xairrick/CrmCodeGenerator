@@ -135,6 +135,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                 Context = mapper.MapContext();
 
                 settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
+                this.DialogResult = true;
                 this.Close();
             }
             catch (Exception ex)
@@ -146,8 +147,6 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             }
 
             this.Cursor = origCursor;
-            this.DialogResult = true;
-
         }
         private void UpdateStatus(string message, bool working = false)
         {

@@ -19,8 +19,8 @@ namespace CrmCodeGenerator.VSPackage.T4
             ErrorMessages.Add(new ErrorMessage(){
                 Message = message,
                 Warning = warning,
-                Line = (uint)line,
-                Column = (uint)column
+                Line = (uint)line + 1,
+                Column = (uint)column + 1
             }); 
         }
 

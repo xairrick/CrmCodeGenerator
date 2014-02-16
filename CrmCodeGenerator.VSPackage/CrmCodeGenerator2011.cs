@@ -42,7 +42,7 @@ namespace CrmCodeGenerator.VSPackage
     [ProvideObject(typeof(CrmCodeGenerator2011))]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVCSProject, GeneratesDesignTimeSource = true)]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVBProject, GeneratesDesignTimeSource = true)]
-    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite, IDisposable
+    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite, IDisposable 
     {
         private object site = null;
         private CodeDomProvider codeDomProvider = null;
@@ -144,8 +144,9 @@ namespace CrmCodeGenerator.VSPackage
             sessionHost.Session["Context"] = context;
 
             Callback cb = new Callback();
-
+            t4.BeginErrorSession();
             string content = t4.ProcessTemplate(wszInputFilePath, bstrInputFileContents, cb);
+            t4.EndErrorSession();
 
             // If there was an output directive in the TemplateFile, then cb.SetFileExtension() will have been called.
             if (!string.IsNullOrWhiteSpace(cb.FileExtension))
@@ -156,18 +157,20 @@ namespace CrmCodeGenerator.VSPackage
             Status.Update("Writing code to disk... ");
             SaveOutputContent(rgbOutputFileContents, out pcbOutput, content);
 
-            // Append any error messages:
-            if (cb.ErrorMessages.Count == 0)
+            // Append any error/warning to output window
+            foreach (var err in cb.ErrorMessages)
             {
-                Status.Update("Done!");
+                // The templating system (eg t4.ProcessTemplate) will automatically add error/warning to the ErrorList 
+                Status.Update("[" + (err.Warning == true ? "WARN" : "ERROR") + "] " + err.Message + " " + err.Line + "," + err.Column);
+            }
+
+            if (cb.ErrorMessages.Any(em => em.Warning == false))
+            {
+                Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
             }
             else
             {
-                foreach (var err in cb.ErrorMessages)
-                {
-                    Status.Update(err.Message);
-                }
-                Configuration.Instance.DTE.ExecuteCommand("View.ErrorList");
+                Status.Update("Done!");
             }
 
             return VSConstants.S_OK;
