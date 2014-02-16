@@ -59,9 +59,18 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Orgs", true);
 
-            var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
-            var newOrgs = new ObservableCollection<String>(orgs);
-            settings.OrgList = newOrgs;
+            try
+            {
+                var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
+                var newOrgs = new ObservableCollection<String>(orgs);
+                settings.OrgList = newOrgs;
+            }
+            catch (Exception ex)
+            {
+                var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
+                UpdateStatus(error);
+                UpdateStatus("Unable to refresh organizations, check connection information");
+            }
 
             Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
         }
@@ -70,6 +79,24 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Entities...", true);
 
+            try
+            {
+                EntitiesRefreshCore();
+            }
+            catch (Exception ex)
+            {
+                var error = "[ERROR] " +  ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
+                UpdateStatus(error);
+                UpdateStatus("Unable to refresh entities, check connection information");
+            }
+
+            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
+            UpdateStatus("");
+        }
+
+
+        private void EntitiesRefreshCore()
+        {
             var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
 
             RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
@@ -88,12 +115,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             settings.EntityList = newList;
             settings.EntitiesToIncludeString = origSelection;
-
-            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
-            UpdateStatus("");
         }
-
-
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             var origCursor = this.Cursor;
@@ -111,18 +133,21 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                 UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ", true);
                 var mapper = new Mapper(settings);
                 Context = mapper.MapContext();
+
+                settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
+                this.Close();
             }
             catch (Exception ex)
             {
-                var error = ex.Message + "\n" + ex.StackTrace;
+                var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
                 UpdateStatus(error);
+                UpdateStatus(ex.StackTrace);
+                UpdateStatus("Unable to map entities, see error above.");
             }
 
             this.Cursor = origCursor;
             this.DialogResult = true;
 
-            settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
-            this.Close();
         }
         private void UpdateStatus(string message, bool working = false)
         {

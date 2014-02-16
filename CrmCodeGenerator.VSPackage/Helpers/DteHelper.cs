@@ -28,9 +28,7 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             // iterate project items
             foreach (ProjectItem projectItem in projectItems)
             {
-                //var fullPath = GetFullPath(projectItem);
                 // if the name matches
-                Status.Update(folder + projectItem.Name);
                 if (folder + projectItem.Name == projectFile)
                 {
                     result = projectItem;

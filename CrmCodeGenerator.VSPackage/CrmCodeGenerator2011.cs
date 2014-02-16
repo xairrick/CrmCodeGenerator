@@ -191,24 +191,18 @@ namespace CrmCodeGenerator.VSPackage
         }
         private static string GetOriginalFile(string wszInputFilePath)
         {
-            string fullpath = null;
-            try
+            var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
+            var project = dte.GetSelectedProject();
+            var relFile = DteHelper.MakeRelative(wszInputFilePath, project.GetProjectDirectory());
+            var pi = project.GetProjectItem(relFile);
+            foreach (EnvDTE.ProjectItem item in pi.ProjectItems)
             {
-                var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
-                var project = dte.GetSelectedProject();
-                var relFile = DteHelper.MakeRelative(wszInputFilePath, project.GetProjectDirectory());
-                var pi = project.GetProjectItem(relFile);
-                foreach (EnvDTE.ProjectItem item in pi.ProjectItems)
-                {
-                    fullpath = item.Document.FullName;
-                }
+                // It possible for the project item to be corrupt. (ie project has a reference to a file, but the file is gone).  
+                //  when this happens the item will have a NULL document.
+                if (item.Document != null)   
+                    return item.Document.FullName;
             }
-            catch (Exception ex)
-            {
-                // It possible for the project item to be corrupt (has a reference to a file, but the file is gone)
-                Status.Update(ex.Message + "/n" + ex.StackTrace);   
-            }
-            return fullpath;
+            return null;
         }
         private void PromptToRefreshEntities()
         {
