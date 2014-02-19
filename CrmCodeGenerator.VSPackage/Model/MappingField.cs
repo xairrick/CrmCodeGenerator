@@ -10,11 +10,15 @@ namespace CrmCodeGenerator.VSPackage.Model
     [Serializable]
     public class MappingField
     {
+        public AttributeMetadata AttributeMetadata { get; set; }
         public CrmPropertyAttribute Attribute { get; set; }
-
+        public string AttributeOf { get; set; }
         public MappingEnum EnumData { get; set; }
         public AttributeTypeCode FieldType { get; set; }
-        
+
+        public Nullable<bool> IsValidForCreate { get; set; }
+        public Nullable<bool> IsValidForRead { get; set; }
+        public Nullable<bool> IsValidForUpdate { get; set; }
         public string LookupSingleType { get; set; }
 
         public string PrivatePropertyName
@@ -32,7 +36,10 @@ namespace CrmCodeGenerator.VSPackage.Model
         public static MappingField Parse(AttributeMetadata attribute)
         {
             var result = new MappingField();
-
+            result.AttributeOf = attribute.AttributeOf;
+            result.IsValidForCreate = attribute.IsValidForCreate;
+            result.IsValidForRead = attribute.IsValidForRead;
+            result.IsValidForUpdate = attribute.IsValidForUpdate;
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
@@ -123,7 +130,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             get
             {
                 if (IsPrimaryKey)
-                    return "Nullable<Guid>";
+                    return "System.Nullable<System.Guid>";
 
                 switch (FieldType)
                 {
@@ -148,6 +155,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         return "System.Nullable<double>";
 
                     case AttributeTypeCode.Uniqueidentifier:
+                        return "System.Nullable<System.Guid>";
                     case AttributeTypeCode.Lookup:
                     case AttributeTypeCode.Owner:
                     case AttributeTypeCode.Customer:

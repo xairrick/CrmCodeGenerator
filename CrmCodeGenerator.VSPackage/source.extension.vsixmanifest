@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="d57cc223-384b-41cc-b5d0-814a71ce8d61" Version="0.8.2" Language="en-US" Publisher="Eric Labashosky" />
+    <Identity Id="d57cc223-384b-41cc-b5d0-814a71ce8d61" Version="0.8.2.1" Language="en-US" Publisher="Eric Labashosky" />
     <DisplayName>CrmCodeGenerator.VSPackage</DisplayName>
     <Description xml:space="preserve">Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
