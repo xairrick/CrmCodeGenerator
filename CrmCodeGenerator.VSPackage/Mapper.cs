@@ -114,16 +114,12 @@ namespace CrmCodeGenerator.VSPackage
             var results = sdk.Execute(request);
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
-            string[] forceIgnore = new string[] { "BulkOperation", "ContractTemplate", "DuplicateRule", "DuplicateRuleCondition", "FieldPermission", "FieldSecurityProfile", "Goal", "GoalRollupQuery", "ImportMap", "InternalAddress", "KbArticleTemplate", "MailMergeTemplate", "Metric", "ProcessSession", "Publisher", "Queue", "QueueItem", "Report", "ReportCategory", "Role", "RolePrivileges", "RollupField",
-                "SavedQuery", "SharePointSite", "Solution", "UserQuery", "UserQueryVisualization", "Workflow"}.Select(w => w.ToLower()).ToArray();
+            //string[] forceIgnore = new string[] { "BulkOperation", "ContractTemplate", "DuplicateRule", "DuplicateRuleCondition", "FieldPermission", "FieldSecurityProfile", "Goal", "GoalRollupQuery", "ImportMap", "InternalAddress", "KbArticleTemplate", "MailMergeTemplate", "Metric", "ProcessSession", "Publisher", "Queue", "QueueItem", "Report", "ReportCategory", "Role", "RolePrivileges", "RollupField",
+            //    "SavedQuery", "SharePointSite", "Solution", "UserQuery", "UserQueryVisualization", "Workflow"}.Select(w => w.ToLower()).ToArray();
 
-            // Removed, as we are using combobox that will FORCE you to select which entities to pick
-            //this.Settings.EntitiesToExclude = this.Settings.EntitiesToExclude.Concat(
-            //        forceIgnore.Except(this.Settings.EntitiesToInclude)).ToArray();
-            //this.Settings.EntitiesToInclude = this.Settings.EntitiesToInclude.Select(i => i.ToLower().Trim()).ToArray();
-            //this.Settings.EntitiesToExclude = this.Settings.EntitiesToExclude.Select(e => e.ToLower().Trim()).ToArray();
 
-            var testType = entities.Where(r => r.LogicalName != "subscriptionsyncinfo")
+
+            var selectedEntities = entities.Where(r => r.LogicalName != "subscriptionsyncinfo")
                 .Where(r =>
                     {
                         bool include = false;
@@ -141,11 +137,18 @@ namespace CrmCodeGenerator.VSPackage
 
                         return include;
 
-                    }).ToArray();
+                    })                    
+                    .ToList();
 
-            OnMessage(string.Format("Found {0} entities", testType.Length));
+            if (selectedEntities.Any(r => r.IsActivity == true || r.IsActivityParty == true))
+            {
+                if(!selectedEntities.Any(r => r.LogicalName.Equals("activityparty")))
+                    selectedEntities.Add(entities.Where(r => r.LogicalName.Equals("activityparty")).Single());
+            }
 
-            return GetEntities(testType);
+            OnMessage(string.Format("Found {0} entities", selectedEntities.Count));
+
+            return GetEntities(selectedEntities.ToArray());
         }
     }
 }

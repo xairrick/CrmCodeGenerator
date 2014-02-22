@@ -15,10 +15,11 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string AttributeOf { get; set; }
         public MappingEnum EnumData { get; set; }
         public AttributeTypeCode FieldType { get; set; }
-
+        public string FieldTypeString { get; set; }
         public Nullable<bool> IsValidForCreate { get; set; }
         public Nullable<bool> IsValidForRead { get; set; }
         public Nullable<bool> IsValidForUpdate { get; set; }
+        public bool IsActivityParty { get; set; }
         public string LookupSingleType { get; set; }
 
         public string PrivatePropertyName
@@ -40,6 +41,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsValidForCreate = attribute.IsValidForCreate;
             result.IsValidForRead = attribute.IsValidForRead;
             result.IsValidForUpdate = attribute.IsValidForUpdate;
+            result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
+            
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
@@ -73,6 +76,8 @@ namespace CrmCodeGenerator.VSPackage.Model
                     LogicalName = attribute.LogicalName,
                     IsLookup = attribute.AttributeType == AttributeTypeCode.Lookup || attribute.AttributeType == AttributeTypeCode.Customer
                 };
+            result.FieldTypeString = result.TargetTypeForCrmSvcUtil;
+
 
             return result;
         }
@@ -125,6 +130,8 @@ namespace CrmCodeGenerator.VSPackage.Model
         public decimal? Min { get; set; }
         public decimal? Max { get; set; }
 
+
+
         public string TargetTypeForCrmSvcUtil
         {
             get
@@ -170,7 +177,8 @@ namespace CrmCodeGenerator.VSPackage.Model
                     case AttributeTypeCode.EntityName:
                     case AttributeTypeCode.String:
                         return "string";
-
+                    case AttributeTypeCode.PartyList:
+                        return "System.Collections.Generic.IEnumerable<ActivityParty>";
                     default:
                         return "object";
                 }

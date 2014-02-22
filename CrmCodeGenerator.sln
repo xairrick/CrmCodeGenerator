@@ -12,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{FE93ED76-041
 	EndProjectSection
 EndProject
 Global
+	GlobalSection(CrmCodeGeneration) = preSolution
+		CrmUrl = https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc
+		Domain = 
+		Organization = DEV-CRM
+		IncludeEntities = account,contact,lead,opportunity,systemuser
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms

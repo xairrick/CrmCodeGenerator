@@ -68,6 +68,33 @@ namespace <#= Context.Namespace #>
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
         public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
+<# if(attribute.IsActivityParty) { #>
+			get
+			{
+				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("<#=attribute.Attribute.LogicalName#>");
+				if (((collection != null) && (collection.Entities != null)))
+				{
+					return System.Linq.Enumerable.Cast<ActivityParty>(collection.Entities);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.Attribute.LogicalName#>");
+				if ((value == null))
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
+				}
+				else
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
+				}
+				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
+			}
+<# } else { #>
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
 <# if(!entity.IsIntersect || attribute == entity.PrimaryKey) { #>
 			set 
@@ -86,6 +113,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
 			}
+<#}#>
 <#}#>
 		}
 <#}#>
