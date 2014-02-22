@@ -65,7 +65,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.StateName = entity.HybridName + "State";
 
             var fields = entityMetadata.Attributes
-                .Where(a => !(a.LogicalName.EndsWith("_base") && a.AttributeType == AttributeTypeCode.Money) && a.AttributeType != AttributeTypeCode.EntityName)
+                .Where(a => !(a.LogicalName.EndsWith("_base") && a.AttributeType == AttributeTypeCode.Money) && a.AttributeType != AttributeTypeCode.EntityName && a.AttributeOf == null)
                 .Select(a => MappingField.Parse(a, entity)).ToList();
 
             fields.ForEach(f =>

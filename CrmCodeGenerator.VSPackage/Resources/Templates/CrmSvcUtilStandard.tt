@@ -30,7 +30,7 @@ namespace <#= Context.Namespace #>
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
 		public <#=entity.HybridName#>()
-			: base("<#=entity.LogicalName#>")
+			: base(EntityLogicalName)
 		{
 		}
 
@@ -83,7 +83,7 @@ namespace <#= Context.Namespace #>
 			}
 			set
 			{
-				this.OnPropertyChanging("<#=attribute.Attribute.LogicalName#>");
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
 				if ((value == null))
 				{
 					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
@@ -92,7 +92,7 @@ namespace <#= Context.Namespace #>
 				{
 					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
 				}
-				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 <# } else if(attribute.IsStateCode) { #>
 			get
@@ -109,10 +109,10 @@ namespace <#= Context.Namespace #>
 			}
 <# } else { #>
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
-<# if(!entity.IsIntersect || attribute == entity.PrimaryKey) { #>
+<# if((!entity.IsIntersect && attribute.IsValidForUpdate == true) || attribute == entity.PrimaryKey) { #>
 			set 
 			{ 
-				this.OnPropertyChanging("<#=attribute.Attribute.LogicalName#>");
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
 				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
 <# if(attribute == entity.PrimaryKey) { #>
 				if (value.HasValue)
@@ -124,7 +124,7 @@ namespace <#= Context.Namespace #>
 					base.Id = System.Guid.Empty;
 				}
 <#}#>
-				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 <#}#>
 <#}#>
