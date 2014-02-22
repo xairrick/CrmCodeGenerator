@@ -12,6 +12,7 @@ namespace CrmCodeGenerator.VSPackage.Model
     {
         public AttributeMetadata AttributeMetadata { get; set; }
         public CrmPropertyAttribute Attribute { get; set; }
+        public MappingEntity Entity { get; set; }
         public string AttributeOf { get; set; }
         public MappingEnum EnumData { get; set; }
         public AttributeTypeCode FieldType { get; set; }
@@ -20,6 +21,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public Nullable<bool> IsValidForRead { get; set; }
         public Nullable<bool> IsValidForUpdate { get; set; }
         public bool IsActivityParty { get; set; }
+        public bool IsStateCode { get; set; }
         public string LookupSingleType { get; set; }
 
         public string PrivatePropertyName
@@ -33,15 +35,18 @@ namespace CrmCodeGenerator.VSPackage.Model
             get;set;
         }
         public string HybridName { get; set; }
+        public string StateName { get; set; }
 
-        public static MappingField Parse(AttributeMetadata attribute)
+        public static MappingField Parse(AttributeMetadata attribute, MappingEntity entity)
         {
             var result = new MappingField();
+            result.Entity = entity;
             result.AttributeOf = attribute.AttributeOf;
             result.IsValidForCreate = attribute.IsValidForCreate;
             result.IsValidForRead = attribute.IsValidForRead;
             result.IsValidForUpdate = attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
+            result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
             
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
@@ -64,7 +69,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             result.DisplayName = Naming.GetProperVariableName(attribute.SchemaName);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
-            
+            result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
 
             result.IsUpdatable = attribute.IsValidForUpdate == true;
 
@@ -77,7 +82,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     IsLookup = attribute.AttributeType == AttributeTypeCode.Lookup || attribute.AttributeType == AttributeTypeCode.Customer
                 };
             result.FieldTypeString = result.TargetTypeForCrmSvcUtil;
-
+            
 
             return result;
         }
@@ -169,6 +174,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         return "EntityReference";
 
                     case AttributeTypeCode.State:
+                        return "System.Nullable<" + Entity.StateName + ">";
                     case AttributeTypeCode.Status:
                         return "OptionSetValue";
 

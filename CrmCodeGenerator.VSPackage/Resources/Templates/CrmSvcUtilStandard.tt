@@ -16,7 +16,7 @@ namespace <#= Context.Namespace #>
 #>
 <# if (entity.States != null) { #>
 	[System.Runtime.Serialization.DataContractAttribute()]
-	public enum <#=entity.HybridName#>State
+	public enum <#=entity.StateName#>
 	{
 <# foreach (var itm in entity.States.Items) { #>
 		[System.Runtime.Serialization.EnumMemberAttribute()]
@@ -93,6 +93,19 @@ namespace <#= Context.Namespace #>
 					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
 				}
 				this.OnPropertyChanged("<#=attribute.Attribute.LogicalName#>");
+			}
+<# } else if(attribute.IsStateCode) { #>
+			get
+			{
+				Microsoft.Xrm.Sdk.OptionSetValue optionSet = this.GetAttributeValue<Microsoft.Xrm.Sdk.OptionSetValue>("<#=attribute.Attribute.LogicalName#>");
+				if ((optionSet != null))
+				{
+					return ((<#=entity.StateName#>)(System.Enum.ToObject(typeof(<#=entity.StateName#>), optionSet.Value)));
+				}
+				else
+				{
+					return null;
+				}
 			}
 <# } else { #>
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }

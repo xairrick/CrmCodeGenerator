@@ -33,7 +33,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             set;
         }
         public string HybridName { get; set; }
-
+        public string StateName { get; set; }
         public MappingField PrimaryKey { get; set; }
         public string PrimaryKeyProperty
         {
@@ -62,16 +62,17 @@ namespace CrmCodeGenerator.VSPackage.Model
             // entity.DisplayName = Helper.GetProperVariableName(entityMetadata.SchemaName);
             entity.DisplayName = Naming.GetProperEntityName(entityMetadata.SchemaName);
             entity.HybridName = Naming.GetProperHybridName(entityMetadata.SchemaName, entityMetadata.LogicalName);
+            entity.StateName = entity.HybridName + "State";
 
             var fields = entityMetadata.Attributes
                 .Where(a => !(a.LogicalName.EndsWith("_base") && a.AttributeType == AttributeTypeCode.Money) && a.AttributeType != AttributeTypeCode.EntityName)
-                .Select(a => MappingField.Parse(a)).ToList();
+                .Select(a => MappingField.Parse(a, entity)).ToList();
 
             fields.ForEach(f =>
                     {
                         if (f.DisplayName == entity.DisplayName)
                             f.DisplayName += "1";
-                        f.HybridName = Naming.GetProperHybridFieldName(f.DisplayName, f.Attribute);
+                        //f.HybridName = Naming.GetProperHybridFieldName(f.DisplayName, f.Attribute);
                     }
                 );
 
