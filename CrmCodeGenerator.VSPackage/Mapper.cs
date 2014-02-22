@@ -114,12 +114,9 @@ namespace CrmCodeGenerator.VSPackage
             var results = sdk.Execute(request);
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
-            //string[] forceIgnore = new string[] { "BulkOperation", "ContractTemplate", "DuplicateRule", "DuplicateRuleCondition", "FieldPermission", "FieldSecurityProfile", "Goal", "GoalRollupQuery", "ImportMap", "InternalAddress", "KbArticleTemplate", "MailMergeTemplate", "Metric", "ProcessSession", "Publisher", "Queue", "QueueItem", "Report", "ReportCategory", "Role", "RolePrivileges", "RollupField",
-            //    "SavedQuery", "SharePointSite", "Solution", "UserQuery", "UserQueryVisualization", "Workflow"}.Select(w => w.ToLower()).ToArray();
+            string[] forceIgnore = new string[] { "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject" };
 
-
-
-            var selectedEntities = entities.Where(r => r.LogicalName != "subscriptionsyncinfo")
+            var selectedEntities = entities
                 .Where(r =>
                     {
                         bool include = false;
@@ -134,10 +131,10 @@ namespace CrmCodeGenerator.VSPackage
                         //    include =  && !this.Settings.EntitiesToExclude.Contains(r.LogicalName) // make sure it's not forcefully excluded
                         //        (r.IsCustomEntity == true || r.IsCustomizable.Value); // ignore the system entities, these are never used
                         //}
-
                         return include;
 
-                    })                    
+                    })
+                    .Where(r => !forceIgnore.Contains(r.LogicalName))
                     .ToList();
 
             if (selectedEntities.Any(r => r.IsActivity == true || r.IsActivityParty == true))

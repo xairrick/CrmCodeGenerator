@@ -148,36 +148,28 @@ namespace CrmCodeGenerator.VSPackage.Model
                 {
                     case AttributeTypeCode.Picklist:
                         return "OptionSetValue";
-
                     case AttributeTypeCode.BigInt:
                     case AttributeTypeCode.Integer:
                         return "System.Nullable<int>";
-
                     case AttributeTypeCode.Boolean:
                         return "System.Nullable<bool>";
-
                     case AttributeTypeCode.DateTime:
-                        return "DateTime";
-
+                        return "System.Nullable<DateTime>";
                     case AttributeTypeCode.Decimal:
                     case AttributeTypeCode.Money:
                         return "Money";
-
                     case AttributeTypeCode.Double:
                         return "System.Nullable<double>";
-
                     case AttributeTypeCode.Uniqueidentifier:
                         return "System.Nullable<System.Guid>";
                     case AttributeTypeCode.Lookup:
                     case AttributeTypeCode.Owner:
                     case AttributeTypeCode.Customer:
                         return "EntityReference";
-
                     case AttributeTypeCode.State:
                         return "System.Nullable<" + Entity.StateName + ">";
                     case AttributeTypeCode.Status:
                         return "OptionSetValue";
-
                     case AttributeTypeCode.Memo:
                     case AttributeTypeCode.Virtual:
                     case AttributeTypeCode.EntityName:
