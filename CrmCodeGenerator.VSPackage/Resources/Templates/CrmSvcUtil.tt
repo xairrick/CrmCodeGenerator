@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
@@ -15,56 +14,128 @@ namespace <#= Context.Namespace #>
 <# foreach (var entity in Context.Entities)
 {
 #>
+<# if (entity.States != null) { #>
+	[System.Runtime.Serialization.DataContractAttribute()]
+	public enum <#=entity.StateName#>
+	{
+<# foreach (var itm in entity.States.Items) { #>
+		[System.Runtime.Serialization.EnumMemberAttribute()]
+		<#=itm.Name#> = <#=itm.Value#>,
+<#}#>
+	}
+<#}#>
+
+	[System.Runtime.Serialization.DataContractAttribute()]
 	[EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
-	public partial class <#=entity.HybridName#> : Entity
+	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
 		public <#=entity.HybridName#>()
-			: base("<#=entity.LogicalName#>")
+			: base(EntityLogicalName)
 		{
+		}
+
+		public const string EntityLogicalName = "<#=entity.LogicalName#>";
+		public const int EntityTypeCode = <#=entity.TypeCode#>;
+	
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
+	
+		private void OnPropertyChanged(string propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+	
+		private void OnPropertyChanging(string propertyName)
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, new System.ComponentModel.PropertyChangingEventArgs(propertyName));
+			}
 		}
 
 		[AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
 		public override Guid Id
 		{
 			get { return base.Id; }
-			set { <#=entity.PrimaryKey.HybridName#> = value; }
+			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
 		}
 
 <#
 	foreach(var attribute in entity.Fields)	{#>
+<# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public virtual <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.HybridName#>
+        public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
+<# if(attribute.IsActivityParty) { #>
+			get
+			{
+				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("<#=attribute.Attribute.LogicalName#>");
+				if (((collection != null) && (collection.Entities != null)))
+				{
+					return System.Linq.Enumerable.Cast<ActivityParty>(collection.Entities);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				if ((value == null))
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
+				}
+				else
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
+				}
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<# } else if(attribute.IsStateCode) { #>
+			get
+			{
+				Microsoft.Xrm.Sdk.OptionSetValue optionSet = this.GetAttributeValue<Microsoft.Xrm.Sdk.OptionSetValue>("<#=attribute.Attribute.LogicalName#>");
+				if ((optionSet != null))
+				{
+					return ((<#=entity.StateName#>)(System.Enum.ToObject(typeof(<#=entity.StateName#>), optionSet.Value)));
+				}
+				else
+				{
+					return null;
+				}
+			}
+<# } else { #>
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
-			set { this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); }
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
+			set 
+			{ 
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
+<# if(attribute == entity.PrimaryKey) { #>
+				if (value.HasValue)
+				{
+					base.Id = value.Value;
+				}
+				else
+				{
+					base.Id = System.Guid.Empty;
+				}
+<#}#>
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<#}#>
+<#}#>
 		}
+<#}#>
 <#}#>
 	}
-	public class <#=entity.DisplayName#>Enums
-		{
-<#foreach(var enm in entity.Enums){#>
-			[DataContractAttribute]
-			public enum <#=enm.DisplayName#> 
-			{
-<#foreach(var item in enm.Items){#>
-				[EnumMemberAttribute]<#= item.Name #> = <#= item.Value #>,
 <#}#>
-			}		
-<#}#>
-		}
-		public class <#=entity.DisplayName#>Fields
-		{
-			public const string SchemaName = "<#=entity.Attribute.LogicalName#>";
-			
-<#foreach(var f in entity.Fields){#>
-			public const string <#=f.DisplayName#> = "<#=f.Attribute.LogicalName#>";
-<#}#>
-		}
-<#}#>
-
-
-
-
+	
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{
 		public XrmServiceContext(Microsoft.Xrm.Sdk.IOrganizationService service) : 
