@@ -139,22 +139,46 @@ namespace <#= Context.Namespace #>
 <#}#>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
-	[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
-	public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
-	{
-		get
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
 		{
-			return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+			get
+			{
+				return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
 		}
-		set
-		{
-			this.OnPropertyChanging("<#=attribute.DisplayName#>");
-			this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
-			this.OnPropertyChanged("<#=attribute.DisplayName#>");
-		}
-	}
 <#}#>
-<# //END// 1:N Realationships  #>
+<# 
+//END// 1:N Realationships
+
+//BEGIN// N:1 Realationships 
+	foreach(var attribute in entity.RelationshipsManyToOne)	{
+#>
+		/// <summary>
+		/// N:1 <#=attribute.DisplayName#>
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.FromKey#>")]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+		public <#=attribute.ToEntity.DisplayName#> Referencing<#=attribute.DisplayName#>
+		{
+			get
+			{
+				return this.GetRelatedEntity<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+			}
+			set
+			{
+				this.OnPropertyChanging("Referencing<#=attribute.DisplayName#>");
+				this.SetRelatedEntity<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.OnPropertyChanged("Referencing<#=attribute.DisplayName#>");
+			}
+		}
+<#} //END// N:1 Realationships  #>
 	}
 <#}#>
 	
