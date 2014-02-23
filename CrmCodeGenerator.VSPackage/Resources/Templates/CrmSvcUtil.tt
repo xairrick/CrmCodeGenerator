@@ -178,7 +178,29 @@ namespace <#= Context.Namespace #>
 				this.OnPropertyChanged("Referencing<#=attribute.DisplayName#>");
 			}
 		}
-<#} //END// N:1 Realationships  #>
+<#} //END// N:1 Realationships 
+
+//BEGIN// N:N Realationships 
+	foreach(var attribute in entity.RelationshipsManyToMany)	{
+#>
+		/// <summary>
+		/// N:N <#=attribute.DisplayName#>
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
+		{
+			get
+			{
+				return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+		}
+<#} //END// N:N Realationships  #>
 	}
 <#}#>
 	

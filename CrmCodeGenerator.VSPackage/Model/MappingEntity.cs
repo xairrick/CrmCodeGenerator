@@ -96,7 +96,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
 
             entity.RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r =>
-                MappingRelationshipMN.Parse(r)).ToArray();
+                MappingRelationshipMN.Parse(r, entity.LogicalName)).ToArray();
 
             return entity;
         }
@@ -210,6 +210,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             if (!fields.Any(f => f.DisplayName == image.DisplayName))
                 fields.Add(image);
         }
-        public MappingRelationshipN1[] RelationshipsManyToMany { get; set; }
+        public MappingRelationshipMN [] RelationshipsManyToMany { get; set; }
     }
 }

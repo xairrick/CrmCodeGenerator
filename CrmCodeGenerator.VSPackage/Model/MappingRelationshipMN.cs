@@ -7,53 +7,49 @@ using CrmCodeGenerator.VSPackage.Helpers;
 
 namespace CrmCodeGenerator.VSPackage.Model
 {
+    [Serializable]
     public class MappingRelationshipMN
     {
         public CrmRelationshipAttribute Attribute { get; set; }
 
-        public string DisplayName
-        {
-            get;
-            set;
-        }
+        public string DisplayName { get; set; }
+        public string ForeignKey { get; set; }
+        public string PrivateName { get; set; }
+        public string Type {get; set; }
+        public MappingEntity ToEntity { get; set; }
 
-        public string ForeignKey
+        public static MappingRelationshipMN Parse(ManyToManyRelationshipMetadata rel, string ThisEntityLogicalName)
         {
-            get
+            var result = new MappingRelationshipMN();
+            if (rel.Entity1LogicalName == ThisEntityLogicalName)
             {
-                return Naming.GetProperVariableName(Attribute.ToKey);
-            }
-        }
-
-        public string PrivateName
-        {
-            get;
-            set;
-        }
-
-        public string Type
-        {
-            get
-            {
-                return Naming.GetProperVariableName(Attribute.FromEntity);
-            }
-        }
-
-        public static MappingRelationshipN1 Parse(ManyToManyRelationshipMetadata rel)
-        {
-            return new MappingRelationshipN1
-            {
-                Attribute = new CrmRelationshipAttribute
+                result.Attribute = new CrmRelationshipAttribute
                 {
-                    //FromEntity = rel.ReferencedEntity,
-                    //FromKey = rel.ReferencedAttribute,
-                    //ToEntity = rel.ReferencingEntity,
-                    //ToKey = rel.ReferencingAttribute,
+                    FromEntity = rel.Entity1LogicalName,
+                    FromKey = rel.Entity1IntersectAttribute,
+                    ToEntity = rel.Entity2LogicalName,
+                    ToKey = rel.Entity2IntersectAttribute,
                     IntersectingEntity = rel.IntersectEntityName
-                },
-                DisplayName = Naming.GetProperVariableName(rel.SchemaName),
-                PrivateName = "_nn" + Naming.GetEntityPropertyPrivateName(rel.SchemaName)
-            };
+                };
+            }
+            else
+            {
+                result.Attribute = new CrmRelationshipAttribute
+                {
+                    ToEntity = rel.Entity1LogicalName,
+                    ToKey = rel.Entity1IntersectAttribute,
+                    FromEntity = rel.Entity2LogicalName,
+                    FromKey = rel.Entity2IntersectAttribute,
+                    IntersectingEntity = rel.IntersectEntityName
+                };
+            }
+
+            result.DisplayName = Naming.GetProperVariableName(rel.SchemaName);
+            result.PrivateName = "_nn" + Naming.GetEntityPropertyPrivateName(rel.SchemaName);
+            result.ForeignKey =  Naming.GetProperVariableName(result.Attribute.ToKey);
+            result.Type = Naming.GetProperVariableName(result.Attribute.ToEntity);
+
+            return result;
         }
     }
 }

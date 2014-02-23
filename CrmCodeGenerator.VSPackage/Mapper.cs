@@ -147,7 +147,10 @@ namespace CrmCodeGenerator.VSPackage
                 {
                     rel.ToEntity = mappedEntities.Where(e => e.LogicalName.Equals(rel.Attribute.ToEntity)).FirstOrDefault();
                 }
-
+                foreach (var rel in ent.RelationshipsManyToMany)
+                {
+                    rel.ToEntity = mappedEntities.Where(e => e.LogicalName.Equals(rel.Attribute.ToEntity)).FirstOrDefault();
+                }
             }
 
             return mappedEntities.ToArray();
