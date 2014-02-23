@@ -76,8 +76,10 @@ namespace CrmCodeGenerator.VSPackage.Model
                     }
                 );
 
-            var fieldsIterator = fields.Where(e => e.Attribute.IsLookup).ToArray();
+            AddEnityImageCRM2013(fields);
 
+
+            var fieldsIterator = fields.Where(e => e.Attribute.IsLookup).ToArray();
             foreach (var lookup in fieldsIterator)
             {
                 var nameField = new MappingField
@@ -89,7 +91,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         IsEntityReferenceHelper = true
                     },
                     DisplayName = lookup.DisplayName + "Name",
-                    HybridName = lookup.HybridName  + "Name",
+                    HybridName = lookup.HybridName + "Name",
                     FieldType = AttributeTypeCode.EntityName,
                     IsValidForUpdate = false,
                     GetMethod = "",
@@ -128,7 +130,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.Enums = entityMetadata.Attributes
                 .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata)
                 .Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).ToArray();
-                //.Select(a => MapperEnum.Parse(a as PicklistAttributeMetadata)).ToArray();
+            //.Select(a => MapperEnum.Parse(a as PicklistAttributeMetadata)).ToArray();
 
             entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
             entity.PrimaryKeyProperty = entity.PrimaryKey.DisplayName;
@@ -145,6 +147,68 @@ namespace CrmCodeGenerator.VSPackage.Model
             return entity;
         }
 
+        private static void AddEnityImageCRM2013(List<MappingField> fields)
+        {
+            
+            if (!fields.Any(f => f.DisplayName.Equals("EntityImageId")))
+                return;
+
+            var image = new MappingField {
+                    Attribute = new CrmPropertyAttribute
+                    {
+                        IsLookup = false,
+                        LogicalName = "entityimage",
+                        IsEntityReferenceHelper = false
+                    },
+                    DisplayName = "EntityImage",
+                    HybridName = "EntityImage",
+                    TargetTypeForCrmSvcUtil = "byte[]",
+                    IsValidForUpdate = true,
+                    GetMethod = ""
+            };
+            SafeAddField(fields, image);
+
+            var imageTimestamp = new MappingField
+            {
+                Attribute = new CrmPropertyAttribute
+                {
+                    IsLookup = false,
+                    LogicalName = "entityimage_timestamp",
+                    IsEntityReferenceHelper = false
+                },
+                DisplayName = "EntityImage_Timestamp",
+                HybridName = "EntityImage_Timestamp",
+                TargetTypeForCrmSvcUtil = "System.Nullable<long>",
+                FieldType = AttributeTypeCode.BigInt,
+                IsValidForUpdate = false,
+                IsValidForCreate = false,
+                GetMethod = ""
+            };
+            SafeAddField(fields, imageTimestamp);
+
+            var imageURL = new MappingField
+            {
+                Attribute = new CrmPropertyAttribute
+                {
+                    IsLookup = false,
+                    LogicalName = "entityimage_url",
+                    IsEntityReferenceHelper = false
+                },
+                DisplayName = "EntityImage_URL",
+                HybridName = "EntityImage_URL",
+                TargetTypeForCrmSvcUtil = "string",
+                FieldType = AttributeTypeCode.String,
+                IsValidForUpdate = false,
+                IsValidForCreate = false,
+                GetMethod = ""
+            };
+            SafeAddField(fields, imageURL);
+        }
+        private static void SafeAddField(List<MappingField> fields, MappingField image)
+        {
+            if (!fields.Any(f => f.DisplayName == image.DisplayName))
+                fields.Add(image);
+        }
         public MappingRelationshipN1[] RelationshipsManyToMany { get; set; }
     }
 }

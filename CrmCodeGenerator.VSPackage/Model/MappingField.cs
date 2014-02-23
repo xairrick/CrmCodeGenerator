@@ -32,6 +32,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string DisplayName { get; set; }
         public string HybridName { get; set; }
         public string StateName { get; set; }
+        public string TargetTypeForCrmSvcUtil { get; set; }
 
         public MappingField()
         {
@@ -80,6 +81,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     LogicalName = attribute.LogicalName,
                     IsLookup = attribute.AttributeType == AttributeTypeCode.Lookup || attribute.AttributeType == AttributeTypeCode.Customer
                 };
+            result.TargetTypeForCrmSvcUtil = GetTargetType(result);
             result.FieldTypeString = result.TargetTypeForCrmSvcUtil;
 
 
@@ -127,51 +129,50 @@ namespace CrmCodeGenerator.VSPackage.Model
 
 
 
-        public string TargetTypeForCrmSvcUtil
+        private static string GetTargetType(MappingField field)
         {
-            get
-            {
-                if (IsPrimaryKey)
-                    return "System.Nullable<System.Guid>";
+            if (field.IsPrimaryKey)
+                return "System.Nullable<System.Guid>";
 
-                switch (FieldType)
-                {
-                    case AttributeTypeCode.Picklist:
-                        return "OptionSetValue";
-                    case AttributeTypeCode.BigInt:
-                    case AttributeTypeCode.Integer:
-                        return "System.Nullable<int>";
-                    case AttributeTypeCode.Boolean:
-                        return "System.Nullable<bool>";
-                    case AttributeTypeCode.DateTime:
-                        return "System.Nullable<DateTime>";
-                    case AttributeTypeCode.Decimal:
-                    case AttributeTypeCode.Money:
-                        return "Money";
-                    case AttributeTypeCode.Double:
-                        return "System.Nullable<double>";
-                    case AttributeTypeCode.Uniqueidentifier:
-                        return "System.Nullable<System.Guid>";
-                    case AttributeTypeCode.Lookup:
-                    case AttributeTypeCode.Owner:
-                    case AttributeTypeCode.Customer:
-                        return "EntityReference";
-                    case AttributeTypeCode.State:
-                        return "System.Nullable<" + Entity.StateName + ">";
-                    case AttributeTypeCode.Status:
-                        return "OptionSetValue";
-                    case AttributeTypeCode.Memo:
-                    case AttributeTypeCode.Virtual:
-                    case AttributeTypeCode.EntityName:
-                    case AttributeTypeCode.String:
-                        return "string";
-                    case AttributeTypeCode.PartyList:
-                        return "System.Collections.Generic.IEnumerable<ActivityParty>";
-                    default:
-                        return "object";
-                }
+            switch (field.FieldType)
+            {
+                case AttributeTypeCode.Picklist:
+                    return "OptionSetValue";
+                case AttributeTypeCode.BigInt:
+                    return "System.Nullable<long>";
+                case AttributeTypeCode.Integer:
+                    return "System.Nullable<int>";
+                case AttributeTypeCode.Boolean:
+                    return "System.Nullable<bool>";
+                case AttributeTypeCode.DateTime:
+                    return "System.Nullable<DateTime>";
+                case AttributeTypeCode.Decimal:
+                case AttributeTypeCode.Money:
+                    return "Money";
+                case AttributeTypeCode.Double:
+                    return "System.Nullable<double>";
+                case AttributeTypeCode.Uniqueidentifier:
+                    return "System.Nullable<System.Guid>";
+                case AttributeTypeCode.Lookup:
+                case AttributeTypeCode.Owner:
+                case AttributeTypeCode.Customer:
+                    return "EntityReference";
+                case AttributeTypeCode.State:
+                    return "System.Nullable<" + field.Entity.StateName + ">";
+                case AttributeTypeCode.Status:
+                    return "OptionSetValue";
+                case AttributeTypeCode.Memo:
+                case AttributeTypeCode.Virtual:
+                case AttributeTypeCode.EntityName:
+                case AttributeTypeCode.String:
+                    return "string";
+                case AttributeTypeCode.PartyList:
+                    return "System.Collections.Generic.IEnumerable<ActivityParty>";
+                default:
+                    return "object";
             }
         }
+
 
         public string TargetType
         {
