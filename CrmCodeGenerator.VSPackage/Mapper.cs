@@ -47,13 +47,6 @@ namespace CrmCodeGenerator.VSPackage
             return context;
         }
 
-
-
-        internal MappingEntity[] GetEntities(EntityMetadata[] entities)
-        {
-            return entities.Select(e => MappingEntity.Parse(e)).ToArray();
-        }
-
         internal Microsoft.Xrm.Sdk.IOrganizationService GetConnection()
         {
             OnMessage("Connecting to crm, please wait...");
@@ -90,14 +83,10 @@ namespace CrmCodeGenerator.VSPackage
                 e.Fields = e.Fields.OrderBy(f => f.DisplayName).ToArray();
 
             foreach (var e in context.Entities)
-                e.RelationshipsOneToMany =
-                    e.RelationshipsOneToMany.Where(
-                        r => context.Entities.Any(t => t.DisplayName == r.Type)).OrderBy(r => r.DisplayName).OrderBy(r => r.DisplayName).ToArray();
+                e.RelationshipsOneToMany = e.RelationshipsOneToMany.OrderBy(r => r.DisplayName).ToArray();
 
             foreach (var e in context.Entities)
-                e.RelationshipsManyToOne =
-                    e.RelationshipsManyToOne.Where(
-                        r => context.Entities.Any(t => t.DisplayName == r.Type)).OrderBy(r => r.DisplayName).OrderBy(r => r.DisplayName).ToArray();
+                e.RelationshipsManyToOne = e.RelationshipsManyToOne.OrderBy(r => r.DisplayName).ToArray();
             return;
         }
 
@@ -145,7 +134,27 @@ namespace CrmCodeGenerator.VSPackage
 
             OnMessage(string.Format("Found {0} entities", selectedEntities.Count));
 
-            return GetEntities(selectedEntities.ToArray());
+            var mappedEntities = selectedEntities.Select(e => MappingEntity.Parse(e)).ToList();
+
+            ExcludeRelationshipsNotIncluded(mappedEntities);
+            foreach (var ent in mappedEntities)
+            {
+                foreach (var rel in ent.RelationshipsOneToMany)
+                {
+                    rel.ToEntity = mappedEntities.Where(e => e.LogicalName.Equals(rel.Attribute.ToEntity)).FirstOrDefault();
+                }
+            }
+
+            return mappedEntities.ToArray();
+        }
+        private static void ExcludeRelationshipsNotIncluded(List<MappingEntity> mappedEntities)
+        {
+            foreach (var ent in mappedEntities)
+            {
+                ent.RelationshipsOneToMany = ent.RelationshipsOneToMany.ToList().Where(r => mappedEntities.Select(m => m.LogicalName).Contains(r.Type)).ToArray();
+                ent.RelationshipsManyToOne = ent.RelationshipsManyToOne.ToList().Where(r => mappedEntities.Select(m => m.LogicalName).Contains(r.Type)).ToArray();
+                ent.RelationshipsManyToMany = ent.RelationshipsManyToMany.ToList().Where(r => mappedEntities.Select(m => m.LogicalName).Contains(r.Type)).ToArray();
+            }
         }
     }
 }

@@ -77,8 +77,32 @@ namespace CrmCodeGenerator.VSPackage.Model
                 );
 
             AddEnityImageCRM2013(fields);
+            AddLookupFields(fields);
 
+            entity.Fields = fields.ToArray();
+            entity.States = entityMetadata.Attributes.Where(a => a is StateAttributeMetadata).Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).FirstOrDefault();
+            entity.Enums = entityMetadata.Attributes
+                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata)
+                .Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).ToArray();
+            //.Select(a => MapperEnum.Parse(a as PicklistAttributeMetadata)).ToArray();
 
+            entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
+            entity.PrimaryKeyProperty = entity.PrimaryKey.DisplayName;
+
+            entity.RelationshipsOneToMany = entityMetadata.OneToManyRelationships.Select(r =>
+                MappingRelationship1N.Parse(r, entity.Fields)).ToArray();
+
+            entity.RelationshipsManyToOne = entityMetadata.ManyToOneRelationships.Select(r =>
+                MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
+
+            entity.RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r =>
+                MappingRelationshipMN.Parse(r)).ToArray();
+
+            return entity;
+        }
+
+        private static void AddLookupFields(List<MappingField> fields)
+        {
             var fieldsIterator = fields.Where(e => e.Attribute.IsLookup).ToArray();
             foreach (var lookup in fieldsIterator)
             {
@@ -122,31 +146,8 @@ namespace CrmCodeGenerator.VSPackage.Model
 
                 if (fields.Count(f => f.DisplayName == typeField.DisplayName) == 0)
                     fields.Add(typeField);
-
             }
-
-            entity.Fields = fields.ToArray();
-            entity.States = entityMetadata.Attributes.Where(a => a is StateAttributeMetadata).Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).FirstOrDefault();
-            entity.Enums = entityMetadata.Attributes
-                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata)
-                .Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).ToArray();
-            //.Select(a => MapperEnum.Parse(a as PicklistAttributeMetadata)).ToArray();
-
-            entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
-            entity.PrimaryKeyProperty = entity.PrimaryKey.DisplayName;
-
-            entity.RelationshipsOneToMany = entityMetadata.OneToManyRelationships.Select(r =>
-                MappingRelationship1N.Parse(r, entity.Fields)).ToArray();
-
-            entity.RelationshipsManyToOne = entityMetadata.ManyToOneRelationships.Select(r =>
-                MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
-
-            entity.RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r =>
-                MappingRelationshipMN.Parse(r)).ToArray();
-
-            return entity;
         }
-
         private static void AddEnityImageCRM2013(List<MappingField> fields)
         {
             

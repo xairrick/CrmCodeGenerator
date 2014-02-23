@@ -1,5 +1,7 @@
 ﻿<#@ output extension=".cs" #>
 <#@ parameter type="CrmCodeGenerator.VSPackage.Model.Context" name="Context"#>
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +13,13 @@ using Microsoft.Xrm.Sdk.Client;
 [assembly: Microsoft.Xrm.Sdk.Client.ProxyTypesAssemblyAttribute()]
 namespace <#= Context.Namespace #>
 {
-<# foreach (var entity in Context.Entities)
-{
-#>
-<# if (entity.States != null) { #>
+<# foreach (var entity in Context.Entities) { #>
+<#	if (entity.States != null) { #>
+
+// entity.Fields:<#=entity.Fields.Length#>
+// RelationshipsOneToMany: <#=entity.RelationshipsOneToMany.Length#>
+// RelationshipsManyToOne:<#=entity.RelationshipsManyToOne.Length#>
+
 	[System.Runtime.Serialization.DataContractAttribute()]
 	public enum <#=entity.StateName#>
 	{
@@ -63,9 +68,8 @@ namespace <#= Context.Namespace #>
 			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
 		}
 
-<#
-	foreach(var attribute in entity.Fields)	{#>
-<# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+<#	foreach(var attribute in entity.Fields)	{#>
+<#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
 
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
         public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
@@ -133,9 +137,28 @@ namespace <#= Context.Namespace #>
 		}
 <#}#>
 <#}#>
+<# //BEGIN// 1:N Realationships  #>
+<#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
+	[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+	public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
+	{
+		get
+		{
+			return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+		}
+		set
+		{
+			this.OnPropertyChanging("<#=attribute.DisplayName#>");
+			this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+			this.OnPropertyChanged("<#=attribute.DisplayName#>");
+		}
+	}
+<#}#>
+<# //END// 1:N Realationships  #>
 	}
 <#}#>
 	
+
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{
 		public XrmServiceContext(Microsoft.Xrm.Sdk.IOrganizationService service) : 

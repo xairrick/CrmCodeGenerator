@@ -24,18 +24,9 @@ namespace CrmCodeGenerator.VSPackage.Model
             set;
         }
 
-        public string PrivateName
-        {
-            get; set;
-        }
-        
-        public string Type
-        {
-            get
-            {
-                return Naming.GetProperVariableName(Attribute.ToEntity);
-            }
-        }
+        public string PrivateName { get; set; }
+        public string Type { get; set; }
+        public MappingEntity ToEntity { get; set; }
 
         public static MappingRelationship1N Parse(OneToManyRelationshipMetadata rel, MappingField[] properties)
         {
@@ -54,7 +45,8 @@ namespace CrmCodeGenerator.VSPackage.Model
                 },
                 ForeignKey = propertyName,
                 DisplayName = Naming.GetPluralName(Naming.GetProperVariableName(rel.SchemaName)),
-                PrivateName = Naming.GetEntityPropertyPrivateName(rel.SchemaName)
+                PrivateName = Naming.GetEntityPropertyPrivateName(rel.SchemaName),
+                Type = Naming.GetProperVariableName(rel.ReferencingEntity),
             };
         }
     }
