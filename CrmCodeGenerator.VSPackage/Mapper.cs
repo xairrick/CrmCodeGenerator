@@ -114,7 +114,7 @@ namespace CrmCodeGenerator.VSPackage
             var results = sdk.Execute(request);
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
-            string[] forceIgnore = new string[] { "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject" };
+            string[] forceIgnore = new string[] { "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile" };
 
             var selectedEntities = entities
                 .Where(r =>
