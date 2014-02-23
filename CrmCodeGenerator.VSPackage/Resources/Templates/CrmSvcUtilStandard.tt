@@ -109,7 +109,7 @@ namespace <#= Context.Namespace #>
 			}
 <# } else { #>
 			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
-<# if((!entity.IsIntersect && attribute.IsValidForUpdate == true) || attribute == entity.PrimaryKey) { #>
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
 			set 
 			{ 
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
