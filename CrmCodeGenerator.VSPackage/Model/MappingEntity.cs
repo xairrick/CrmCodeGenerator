@@ -91,7 +91,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     DisplayName = lookup.DisplayName + "Name",
                     HybridName = lookup.HybridName  + "Name",
                     FieldType = AttributeTypeCode.EntityName,
-                    IsUpdatable = false,
+                    IsValidForUpdate = false,
                     GetMethod = "",
                     PrivatePropertyName = lookup.PrivatePropertyName + "Name"
                 };
@@ -113,7 +113,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     DisplayName = lookup.DisplayName + "Type",
                     HybridName = lookup.HybridName + "Type",
                     FieldType = AttributeTypeCode.EntityName,
-                    IsUpdatable = false,
+                    IsValidForUpdate = false,
                     GetMethod = "",
                     PrivatePropertyName = lookup.PrivatePropertyName + "Type"
                 };

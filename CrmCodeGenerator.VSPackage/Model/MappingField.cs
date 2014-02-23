@@ -17,37 +17,38 @@ namespace CrmCodeGenerator.VSPackage.Model
         public MappingEnum EnumData { get; set; }
         public AttributeTypeCode FieldType { get; set; }
         public string FieldTypeString { get; set; }
-        public Nullable<bool> IsValidForCreate { get; set; }
-        public Nullable<bool> IsValidForRead { get; set; }
-        public Nullable<bool> IsValidForUpdate { get; set; }
+        public bool IsValidForCreate { get; set; }
+        public bool IsValidForRead { get; set; }
+        public bool IsValidForUpdate { get; set; }
         public bool IsActivityParty { get; set; }
         public bool IsStateCode { get; set; }
         public string LookupSingleType { get; set; }
-
-        public string PrivatePropertyName
-        {
-            get;
-            set;
-        }
-
-        public string DisplayName
-        {
-            get;set;
-        }
+        bool IsPrimaryKey { get; set; }
+        public bool IsRequired { get; set; }
+        public int? MaxLength { get; set; }
+        public decimal? Min { get; set; }
+        public decimal? Max { get; set; }
+        public string PrivatePropertyName { get; set; }
+        public string DisplayName { get; set; }
         public string HybridName { get; set; }
         public string StateName { get; set; }
 
+        public MappingField()
+        {
+            IsValidForUpdate = false;
+            IsValidForCreate = false;
+        }
         public static MappingField Parse(AttributeMetadata attribute, MappingEntity entity)
         {
             var result = new MappingField();
             result.Entity = entity;
             result.AttributeOf = attribute.AttributeOf;
-            result.IsValidForCreate = attribute.IsValidForCreate;
-            result.IsValidForRead = attribute.IsValidForRead;
-            result.IsValidForUpdate = attribute.IsValidForUpdate;
+            result.IsValidForCreate = (bool)attribute.IsValidForCreate;
+            result.IsValidForRead = (bool)attribute.IsValidForRead;
+            result.IsValidForUpdate = (bool)attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
             result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
-            
+
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
@@ -61,7 +62,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
 
             ParseMinMaxValues(attribute, result);
-            
+
             if (attribute.AttributeType != null)
                 result.FieldType = attribute.AttributeType.Value;
 
@@ -70,8 +71,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.DisplayName = Naming.GetProperVariableName(attribute.SchemaName);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
-
-            result.IsUpdatable = attribute.IsValidForUpdate == true;
 
             result.IsRequired = attribute.RequiredLevel != null && attribute.RequiredLevel.Value == AttributeRequiredLevel.ApplicationRequired;
 
@@ -82,7 +81,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     IsLookup = attribute.AttributeType == AttributeTypeCode.Lookup || attribute.AttributeType == AttributeTypeCode.Customer
                 };
             result.FieldTypeString = result.TargetTypeForCrmSvcUtil;
-            
+
 
             return result;
         }
@@ -125,15 +124,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
         }
 
-        bool IsPrimaryKey { get; set; }
-
-        public bool IsUpdatable { get; set; }
-
-        public bool IsRequired { get; set; }
-
-        public int? MaxLength { get; set; }
-        public decimal? Min { get; set; }
-        public decimal? Max { get; set; }
 
 
 
@@ -266,7 +256,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         methodName = "SetValue<Guid?>"; break;
                     case AttributeTypeCode.Lookup:
                         methodName = "SetLookup"; break;
-                        //methodName = "SetLookup"; break;
+                    //methodName = "SetLookup"; break;
                     case AttributeTypeCode.Virtual:
                         methodName = "SetValue<string>"; break;
                     case AttributeTypeCode.Customer:
@@ -281,7 +271,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         return "";
                 }
 
-                if (methodName == "" || !this.IsUpdatable)
+                if (methodName == "" || !this.IsValidForUpdate)
                     return "";
 
                 if (FieldType == AttributeTypeCode.Picklist)
@@ -289,7 +279,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
                 if (FieldType == AttributeTypeCode.Lookup || FieldType == AttributeTypeCode.Customer)
                     if (string.IsNullOrEmpty(LookupSingleType))
-                        return string.Format("{0}(\"{1}\", {2}Type, value);", methodName, Attribute.LogicalName,this.DisplayName);
+                        return string.Format("{0}(\"{1}\", {2}Type, value);", methodName, Attribute.LogicalName, this.DisplayName);
                     else
                         return string.Format("{0}(\"{1}\", \"{2}\", value);", methodName, Attribute.LogicalName, this.LookupSingleType);
 

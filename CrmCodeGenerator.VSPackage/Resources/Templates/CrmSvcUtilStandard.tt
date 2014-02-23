@@ -65,6 +65,8 @@ namespace <#= Context.Namespace #>
 
 <#
 	foreach(var attribute in entity.Fields)	{#>
+<# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+
 		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
         public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
@@ -129,6 +131,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 <#}#>
 		}
+<#}#>
 <#}#>
 	}
 	public class <#=entity.DisplayName#>Enums
