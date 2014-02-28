@@ -147,8 +147,9 @@ namespace CrmCodeGenerator.VSPackage.Model
                 case AttributeTypeCode.DateTime:
                     return "System.Nullable<DateTime>";
                 case AttributeTypeCode.Decimal:
+                    return "System.Nullable<decimal>";
                 case AttributeTypeCode.Money:
-                    return "Money";
+                    return "Microsoft.Xrm.Sdk.Money";
                 case AttributeTypeCode.Double:
                     return "System.Nullable<double>";
                 case AttributeTypeCode.Uniqueidentifier:
@@ -156,11 +157,11 @@ namespace CrmCodeGenerator.VSPackage.Model
                 case AttributeTypeCode.Lookup:
                 case AttributeTypeCode.Owner:
                 case AttributeTypeCode.Customer:
-                    return "EntityReference";
+                    return "Microsoft.Xrm.Sdk.EntityReference";
                 case AttributeTypeCode.State:
                     return "System.Nullable<" + field.Entity.StateName + ">";
                 case AttributeTypeCode.Status:
-                    return "OptionSetValue";
+                    return "Microsoft.Xrm.Sdk.OptionSetValue";
                 case AttributeTypeCode.Memo:
                 case AttributeTypeCode.Virtual:
                 case AttributeTypeCode.EntityName:

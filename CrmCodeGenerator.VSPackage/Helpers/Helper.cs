@@ -121,7 +121,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         {
             if (logicalName.Contains("_"))
             {
-                return logicalName;
+                Console.WriteLine(displayName + " " + logicalName);
+                return displayName;
             }
             else
             {

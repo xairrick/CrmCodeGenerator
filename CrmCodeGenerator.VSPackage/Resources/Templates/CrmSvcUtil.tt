@@ -70,8 +70,7 @@ namespace <#= Context.Namespace #>
 
 <#	foreach(var attribute in entity.Fields)	{#>
 <#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
-
-		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
         public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 <# if(attribute.IsActivityParty) { #>
@@ -140,16 +139,16 @@ namespace <#= Context.Namespace #>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
-		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
@@ -165,16 +164,16 @@ namespace <#= Context.Namespace #>
 		/// </summary>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.FromKey#>")]
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
-		public <#=attribute.ToEntity.DisplayName#> Referencing<#=attribute.DisplayName#>
+		public <#=attribute.ToEntity.HybridName#> Referencing<#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntity<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
 			}
 			set
 			{
 				this.OnPropertyChanging("Referencing<#=attribute.DisplayName#>");
-				this.SetRelatedEntity<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
 				this.OnPropertyChanged("Referencing<#=attribute.DisplayName#>");
 			}
 		}
@@ -187,16 +186,16 @@ namespace <#= Context.Namespace #>
 		/// N:N <#=attribute.DisplayName#>
 		/// </summary>
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
-		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.DisplayName#>> <#=attribute.DisplayName#>
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.DisplayName#>>("<#=attribute.DisplayName#>", null, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
