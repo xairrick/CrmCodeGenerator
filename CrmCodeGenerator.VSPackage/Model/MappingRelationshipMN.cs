@@ -13,6 +13,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public CrmRelationshipAttribute Attribute { get; set; }
 
         public string DisplayName { get; set; }
+        public string HybridName { get; set; }
         public string ForeignKey { get; set; }
         public string PrivateName { get; set; }
         public string Type {get; set; }
@@ -45,6 +46,9 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
 
             result.DisplayName = Naming.GetProperVariableName(rel.SchemaName);
+            if (result.DisplayName == ThisEntityLogicalName)
+                result.DisplayName += "1";   // this is what CrmSvcUtil does
+            result.HybridName = Naming.GetProperVariableName(rel.SchemaName) + "_NN";  
             result.PrivateName = "_nn" + Naming.GetEntityPropertyPrivateName(rel.SchemaName);
             result.ForeignKey =  Naming.GetProperVariableName(result.Attribute.ToKey);
             result.Type = Naming.GetProperVariableName(result.Attribute.ToEntity);

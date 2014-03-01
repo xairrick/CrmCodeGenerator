@@ -1,6 +1,9 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.3.2
+[BUG] Possible naming conflict when an N:N relationship has the same name as the entity. (eg native N:N relationship)
+
 Version 0.8.3.1
 [BUG] Used the wrong name when mapping related entities for custom entities.  (also requires template to be updated; change attribute.ToEntity.DisplayName to attribute.ToEntity.HybridName)
 

@@ -1,7 +1,5 @@
 ﻿<#@ output extension=".cs" #>
 <#@ parameter type="CrmCodeGenerator.VSPackage.Model.Context" name="Context"#>
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
