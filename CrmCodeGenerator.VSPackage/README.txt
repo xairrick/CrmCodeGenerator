@@ -1,6 +1,14 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.3.3
+[BUG] fixed bug that was allowing a relationship to be updatable when the underlying property was not updatable.
+[UPDATE] Added Referenced/Referencing relationships for self referencing N:N relationships (eg campaigncampaign_association)
+[BUG] changed naming convention on 1:N relationship to match CrmSvcUtil.exe (removed the pluralization)
+[UPDATE] forced removed postregarding, postrole, imagedescriptor, owner as they aren't provide in CrmSvcUtil
+[BUG] Corrected the names of the Self-referencing relationships (eg contact_customer_contacts)
+[UPDATE] Added _Base attributes for currency attributes.  Added some explicit class names
+
 Version 0.8.3.2
 [BUG] Possible naming conflict when an N:N relationship has the same name as the entity. (eg native N:N relationship)
 
