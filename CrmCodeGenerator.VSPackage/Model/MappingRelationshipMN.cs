@@ -8,14 +8,16 @@ using CrmCodeGenerator.VSPackage.Helpers;
 namespace CrmCodeGenerator.VSPackage.Model
 {
     [Serializable]
-    public class MappingRelationshipMN
+    public class MappingRelationshipMN : ICloneable
     {
         public CrmRelationshipAttribute Attribute { get; set; }
 
         public string DisplayName { get; set; }
+        public string SchemaName { get; set; }
         public string HybridName { get; set; }
         public string ForeignKey { get; set; }
         public string PrivateName { get; set; }
+        public string EntityRole { get; set; }
         public string Type {get; set; }
         public MappingEntity ToEntity { get; set; }
 
@@ -45,15 +47,32 @@ namespace CrmCodeGenerator.VSPackage.Model
                 };
             }
 
+            result.EntityRole = "null";
+            result.SchemaName = Naming.GetProperVariableName(rel.SchemaName);
             result.DisplayName = Naming.GetProperVariableName(rel.SchemaName);
+            if (rel.Entity1LogicalName == rel.Entity2LogicalName)
+            {
+                result.DisplayName = "Referenced" + result.DisplayName;
+                result.EntityRole = "Microsoft.Xrm.Sdk.EntityRole.Referenced";
+            }
             if (result.DisplayName == ThisEntityLogicalName)
+            {
                 result.DisplayName += "1";   // this is what CrmSvcUtil does
+            }
+
             result.HybridName = Naming.GetProperVariableName(rel.SchemaName) + "_NN";  
             result.PrivateName = "_nn" + Naming.GetEntityPropertyPrivateName(rel.SchemaName);
             result.ForeignKey =  Naming.GetProperVariableName(result.Attribute.ToKey);
             result.Type = Naming.GetProperVariableName(result.Attribute.ToEntity);
 
             return result;
+        }
+
+        public object Clone()
+        {
+            var newPerson = (MappingRelationshipMN)this.MemberwiseClone();
+            newPerson.Attribute = (CrmRelationshipAttribute)this.Attribute.Clone();
+            return newPerson;
         }
     }
 }

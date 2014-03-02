@@ -187,19 +187,19 @@ namespace <#= Context.Namespace #>
 	foreach(var attribute in entity.RelationshipsManyToMany)	{
 #>
 		/// <summary>
-		/// N:N <#=attribute.DisplayName#>
+		/// N:N <#=attribute.SchemaName#>
 		/// </summary>
-		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
 		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}

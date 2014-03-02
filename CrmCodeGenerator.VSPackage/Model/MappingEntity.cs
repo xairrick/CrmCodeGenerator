@@ -95,8 +95,16 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.RelationshipsManyToOne = entityMetadata.ManyToOneRelationships.Select(r =>
                 MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
 
-            entity.RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r =>
-                MappingRelationshipMN.Parse(r, entity.LogicalName)).ToArray();
+            var RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r => MappingRelationshipMN.Parse(r, entity.LogicalName)).ToList();
+            var selfReferenced = RelationshipsManyToMany.Where(r => r.Attribute.ToEntity == r.Attribute.FromEntity).ToList();
+            foreach (var referecned in selfReferenced)
+            {
+                var referencing = (MappingRelationshipMN)referecned.Clone();
+                referencing.DisplayName = "Referencing" + Naming.GetProperVariableName(referecned.SchemaName);
+                referencing.EntityRole = "Microsoft.Xrm.Sdk.EntityRole.Referencing";
+                RelationshipsManyToMany.Add(referencing);
+            }
+            entity.RelationshipsManyToMany = RelationshipsManyToMany.OrderBy(r => r.DisplayName).ToArray();
 
             return entity;
         }

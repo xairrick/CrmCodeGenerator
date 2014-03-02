@@ -16,7 +16,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
     [Serializable]
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class CrmRelationshipAttribute : Attribute
+    public class CrmRelationshipAttribute : Attribute, ICloneable
     {
         public string FromEntity { get; set; }
 
@@ -27,6 +27,11 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string ToKey { get; set; }
 
         public string IntersectingEntity { get; set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 
     [Serializable]
