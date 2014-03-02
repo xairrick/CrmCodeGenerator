@@ -174,12 +174,14 @@ namespace <#= Context.Namespace #>
 			{
 				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
-			set
+<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>			
+            set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
 				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
+<# } #> 
 		}
 <#} //END// N:1 Realationships 
 

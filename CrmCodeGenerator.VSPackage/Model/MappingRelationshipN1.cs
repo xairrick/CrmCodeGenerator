@@ -21,11 +21,13 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string EntityRole { get; set; }
         public string Type { get; set; }
         public MappingEntity ToEntity { get; set; }
+        public MappingField Property { get; set; }
 
         public static MappingRelationshipN1 Parse(OneToManyRelationshipMetadata rel, MappingField[] properties)
         {
-            var propertyName =
-                properties.First(p => p.Attribute.LogicalName.ToLower() == rel.ReferencingAttribute.ToLower()).DisplayName;
+            var property = properties.First(p => p.Attribute.LogicalName.ToLower() == rel.ReferencingAttribute.ToLower());
+
+            var propertyName = property.DisplayName;
 
             var result = new MappingRelationshipN1
             {
@@ -45,6 +47,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 PrivateName = "_n1"+ Naming.GetEntityPropertyPrivateName(rel.SchemaName),
                 ForeignKey = propertyName,
                 Type = Naming.GetProperVariableName(rel.ReferencedEntity),
+                Property = property,
                 EntityRole = "null"
             };
 
