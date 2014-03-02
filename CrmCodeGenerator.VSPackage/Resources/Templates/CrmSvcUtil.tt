@@ -29,7 +29,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 
 	[System.Runtime.Serialization.DataContractAttribute()]
-	[Microsoft.Xrm.Sdk.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
+	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
 		public <#=entity.HybridName#>()
@@ -111,7 +111,10 @@ namespace <#= Context.Namespace #>
 				}
 			}
 <# } else { #>
-			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
+			get
+            { 
+                return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); 
+            }
 <# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
 			set 
 			{ 
@@ -136,17 +139,20 @@ namespace <#= Context.Namespace #>
 <#}#>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
-		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
+        /// <summary>
+		/// 1:N <#=attribute.SchemaName#>
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
 		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
@@ -158,21 +164,21 @@ namespace <#= Context.Namespace #>
 	foreach(var attribute in entity.RelationshipsManyToOne)	{
 #>
 		/// <summary>
-		/// N:1 <#=attribute.DisplayName#>
+		/// N:1 <#=attribute.SchemaName#>
 		/// </summary>
-		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.FromKey#>")]
-		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>")]
-		public <#=attribute.ToEntity.HybridName#> Referencing<#=attribute.DisplayName#>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.LogicalName#>")]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		public <#=attribute.ToEntity.HybridName#> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null);
+				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
-				this.OnPropertyChanging("Referencing<#=attribute.DisplayName#>");
-				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", null, value);
-				this.OnPropertyChanged("Referencing<#=attribute.DisplayName#>");
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
 <#} //END// N:1 Realationships 

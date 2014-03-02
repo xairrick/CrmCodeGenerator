@@ -83,10 +83,10 @@ namespace CrmCodeGenerator.VSPackage
                 e.Fields = e.Fields.OrderBy(f => f.DisplayName).ToArray();
 
             foreach (var e in context.Entities)
-                e.RelationshipsOneToMany = e.RelationshipsOneToMany.OrderBy(r => r.DisplayName).ToArray();
+                e.RelationshipsOneToMany = e.RelationshipsOneToMany.OrderBy(r => r.LogicalName).ToArray();
 
             foreach (var e in context.Entities)
-                e.RelationshipsManyToOne = e.RelationshipsManyToOne.OrderBy(r => r.DisplayName).ToArray();
+                e.RelationshipsManyToOne = e.RelationshipsManyToOne.OrderBy(r => r.LogicalName).ToArray();
             return;
         }
 
@@ -134,8 +134,7 @@ namespace CrmCodeGenerator.VSPackage
 
             OnMessage(string.Format("Found {0} entities", selectedEntities.Count));
 
-            var mappedEntities = selectedEntities.Select(e => MappingEntity.Parse(e)).ToList();
-
+            var mappedEntities = selectedEntities.Select(e => MappingEntity.Parse(e)).OrderBy(e => e.DisplayName).ToList();
             ExcludeRelationshipsNotIncluded(mappedEntities);
             foreach (var ent in mappedEntities)
             {

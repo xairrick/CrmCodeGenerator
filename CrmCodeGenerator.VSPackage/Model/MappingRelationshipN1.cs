@@ -13,9 +13,12 @@ namespace CrmCodeGenerator.VSPackage.Model
         public CrmRelationshipAttribute Attribute { get; set; }
 
         public string DisplayName { get; set; }
+        public string SchemaName { get; set; }
+        public string LogicalName { get; set; }
         public string HybridName { get; set; }
         public string ForeignKey  { get; set; }
         public string PrivateName { get; set; }
+        public string EntityRole { get; set; }
         public string Type { get; set; }
         public MappingEntity ToEntity { get; set; }
 
@@ -24,7 +27,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             var propertyName =
                 properties.First(p => p.Attribute.LogicalName.ToLower() == rel.ReferencingAttribute.ToLower()).DisplayName;
 
-            return new MappingRelationshipN1
+            var result = new MappingRelationshipN1
             {
                 Attribute = new CrmRelationshipAttribute
                 {
@@ -34,12 +37,24 @@ namespace CrmCodeGenerator.VSPackage.Model
                     FromKey = rel.ReferencingAttribute,
                     IntersectingEntity = ""
                 },
+
                 DisplayName = Naming.GetProperVariableName(rel.SchemaName),
+                SchemaName = Naming.GetProperVariableName(rel.SchemaName),
+                LogicalName = rel.ReferencingAttribute,
                 HybridName = Naming.GetProperVariableName(rel.SchemaName) + "_N1",
                 PrivateName = "_n1"+ Naming.GetEntityPropertyPrivateName(rel.SchemaName),
                 ForeignKey = propertyName,
-                Type = Naming.GetProperVariableName(rel.ReferencedEntity)
+                Type = Naming.GetProperVariableName(rel.ReferencedEntity),
+                EntityRole = "null"
             };
+
+            if (rel.ReferencedEntity == rel.ReferencingEntity)
+            {
+                result.EntityRole = "Microsoft.Xrm.Sdk.EntityRole.Referencing";
+                result.DisplayName = "Referencing" + result.DisplayName;
+            }
+
+            return result;
         }
     }
 }
