@@ -29,7 +29,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 
 	[System.Runtime.Serialization.DataContractAttribute()]
-	[EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
+	[Microsoft.Xrm.Sdk.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
 		public <#=entity.HybridName#>()
@@ -59,8 +59,8 @@ namespace <#= Context.Namespace #>
 			}
 		}
 
-		[AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
-		public override Guid Id
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
+		public override System.Guid Id
 		{
 			get { return base.Id; }
 			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }

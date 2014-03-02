@@ -76,6 +76,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     }
                 );
 
+            Add_BaseFields(fields);
             AddEnityImageCRM2013(fields);
             AddLookupFields(fields);
 
@@ -100,6 +101,34 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             return entity;
         }
+
+        private static void Add_BaseFields(List<MappingField> fields)
+        {
+            var fieldsIterator = fields.Where(e => e.FieldType == AttributeTypeCode.Money).ToArray();
+            foreach (var moneyattribute in fieldsIterator)
+            {
+                var newAttribute = new MappingField
+                {
+                    Attribute = new CrmPropertyAttribute
+                    {
+                        IsLookup = false,
+                        LogicalName = moneyattribute.Attribute.LogicalName + "_base",
+                        IsEntityReferenceHelper = false
+                    },
+                    TargetTypeForCrmSvcUtil = "Microsoft.Xrm.Sdk.Money",
+                    DisplayName = moneyattribute.DisplayName + "_Base",
+                    HybridName = moneyattribute.HybridName + "_Bame",
+                    FieldType = AttributeTypeCode.Money,
+                    IsValidForUpdate = false,
+                    IsValidForCreate = false,
+                    GetMethod = "",
+                    PrivatePropertyName = moneyattribute.PrivatePropertyName + "_Base"
+                };
+                SafeAddField(fields, newAttribute);
+            }
+        }
+
+
 
         private static void AddLookupFields(List<MappingField> fields)
         {
