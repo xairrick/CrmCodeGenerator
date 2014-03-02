@@ -15,6 +15,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string ForeignKey { get; set; }
         public string LogicalName { get; set; }
         public string SchemaName { get; set; }
+        public string HybridName { get; set; }
         public string PrivateName { get; set; }
         public string EntityRole { get; set; }
         public string Type { get; set; }
@@ -36,10 +37,11 @@ namespace CrmCodeGenerator.VSPackage.Model
                     IntersectingEntity = ""
                 },
                 ForeignKey = propertyName,
-                DisplayName = Naming.GetPluralName(Naming.GetProperVariableName(rel.SchemaName)),
+                DisplayName = Naming.GetProperVariableName(rel.SchemaName),
                 SchemaName = Naming.GetProperVariableName(rel.SchemaName),
                 LogicalName = rel.ReferencingAttribute,
                 PrivateName = Naming.GetEntityPropertyPrivateName(rel.SchemaName),
+                HybridName = Naming.GetPluralName(Naming.GetProperVariableName(rel.SchemaName)),
                 EntityRole = "null",
                 Type = Naming.GetProperVariableName(rel.ReferencingEntity),
             };
