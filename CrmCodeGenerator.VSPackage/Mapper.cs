@@ -38,7 +38,7 @@ namespace CrmCodeGenerator.VSPackage
             }
         }
         #endregion
-        
+
         public Context MapContext()
         {
             var context = new Context();
@@ -93,17 +93,23 @@ namespace CrmCodeGenerator.VSPackage
         internal MappingEntity[] GetEntities(IOrganizationService sdk)
         {
             OnMessage("Gathering metadata, this may take a few minutes...");
-            
+
             //TODO should change this to early binding RetrieveAllEntitiesRequest
             OrganizationRequest request = new OrganizationRequest("RetrieveAllEntities");
-            request.Parameters["EntityFilters"] = EntityFilters.All;   
+            request.Parameters["EntityFilters"] = EntityFilters.All;
             request.Parameters["RetrieveAsIfPublished"] = true;
 
             //var entities = sdk.Execute(request).Results["EntityMetadata"] as EntityMetadata[];
             var results = sdk.Execute(request);
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
-            string[] forceIgnore = new string[] { "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile" };
+            string[] forceIgnore = new string[] {
+                        "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
+                        , "postregarding"  // Not included with CrmSvcUtil 2013
+                        , "postrole"  // Not included with CrmSvcUtil 2013
+                        , "imagedescriptor"  // Not included with CrmSvcUtil 2013
+                        , "owner"   // Not included with CrmSvcUtil 2013
+                            };
 
             var selectedEntities = entities
                 .Where(r =>
@@ -128,7 +134,7 @@ namespace CrmCodeGenerator.VSPackage
 
             if (selectedEntities.Any(r => r.IsActivity == true || r.IsActivityParty == true))
             {
-                if(!selectedEntities.Any(r => r.LogicalName.Equals("activityparty")))
+                if (!selectedEntities.Any(r => r.LogicalName.Equals("activityparty")))
                     selectedEntities.Add(entities.Where(r => r.LogicalName.Equals("activityparty")).Single());
             }
 
