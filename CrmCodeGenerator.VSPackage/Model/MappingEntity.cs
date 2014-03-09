@@ -123,10 +123,12 @@ namespace CrmCodeGenerator.VSPackage.Model
                         LogicalName = moneyattribute.Attribute.LogicalName + "_base",
                         IsEntityReferenceHelper = false
                     },
+                    FieldType = AttributeTypeCode.Money,
                     TargetTypeForCrmSvcUtil = "Microsoft.Xrm.Sdk.Money",
                     DisplayName = moneyattribute.DisplayName + "_Base",
                     HybridName = moneyattribute.HybridName + "_Bame",
-                    FieldType = AttributeTypeCode.Money,
+                    Description = string.Format("The base currency equivalent of the {0} field.", moneyattribute.Label),
+                    Label = moneyattribute.Label + " Base",
                     IsValidForUpdate = false,
                     IsValidForCreate = false,
                     GetMethod = "",

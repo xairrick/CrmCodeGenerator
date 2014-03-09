@@ -27,9 +27,9 @@ namespace <#= Context.Namespace #>
 <#}#>
 	}
 <#}#>
-    /// <summary>
-    /// <#= entity.Description #>
-    /// </summary>
+	/// <summary>
+	/// <#= entity.Description #>
+	/// </summary>
 	[System.Runtime.Serialization.DataContractAttribute()]
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
@@ -72,7 +72,7 @@ namespace <#= Context.Namespace #>
 		}
 <#	foreach(var attribute in entity.Fields)	{#>
 		
-<#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+<# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
 <# if(attribute.Description != "") { #>
 		/// <summary>
 		/// <#=attribute.Description#>
@@ -218,7 +218,6 @@ namespace <#= Context.Namespace #>
 <#} //END// N:N Realationships  #>
 	}
 <#}#>
-	
 
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{

@@ -34,7 +34,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string StateName { get; set; }
         public string TargetTypeForCrmSvcUtil { get; set; }
         public string Description { get; set; }
-
+        public string Label { get; set; }
         public MappingField()
         {
             IsValidForUpdate = false;
@@ -78,6 +78,10 @@ namespace CrmCodeGenerator.VSPackage.Model
             if(attribute.Description != null)
                 if(attribute.Description.UserLocalizedLabel != null)
                     result.Description = attribute.Description.UserLocalizedLabel.Label;
+
+            if (attribute.DisplayName != null)
+                if (attribute.DisplayName.UserLocalizedLabel != null)
+                    result.Label = attribute.DisplayName.UserLocalizedLabel.Label;
 
             result.IsRequired = attribute.RequiredLevel != null && attribute.RequiredLevel.Value == AttributeRequiredLevel.ApplicationRequired;
 
@@ -143,7 +147,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             switch (field.FieldType)
             {
                 case AttributeTypeCode.Picklist:
-                    return "OptionSetValue";
+                    return "Microsoft.Xrm.Sdk.OptionSetValue";
                 case AttributeTypeCode.BigInt:
                     return "System.Nullable<long>";
                 case AttributeTypeCode.Integer:
@@ -151,7 +155,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 case AttributeTypeCode.Boolean:
                     return "System.Nullable<bool>";
                 case AttributeTypeCode.DateTime:
-                    return "System.Nullable<DateTime>";
+                    return "System.Nullable<System.DateTime>";
                 case AttributeTypeCode.Decimal:
                     return "System.Nullable<decimal>";
                 case AttributeTypeCode.Money:
