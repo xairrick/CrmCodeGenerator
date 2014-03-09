@@ -33,11 +33,13 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string HybridName { get; set; }
         public string StateName { get; set; }
         public string TargetTypeForCrmSvcUtil { get; set; }
+        public string Description { get; set; }
 
         public MappingField()
         {
             IsValidForUpdate = false;
             IsValidForCreate = false;
+            Description = "";
         }
         public static MappingField Parse(AttributeMetadata attribute, MappingEntity entity)
         {
@@ -49,7 +51,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsValidForUpdate = (bool)attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
             result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
-
+            
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
@@ -72,6 +74,10 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.DisplayName = Naming.GetProperVariableName(attribute.SchemaName);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
+
+            if(attribute.Description != null)
+                if(attribute.Description.UserLocalizedLabel != null)
+                    result.Description = attribute.Description.UserLocalizedLabel.Label;
 
             result.IsRequired = attribute.RequiredLevel != null && attribute.RequiredLevel.Value == AttributeRequiredLevel.ApplicationRequired;
 
