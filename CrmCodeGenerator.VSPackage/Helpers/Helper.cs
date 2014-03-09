@@ -147,12 +147,11 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             // HOWEVER, If you look at the 'annual' attributes on the annualfiscalcalendar you see it has schema name of Period1  
             // So if the logicalname & schema name don't match use the logical name and try to capitalize it 
             // EXCEPT,  when it's the RequiredAttendees  (i have no idea now CrmSvcUtil know to make that upper case)
+            if (attribute.LogicalName == "requiredattendees")
+                return "RequiredAttendees";  
 
             if(attribute.LogicalName.Equals(attribute.SchemaName, StringComparison.InvariantCultureIgnoreCase))
                 return Clean(attribute.SchemaName);
-
-            if(attribute.LogicalName == "requiredattendees")
-                return "RequiredAttendees" ;  
             
             return Clean(Capitalize(attribute.LogicalName, true));
         }

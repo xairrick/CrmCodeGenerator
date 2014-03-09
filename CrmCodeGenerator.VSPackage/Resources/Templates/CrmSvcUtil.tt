@@ -94,6 +94,7 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
@@ -107,6 +108,7 @@ namespace <#= Context.Namespace #>
 				}
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
+<# } #>
 <# } else if(attribute.IsStateCode) { #>
 			get
 			{
