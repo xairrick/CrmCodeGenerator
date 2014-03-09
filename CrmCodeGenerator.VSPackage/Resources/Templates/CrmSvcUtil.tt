@@ -27,7 +27,9 @@ namespace <#= Context.Namespace #>
 <#}#>
 	}
 <#}#>
-
+    /// <summary>
+    /// <#= entity.Description #>
+    /// </summary>
 	[System.Runtime.Serialization.DataContractAttribute()]
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
@@ -182,14 +184,14 @@ namespace <#= Context.Namespace #>
 			{
 				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
-<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>			
-            set
+<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>
+			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
 				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
-<# } #> 
+<# } #>
 		}
 <#} //END// N:1 Realationships 
 
@@ -204,12 +206,12 @@ namespace <#= Context.Namespace #>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
