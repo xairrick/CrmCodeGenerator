@@ -35,8 +35,8 @@ namespace <#= Context.Namespace #>
 		/// <summary>
 		/// Default Constructor.
 		/// </summary>
-		public <#=entity.HybridName#>()
-			: base(EntityLogicalName)
+		public <#=entity.HybridName#>() : 
+				base(EntityLogicalName)
 		{
 		}
 
@@ -68,10 +68,10 @@ namespace <#= Context.Namespace #>
 			get { return base.Id; }
 			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
 		}
-
 <#	foreach(var attribute in entity.Fields)	{#>
+		
 <#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
-<# if(attribute.Description != "") { #>       
+<# if(attribute.Description != "") { #>
 		/// <summary>
 		/// <#=attribute.Description#>
 		/// </summary>
@@ -121,13 +121,13 @@ namespace <#= Context.Namespace #>
 <# } else { #>
 			get
 			{
-				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); 
+				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>");
 			}
 <# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
-			set 
-			{ 
+			set
+			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
+				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
 <# if(attribute == entity.PrimaryKey) { #>
 				if (value.HasValue)
 				{
