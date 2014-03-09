@@ -65,7 +65,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     entity.Description = entityMetadata.Description.UserLocalizedLabel.Label;
 
             var fields = entityMetadata.Attributes
-                .Where(a => !(a.LogicalName.EndsWith("_base") && a.AttributeType == AttributeTypeCode.Money) && a.AttributeType != AttributeTypeCode.EntityName && a.AttributeOf == null)
+                .Where(a => a.AttributeOf == null)
                 .Select(a => MappingField.Parse(a, entity)).ToList();
 
             fields.ForEach(f =>
@@ -76,7 +76,6 @@ namespace CrmCodeGenerator.VSPackage.Model
                     }
                 );
 
-            Add_BaseFields(fields);
             AddEnityImageCRM2013(fields);
             AddLookupFields(fields);
 
@@ -109,36 +108,6 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             return entity;
         }
-
-        private static void Add_BaseFields(List<MappingField> fields)
-        {
-            var fieldsIterator = fields.Where(e => e.FieldType == AttributeTypeCode.Money).ToArray();
-            foreach (var moneyattribute in fieldsIterator)
-            {
-                var newAttribute = new MappingField
-                {
-                    Attribute = new CrmPropertyAttribute
-                    {
-                        IsLookup = false,
-                        LogicalName = moneyattribute.Attribute.LogicalName + "_base",
-                        IsEntityReferenceHelper = false
-                    },
-                    FieldType = AttributeTypeCode.Money,
-                    TargetTypeForCrmSvcUtil = "Microsoft.Xrm.Sdk.Money",
-                    DisplayName = moneyattribute.DisplayName + "_Base",
-                    HybridName = moneyattribute.HybridName + "_Bame",
-                    Description = string.Format("The base currency equivalent of the {0} field.", moneyattribute.Label),
-                    Label = moneyattribute.Label + " Base",
-                    IsValidForUpdate = false,
-                    IsValidForCreate = false,
-                    GetMethod = "",
-                    PrivatePropertyName = moneyattribute.PrivatePropertyName + "_Base"
-                };
-                SafeAddField(fields, newAttribute);
-            }
-        }
-
-
 
         private static void AddLookupFields(List<MappingField> fields)
         {
