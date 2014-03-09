@@ -32,9 +32,9 @@ namespace <#= Context.Namespace #>
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
-        /// <summary>
-        /// Default Constructor.
-        /// </summary>
+		/// <summary>
+		/// Default Constructor.
+		/// </summary>
 		public <#=entity.HybridName#>()
 			: base(EntityLogicalName)
 		{
@@ -72,12 +72,12 @@ namespace <#= Context.Namespace #>
 <#	foreach(var attribute in entity.Fields)	{#>
 <#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
 <# if(attribute.Description != "") { #>       
-        /// <summary>
-        /// <#=attribute.Description#>
-        /// </summary>
+		/// <summary>
+		/// <#=attribute.Description#>
+		/// </summary>
 <# } #>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
+		public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 <# if(attribute.IsActivityParty) { #>
 			get
@@ -120,9 +120,9 @@ namespace <#= Context.Namespace #>
 			}
 <# } else { #>
 			get
-            {
-                return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); 
-            }
+			{
+				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); 
+			}
 <# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
 			set 
 			{ 
@@ -147,7 +147,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
-        /// <summary>
+		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
