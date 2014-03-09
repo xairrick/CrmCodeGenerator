@@ -31,6 +31,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string PrivatePropertyName { get; set; }
         public string DisplayName { get; set; }
         public string HybridName { get; set; }
+        public string LogicalName { get; set; }
         public string StateName { get; set; }
         public string TargetTypeForCrmSvcUtil { get; set; }
         public string Description { get; set; }
@@ -71,6 +72,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             result.IsPrimaryKey = attribute.IsPrimaryId == true;
 
+            result.LogicalName = attribute.LogicalName;
             result.DisplayName = Naming.GetProperVariableName(attribute);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);

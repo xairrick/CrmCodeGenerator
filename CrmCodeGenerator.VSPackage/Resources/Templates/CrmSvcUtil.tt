@@ -64,7 +64,7 @@ namespace <#= Context.Namespace #>
 			}
 		}
 
-		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.PrimaryKey.LogicalName#>")]
 		public override System.Guid Id
 		{
 			get { return base.Id; }
