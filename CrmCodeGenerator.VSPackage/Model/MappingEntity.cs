@@ -26,19 +26,12 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
         }
 
-        public string DisplayName
-        {
-            get;
-            set;
-        }
+        public string DisplayName { get; set; }
         public string HybridName { get; set; }
         public string StateName { get; set; }
         public MappingField PrimaryKey { get; set; }
-        public string PrimaryKeyProperty
-        {
-            get;
-            set;
-        }
+        public string PrimaryKeyProperty { get; set; }
+        public string Description { get; set; }
 
         public string Plural
         {
@@ -46,6 +39,10 @@ namespace CrmCodeGenerator.VSPackage.Model
             {
                 return Naming.GetPluralName(DisplayName);
             }
+        }
+        public MappingEntity()
+        {
+            Description = "";
         }
 
         public static MappingEntity Parse(EntityMetadata entityMetadata)
@@ -63,8 +60,12 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.HybridName = Naming.GetProperHybridName(entityMetadata.SchemaName, entityMetadata.LogicalName);
             entity.StateName = entity.HybridName + "State";
 
+            if (entityMetadata.Description != null)
+                if (entityMetadata.Description.UserLocalizedLabel != null)
+                    entity.Description = entityMetadata.Description.UserLocalizedLabel.Label;
+
             var fields = entityMetadata.Attributes
-                .Where(a => !(a.LogicalName.EndsWith("_base") && a.AttributeType == AttributeTypeCode.Money) && a.AttributeType != AttributeTypeCode.EntityName && a.AttributeOf == null)
+                .Where(a => a.AttributeOf == null)
                 .Select(a => MappingField.Parse(a, entity)).ToList();
 
             fields.ForEach(f =>
@@ -75,7 +76,6 @@ namespace CrmCodeGenerator.VSPackage.Model
                     }
                 );
 
-            Add_BaseFields(fields);
             AddEnityImageCRM2013(fields);
             AddLookupFields(fields);
 
@@ -108,34 +108,6 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             return entity;
         }
-
-        private static void Add_BaseFields(List<MappingField> fields)
-        {
-            var fieldsIterator = fields.Where(e => e.FieldType == AttributeTypeCode.Money).ToArray();
-            foreach (var moneyattribute in fieldsIterator)
-            {
-                var newAttribute = new MappingField
-                {
-                    Attribute = new CrmPropertyAttribute
-                    {
-                        IsLookup = false,
-                        LogicalName = moneyattribute.Attribute.LogicalName + "_base",
-                        IsEntityReferenceHelper = false
-                    },
-                    TargetTypeForCrmSvcUtil = "Microsoft.Xrm.Sdk.Money",
-                    DisplayName = moneyattribute.DisplayName + "_Base",
-                    HybridName = moneyattribute.HybridName + "_Bame",
-                    FieldType = AttributeTypeCode.Money,
-                    IsValidForUpdate = false,
-                    IsValidForCreate = false,
-                    GetMethod = "",
-                    PrivatePropertyName = moneyattribute.PrivatePropertyName + "_Base"
-                };
-                SafeAddField(fields, newAttribute);
-            }
-        }
-
-
 
         private static void AddLookupFields(List<MappingField> fields)
         {

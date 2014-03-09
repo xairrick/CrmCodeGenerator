@@ -1,6 +1,23 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.4
+[BUG] corrected AuditId so that it is now read only attribute on Audit (to match CrmSvcUtil.exe)
+[BUG] corrected the StateCode on the AsyncOperation  entity to allow it to be R/W (to match CrmSvcUtil.exe)
+[BUG] Fixed attribute name for the ID attribute of Activities  (it should be activityid not appoinmentid)
+[BUG] AllParties needed to be made read only.
+[BUG] Proper case for RequiredAttendees
+[BUG] fixed the Attribute names for the period attributes on the fiscal calendars  (now using annual/quarter/month instead of period/periodN/periodN)
+[BUG] fixed attribute name of self-referencing 1:N relationship (eg "account_parent_account")
+[UPDATE] Added ObjectTypeCode to entities that have them (eg address, annotation, queueitem, etc.)
+[REFACTOR] removed the extra code that was added to created the Base fields (it wasn't needed, they were jsut being excluded)
+[BUG] Added fully qualified class name to OptionSetValue
+[UPDATE] Added Entity/Class summary to CrmSvcUtil template
+[UPDATE] Replaced spaces with tabs in the CrmSvcUtil template
+[UPDATE] Replaced all spaces in the CrmSvcUtil template with tabs
+[UPDATE] Added summary to the attributes.
+
+
 Version 0.8.3.3
 [BUG] fixed bug that was allowing a relationship to be updatable when the underlying property was not updatable.
 [UPDATE] Added Referenced/Referencing relationships for self referencing N:N relationships (eg campaigncampaign_association)

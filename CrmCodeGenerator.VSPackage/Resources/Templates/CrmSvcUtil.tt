@@ -26,13 +26,18 @@ namespace <#= Context.Namespace #>
 <#}#>
 	}
 <#}#>
-
+	/// <summary>
+	/// <#= entity.Description #>
+	/// </summary>
 	[System.Runtime.Serialization.DataContractAttribute()]
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
-		public <#=entity.HybridName#>()
-			: base(EntityLogicalName)
+		/// <summary>
+		/// Default Constructor.
+		/// </summary>
+		public <#=entity.HybridName#>() : 
+				base(EntityLogicalName)
 		{
 		}
 
@@ -58,17 +63,22 @@ namespace <#= Context.Namespace #>
 			}
 		}
 
-		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.PrimaryKey.LogicalName#>")]
 		public override System.Guid Id
 		{
 			get { return base.Id; }
 			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
 		}
-
 <#	foreach(var attribute in entity.Fields)	{#>
-<#		if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+		
+<# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+<# if(attribute.Description != "") { #>
+		/// <summary>
+		/// <#=attribute.Description#>
+		/// </summary>
+<# } #>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
+		public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 <# if(attribute.IsActivityParty) { #>
 			get
@@ -83,6 +93,7 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
@@ -96,6 +107,7 @@ namespace <#= Context.Namespace #>
 				}
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
+<# } #>
 <# } else if(attribute.IsStateCode) { #>
 			get
 			{
@@ -109,16 +121,32 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				if ((value == null))
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", null);
+				}
+				else
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.OptionSetValue(((int)(value))));
+				}
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<# } #>
 <# } else { #>
 			get
-            { 
-                return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); 
-            }
-<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
-			set 
-			{ 
+			{
+				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>");
+			}
+<# // if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
+			set
+			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
+				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
 <# if(attribute == entity.PrimaryKey) { #>
 				if (value.HasValue)
 				{
@@ -138,20 +166,20 @@ namespace <#= Context.Namespace #>
 <#}#>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
-        /// <summary>
+		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
-		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
 		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
@@ -173,14 +201,14 @@ namespace <#= Context.Namespace #>
 			{
 				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
-<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>			
-            set
+<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>
+			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
 				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
-<# } #> 
+<# } #>
 		}
 <#} //END// N:1 Realationships 
 
@@ -195,19 +223,18 @@ namespace <#= Context.Namespace #>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>",  <#=attribute.EntityRole#>, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
 <#} //END// N:N Realationships  #>
 	}
 <#}#>
-	
 
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{

@@ -141,6 +141,20 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             }
         }
 
+        public static string GetProperVariableName(Microsoft.Xrm.Sdk.Metadata.AttributeMetadata attribute)
+        {
+            // Normally we want to use the SchemaName as it has the capitalized names (Which is what CrmSvcUtil.exe does).  
+            // HOWEVER, If you look at the 'annual' attributes on the annualfiscalcalendar you see it has schema name of Period1  
+            // So if the logicalname & schema name don't match use the logical name and try to capitalize it 
+            // EXCEPT,  when it's the RequiredAttendees  (i have no idea now CrmSvcUtil know to make that upper case)
+            if (attribute.LogicalName == "requiredattendees")
+                return "RequiredAttendees";  
+
+            if(attribute.LogicalName.Equals(attribute.SchemaName, StringComparison.InvariantCultureIgnoreCase))
+                return Clean(attribute.SchemaName);
+            
+            return Clean(Capitalize(attribute.LogicalName, true));
+        }
         public static string GetProperVariableName(string p)
         {
             if (string.IsNullOrWhiteSpace(p))

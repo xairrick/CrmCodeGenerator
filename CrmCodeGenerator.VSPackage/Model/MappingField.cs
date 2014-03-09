@@ -31,13 +31,16 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string PrivatePropertyName { get; set; }
         public string DisplayName { get; set; }
         public string HybridName { get; set; }
+        public string LogicalName { get; set; }
         public string StateName { get; set; }
         public string TargetTypeForCrmSvcUtil { get; set; }
-
+        public string Description { get; set; }
+        public string Label { get; set; }
         public MappingField()
         {
             IsValidForUpdate = false;
             IsValidForCreate = false;
+            Description = "";
         }
         public static MappingField Parse(AttributeMetadata attribute, MappingEntity entity)
         {
@@ -49,7 +52,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsValidForUpdate = (bool)attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
             result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
-
+            
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
@@ -69,9 +72,18 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             result.IsPrimaryKey = attribute.IsPrimaryId == true;
 
-            result.DisplayName = Naming.GetProperVariableName(attribute.SchemaName);
+            result.LogicalName = attribute.LogicalName;
+            result.DisplayName = Naming.GetProperVariableName(attribute);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
+
+            if(attribute.Description != null)
+                if(attribute.Description.UserLocalizedLabel != null)
+                    result.Description = attribute.Description.UserLocalizedLabel.Label;
+
+            if (attribute.DisplayName != null)
+                if (attribute.DisplayName.UserLocalizedLabel != null)
+                    result.Label = attribute.DisplayName.UserLocalizedLabel.Label;
 
             result.IsRequired = attribute.RequiredLevel != null && attribute.RequiredLevel.Value == AttributeRequiredLevel.ApplicationRequired;
 
@@ -137,7 +149,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             switch (field.FieldType)
             {
                 case AttributeTypeCode.Picklist:
-                    return "OptionSetValue";
+                    return "Microsoft.Xrm.Sdk.OptionSetValue";
                 case AttributeTypeCode.BigInt:
                     return "System.Nullable<long>";
                 case AttributeTypeCode.Integer:
@@ -145,7 +157,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 case AttributeTypeCode.Boolean:
                     return "System.Nullable<bool>";
                 case AttributeTypeCode.DateTime:
-                    return "System.Nullable<DateTime>";
+                    return "System.Nullable<System.DateTime>";
                 case AttributeTypeCode.Decimal:
                     return "System.Nullable<decimal>";
                 case AttributeTypeCode.Money:
