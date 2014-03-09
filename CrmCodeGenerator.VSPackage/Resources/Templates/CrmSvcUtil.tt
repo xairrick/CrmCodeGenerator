@@ -122,12 +122,28 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				if ((value == null))
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", null);
+				}
+				else
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.OptionSetValue(((int)(value))));
+				}
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<# } #>
 <# } else { #>
 			get
 			{
 				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>");
 			}
-<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
+<# // if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
