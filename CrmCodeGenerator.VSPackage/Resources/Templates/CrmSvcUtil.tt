@@ -18,7 +18,6 @@ namespace <#= Context.Namespace #>
 // RelationshipsOneToMany: <#=entity.RelationshipsOneToMany.Length#>
 // RelationshipsManyToOne:<#=entity.RelationshipsManyToOne.Length#>
 
-	[System.Runtime.Serialization.DataContractAttribute()]
 	public enum <#=entity.StateName#>
 	{
 <# foreach (var itm in entity.States.Items) { #>
