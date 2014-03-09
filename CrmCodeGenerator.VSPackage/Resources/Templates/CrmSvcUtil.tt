@@ -152,17 +152,17 @@ namespace <#= Context.Namespace #>
 		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
-		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.DisplayName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
 		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
 			get
 			{
-				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>);
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
 			}
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.DisplayName#>", <#=attribute.EntityRole#>, value);
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
