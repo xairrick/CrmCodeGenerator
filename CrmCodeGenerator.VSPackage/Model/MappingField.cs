@@ -71,7 +71,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             result.IsPrimaryKey = attribute.IsPrimaryId == true;
 
-            result.DisplayName = Naming.GetProperVariableName(attribute.SchemaName);
+            result.DisplayName = Naming.GetProperVariableName(attribute);
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
 
