@@ -67,7 +67,7 @@ namespace <#= Context.Namespace #>
 		public override System.Guid Id
 		{
 			get { return base.Id; }
-			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
+            set { base.Id = value; }
 		}
 <#	foreach(var attribute in entity.Fields)	{#>
 		

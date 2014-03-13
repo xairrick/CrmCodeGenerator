@@ -1,6 +1,9 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.4.1
+[BUG] Fixed bug in CrmSvcUtil template that cause problem with readonly entities 
+
 Version 0.8.4
 [BUG] corrected AuditId so that it is now read only attribute on Audit (to match CrmSvcUtil.exe)
 [BUG] corrected the StateCode on the AsyncOperation  entity to allow it to be R/W (to match CrmSvcUtil.exe)
