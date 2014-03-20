@@ -186,6 +186,8 @@ namespace CrmCodeGenerator.VSPackage.Model
                     return "string";
                 case AttributeTypeCode.PartyList:
                     return "System.Collections.Generic.IEnumerable<ActivityParty>";
+                case AttributeTypeCode.ManagedProperty:
+                    return "Microsoft.Xrm.Sdk.BooleanManagedProperty";
                 default:
                     return "object";
             }
