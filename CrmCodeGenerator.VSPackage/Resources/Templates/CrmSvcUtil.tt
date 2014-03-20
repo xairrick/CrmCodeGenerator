@@ -14,18 +14,17 @@ namespace <#= Context.Namespace #>
 <# foreach (var entity in Context.Entities) { #>
 <#	if (entity.States != null) { #>
 
-// entity.Fields:<#=entity.Fields.Length#>
-// RelationshipsOneToMany: <#=entity.RelationshipsOneToMany.Length#>
-// RelationshipsManyToOne:<#=entity.RelationshipsManyToOne.Length#>
-
+	[System.Runtime.Serialization.DataContractAttribute()]
 	public enum <#=entity.StateName#>
 	{
 <# foreach (var itm in entity.States.Items) { #>
+		
 		[System.Runtime.Serialization.EnumMemberAttribute()]
 		<#=itm.Name#> = <#=itm.Value#>,
 <#}#>
 	}
 <#}#>
+
 	/// <summary>
 	/// <#= entity.Description #>
 	/// </summary>
@@ -33,6 +32,7 @@ namespace <#= Context.Namespace #>
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
+		
 		/// <summary>
 		/// Default Constructor.
 		/// </summary>
@@ -40,13 +40,15 @@ namespace <#= Context.Namespace #>
 				base(EntityLogicalName)
 		{
 		}
-
+		
 		public const string EntityLogicalName = "<#=entity.LogicalName#>";
+		
 		public const int EntityTypeCode = <#=entity.TypeCode#>;
-	
+		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
 		public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
-	
+		
 		private void OnPropertyChanged(string propertyName)
 		{
 			if ((this.PropertyChanged != null))
@@ -54,7 +56,7 @@ namespace <#= Context.Namespace #>
 				this.PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 			}
 		}
-	
+		
 		private void OnPropertyChanging(string propertyName)
 		{
 			if ((this.PropertyChanging != null))
@@ -62,16 +64,22 @@ namespace <#= Context.Namespace #>
 				this.PropertyChanging(this, new System.ComponentModel.PropertyChangingEventArgs(propertyName));
 			}
 		}
-
+		
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.PrimaryKey.LogicalName#>")]
 		public override System.Guid Id
 		{
-			get { return base.Id; }
-            set { base.Id = value; }
+			get
+			{
+				return base.Id;
+			}
+			set
+			{
+				base.Id = value;
+			}
 		}
 <#	foreach(var attribute in entity.Fields)	{#>
-		
 <# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
+		
 <# if(attribute.Description != "") { #>
 		/// <summary>
 		/// <#=attribute.Description#>
@@ -84,7 +92,8 @@ namespace <#= Context.Namespace #>
 			get
 			{
 				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("<#=attribute.Attribute.LogicalName#>");
-				if (((collection != null) && (collection.Entities != null)))
+				if (((collection != null) 
+							&& (collection.Entities != null)))
 				{
 					return System.Linq.Enumerable.Cast<ActivityParty>(collection.Entities);
 				}
@@ -166,6 +175,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 <# //BEGIN// 1:N Realationships  #>
 <#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
+		
 		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
@@ -190,6 +200,7 @@ namespace <#= Context.Namespace #>
 //BEGIN// N:1 Realationships 
 	foreach(var attribute in entity.RelationshipsManyToOne)	{
 #>
+		
 		/// <summary>
 		/// N:1 <#=attribute.SchemaName#>
 		/// </summary>
@@ -215,6 +226,7 @@ namespace <#= Context.Namespace #>
 //BEGIN// N:N Realationships 
 	foreach(var attribute in entity.RelationshipsManyToMany)	{
 #>
+		
 		/// <summary>
 		/// N:N <#=attribute.SchemaName#>
 		/// </summary>

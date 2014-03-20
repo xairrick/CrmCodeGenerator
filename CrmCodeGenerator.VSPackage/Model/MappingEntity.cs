@@ -173,6 +173,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                     HybridName = "EntityImage",
                     TargetTypeForCrmSvcUtil = "byte[]",
                     IsValidForUpdate = true,
+                    Description = "",  // TODO there is an Description for this entityimage, Need to figure out how to read it from the server
                     GetMethod = ""
             };
             SafeAddField(fields, image);
@@ -191,6 +192,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 FieldType = AttributeTypeCode.BigInt,
                 IsValidForUpdate = false,
                 IsValidForCreate = false,
+                Description = " ",  // CrmSvcUtil provides an empty description for this EntityImage_TimeStamp
                 GetMethod = ""
             };
             SafeAddField(fields, imageTimestamp);
@@ -209,6 +211,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 FieldType = AttributeTypeCode.String,
                 IsValidForUpdate = false,
                 IsValidForCreate = false,
+                Description = " ",   // CrmSvcUtil provides an empty description for this EntityImage_URL
                 GetMethod = ""
             };
             SafeAddField(fields, imageURL);
