@@ -104,7 +104,13 @@ namespace CrmCodeGenerator.VSPackage
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
             string[] forceIgnore = new string[] {
-                        "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
+                        "businessprocessflowinstance" // Not included with CrmSvcUtil 2013  http://community.dynamics.com/crm/f/117/t/117642.aspx
+                        , "businessunitmap" // Not included with CrmSvcUtil 2013
+                        , "clientupdate"  // Not included with CrmSvcUtil 2013
+                        , "commitment" // Not included with CrmSvcUtil 2013
+                        , "competitoraddress" //Not Included with CrmSvcUtil 2013
+                        , "complexcontrol" //Not Included with CrmSvcUtil 2013
+                        , "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
                         , "postregarding"  // Not included with CrmSvcUtil 2013
                         , "postrole"  // Not included with CrmSvcUtil 2013
                         , "imagedescriptor"  // Not included with CrmSvcUtil 2013
