@@ -22,6 +22,8 @@ namespace CrmCodeGenerator.VSPackage.Model
         public bool IsValidForUpdate { get; set; }
         public bool IsActivityParty { get; set; }
         public bool IsStateCode { get; set; }
+        public bool IsDeprecated { get; set; }
+        public string DeprecatedVersion {get ; set; }
         public string LookupSingleType { get; set; }
         bool IsPrimaryKey { get; set; }
         public bool IsRequired { get; set; }
@@ -40,6 +42,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         {
             IsValidForUpdate = false;
             IsValidForCreate = false;
+            IsDeprecated = false;
             Description = "";
         }
         public static MappingField Parse(AttributeMetadata attribute, MappingEntity entity)
@@ -52,6 +55,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsValidForUpdate = (bool)attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
             result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
+            result.DeprecatedVersion = attribute.DeprecatedVersion;
+            result.IsDeprecated = !string.IsNullOrWhiteSpace(attribute.DeprecatedVersion); 
             
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =

@@ -86,6 +86,9 @@ namespace <#= Context.Namespace #>
 		/// </summary>
 <# } #>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
+<# if(attribute.IsDeprecated) { #>
+		[System.ObsoleteAttribute()]
+<# } #>
 		public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 <# if(attribute.IsActivityParty) { #>
