@@ -182,6 +182,38 @@ namespace <#= Context.Namespace #>
 		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
+<# if(attribute.SchemaName == "calendar_calendar_rules" || attribute.SchemaName = "service_calendar_rules") { #>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("calendarrules")]
+		public System.Collections.Generic.IEnumerable<CalendarRule> CalendarRules
+		{
+			get
+			{
+				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("calendarrules");
+				if (((collection != null) 
+							&& (collection.Entities != null)))
+				{
+					return System.Linq.Enumerable.Cast<CalendarRule>(collection.Entities);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				this.OnPropertyChanging("CalendarRules");
+				if ((value == null))
+				{
+					this.SetAttributeValue("calendarrules", value);
+				}
+				else
+				{
+					this.SetAttributeValue("calendarrules", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
+				}
+				this.OnPropertyChanged("CalendarRules");
+			}
+		}
+<# } else { #>
 		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
 		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
 		{
@@ -196,6 +228,7 @@ namespace <#= Context.Namespace #>
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
+<# } #>
 <#}#>
 <# 
 //END// 1:N Realationships

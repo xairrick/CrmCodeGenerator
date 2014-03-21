@@ -164,9 +164,6 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             if (string.IsNullOrWhiteSpace(p))
                 return "Empty";
 
-            if (p.Equals("calendar_calendar_rules"))
-                return "CalendarRules"; 
-
             //return Clean(Capitalize(p, true));
             return Clean(p);
         }
