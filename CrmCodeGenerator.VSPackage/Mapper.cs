@@ -110,6 +110,12 @@ namespace CrmCodeGenerator.VSPackage
                         , "commitment" // Not included with CrmSvcUtil 2013
                         , "competitoraddress" //Not Included with CrmSvcUtil 2013
                         , "complexcontrol" //Not Included with CrmSvcUtil 2013
+                        , "dependencynode" //Not Included with CrmSvcUtil 2013
+                        , "displaystringmap" // Not Included with CrmSvcUtil 2013
+                        , "documentindex"  // Not Included with CrmSvcUtil 2013
+                        , "emailhash"  // Not Included with CrmSvcUtil 2013
+                        , "emailsearch" // Not Included with CrmSvcUtil 2013
+                        , "filtertemplate" // Not Included with CrmSvcUtil 2013
                         , "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
                         , "postregarding"  // Not included with CrmSvcUtil 2013
                         , "postrole"  // Not included with CrmSvcUtil 2013
