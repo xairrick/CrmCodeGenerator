@@ -182,7 +182,7 @@ namespace <#= Context.Namespace #>
 		/// <summary>
 		/// 1:N <#=attribute.SchemaName#>
 		/// </summary>
-<# if(attribute.SchemaName == "calendar_calendar_rules" || attribute.SchemaName = "service_calendar_rules") { #>
+<# if(attribute.SchemaName == "calendar_calendar_rules" || attribute.SchemaName == "service_calendar_rules") { #>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("calendarrules")]
 		public System.Collections.Generic.IEnumerable<CalendarRule> CalendarRules
 		{
