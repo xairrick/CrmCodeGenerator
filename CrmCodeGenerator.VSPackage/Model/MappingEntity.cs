@@ -32,6 +32,13 @@ namespace CrmCodeGenerator.VSPackage.Model
         public MappingField PrimaryKey { get; set; }
         public string PrimaryKeyProperty { get; set; }
         public string Description { get; set; }
+        public string DescriptionXmlSafe 
+        {
+            get
+            {
+                return Naming.XmlEscape(Description);
+            }
+        }
 
         public string Plural
         {

@@ -37,6 +37,14 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string StateName { get; set; }
         public string TargetTypeForCrmSvcUtil { get; set; }
         public string Description { get; set; }
+        public string DescriptionXmlSafe
+        {
+            get
+            {
+                return Naming.XmlEscape(Description);
+            }
+        }
+
         public string Label { get; set; }
         public MappingField()
         {

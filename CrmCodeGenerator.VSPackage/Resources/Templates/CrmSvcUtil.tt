@@ -26,7 +26,7 @@ namespace <#= Context.Namespace #>
 <#}#>
 
 	/// <summary>
-	/// <#= entity.Description #>
+	/// <#=entity.DescriptionXmlSafe.Replace("\n", " \r\n\t/// ") #>
 	/// </summary>
 	[System.Runtime.Serialization.DataContractAttribute()]
 	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
@@ -82,7 +82,7 @@ namespace <#= Context.Namespace #>
 		
 <# if(attribute.Description != "") { #>
 		/// <summary>
-		/// <#=attribute.Description#>
+		/// <#=attribute.DescriptionXmlSafe.Replace("\n", " \r\n\t\t/// ") #>
 		/// </summary>
 <# } #>
 		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace CrmCodeGenerator.VSPackage.Helpers
 {
@@ -182,6 +183,14 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         public static string GetEntityPropertyPrivateName(string p)
         {
             return "_" + Clean(Capitalize(p, false));
+        }
+
+        public static string XmlEscape(string unescaped)
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlNode node = doc.CreateElement("root");
+            node.InnerText = unescaped;
+            return node.InnerXml;
         }
     }
 }
