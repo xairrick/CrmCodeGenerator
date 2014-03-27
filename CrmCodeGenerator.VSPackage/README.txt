@@ -1,6 +1,18 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.8.5
+[UPDATE] XML escaped the descriptions so they can be added into the summary of an class/property
+[UPDATE] force-excluded entities that aren't included in CrmSvcUtil.exe
+[BUG] typo in CrmSvcUtil.tt
+[UPDATE] corrected CalendarRules by mirroring what CrmSvcUtil.exe does
+[UPDATE] added rule to convert attribute name from calendar_calendar_rules to CalendarRules
+[UPDATE] update Attribute type for ManagedProperties (eg ConnectionRole.IsCustomizable)
+[UPDATE] fixed the case on the 'From' attribute
+[UPDATE] excluded some more entities that aren't included with CrmSvcUtil.exe
+[UPDATE] added support deprecated attributes
+[UPDATE] cosmetic changes to CrmSrvUtil template to make it look more like the output from CrmSrvUtil.exe
+
 Version 0.8.4.1
 [BUG] Fixed bug in CrmSvcUtil template that cause problem with readonly entities 
 
