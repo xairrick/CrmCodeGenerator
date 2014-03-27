@@ -31,6 +31,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string StateName { get; set; }
         public MappingField PrimaryKey { get; set; }
         public string PrimaryKeyProperty { get; set; }
+        public string PrimaryNameAttribute { get; set; }
         public string Description { get; set; }
         public string DescriptionXmlSafe 
         {
@@ -95,6 +96,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
             entity.PrimaryKeyProperty = entity.PrimaryKey.DisplayName;
+            entity.PrimaryNameAttribute = entityMetadata.PrimaryNameAttribute;
 
             entity.RelationshipsOneToMany = entityMetadata.OneToManyRelationships.Select(r =>
                 MappingRelationship1N.Parse(r, entity.Fields)).ToArray();
