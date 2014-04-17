@@ -26,9 +26,17 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     {
         public Context Context;
         Settings settings;
-        public Login(Settings settings)
+        public Login(EnvDTE80.DTE2 dte, Settings settings)
         {
             InitializeComponent();
+
+            var main = dte.GetMainWindow();
+            Loaded += delegate
+            {
+                this.Left = main.Left + (main.Width / 2) - (this.Width / 2);
+                this.Top = main.Top + (main.Height / 2) - (this.Height / 2);
+            };
+
             this.settings = settings;
             this.txtPassword.Password = settings.Password;  // PasswordBox doesn't allow 2 way binding
             this.DataContext = settings;

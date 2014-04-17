@@ -38,6 +38,12 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             InitializeComponent();
 
+            var main = dte.GetMainWindow();
+            Loaded += delegate
+            {
+                this.Left = main.Left + (main.Width / 2) - (this.Width / 2);
+                this.Top = main.Top + (main.Height / 2) - (this.Height / 2);
+            };
 
             _Props = new AddTemplateProp();
             this.DataContext = Props;

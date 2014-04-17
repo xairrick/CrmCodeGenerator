@@ -116,7 +116,8 @@ namespace CrmCodeGenerator.VSPackage
 
             if (context == null)
             {
-                var m = new Login(settings);
+                var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE80.DTE2;
+                var m = new Login(dte, settings);
                 m.ShowDialog();
                 context = m.Context;
                 if (context == null)
