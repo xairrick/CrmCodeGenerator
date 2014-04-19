@@ -105,7 +105,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
 
             var RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r => MappingRelationshipMN.Parse(r, entity.LogicalName)).ToList();
-            var selfReferenced = RelationshipsManyToMany.Where(r => r.Attribute.ToEntity == r.Attribute.FromEntity).ToList();
+            var selfReferenced = RelationshipsManyToMany.Where(r => r.IsSelfReferenced).ToList();
             foreach (var referecned in selfReferenced)
             {
                 var referencing = (MappingRelationshipMN)referecned.Clone();

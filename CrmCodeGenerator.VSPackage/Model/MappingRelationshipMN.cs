@@ -19,6 +19,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string PrivateName { get; set; }
         public string EntityRole { get; set; }
         public string Type {get; set; }
+        public bool IsSelfReferenced { get; set; }
         public MappingEntity ToEntity { get; set; }
 
         public static MappingRelationshipMN Parse(ManyToManyRelationshipMetadata rel, string ThisEntityLogicalName)
@@ -50,10 +51,11 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.EntityRole = "null";
             result.SchemaName = Naming.GetProperVariableName(rel.SchemaName);
             result.DisplayName = Naming.GetProperVariableName(rel.SchemaName);
-            if (rel.Entity1LogicalName == rel.Entity2LogicalName)
+            if (rel.Entity1LogicalName == rel.Entity2LogicalName && rel.Entity1LogicalName == ThisEntityLogicalName)
             {
                 result.DisplayName = "Referenced" + result.DisplayName;
                 result.EntityRole = "Microsoft.Xrm.Sdk.EntityRole.Referenced";
+                result.IsSelfReferenced = true;
             }
             if (result.DisplayName == ThisEntityLogicalName)
             {
