@@ -74,7 +74,11 @@ namespace <#= Context.Namespace #>
 			}
 			set
 			{
+<# if(entity.PrimaryKey.IsValidForCreate) { #>
+				this.<#=entity.PrimaryKey.DisplayName#> = value;
+<# } else { #>
 				base.Id = value;
+<# } #>
 			}
 		}
 <#	foreach(var attribute in entity.Fields)	{#>
