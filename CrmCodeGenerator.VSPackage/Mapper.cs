@@ -9,6 +9,7 @@ using System.IO;
 using CrmCodeGenerator.VSPackage.Model;
 using CrmCodeGenerator.VSPackage.T4;
 using Microsoft.Xrm.Sdk.Messages;
+using CrmCodeGenerator.VSPackage.Helpers;
 
 namespace CrmCodeGenerator.VSPackage
 {
@@ -103,45 +104,15 @@ namespace CrmCodeGenerator.VSPackage
             var results = sdk.Execute(request);
             var entities = results["EntityMetadata"] as EntityMetadata[];
 
-            string[] forceIgnore = new string[] {
-                        "businessprocessflowinstance" // Not included with CrmSvcUtil 2013  http://community.dynamics.com/crm/f/117/t/117642.aspx
-                        , "businessunitmap" // Not included with CrmSvcUtil 2013
-                        , "clientupdate"  // Not included with CrmSvcUtil 2013
-                        , "commitment" // Not included with CrmSvcUtil 2013
-                        , "competitoraddress" //Not Included with CrmSvcUtil 2013
-                        , "complexcontrol" //Not Included with CrmSvcUtil 2013
-                        , "dependencynode" //Not Included with CrmSvcUtil 2013
-                        , "displaystringmap" // Not Included with CrmSvcUtil 2013
-                        , "documentindex"  // Not Included with CrmSvcUtil 2013
-                        , "emailhash"  // Not Included with CrmSvcUtil 2013
-                        , "emailsearch" // Not Included with CrmSvcUtil 2013
-                        , "filtertemplate" // Not Included with CrmSvcUtil 2013
-                        , "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
-                        , "postregarding"  // Not included with CrmSvcUtil 2013
-                        , "postrole"  // Not included with CrmSvcUtil 2013
-                        , "imagedescriptor"  // Not included with CrmSvcUtil 2013
-                        , "owner"   // Not included with CrmSvcUtil 2013
-                            };
-
             var selectedEntities = entities
-                .Where(r =>
+                .Where(r => this.Settings.EntitiesSelected.Contains(r.LogicalName))
+                    .Where(r =>
                     {
-                        bool include = false;
-
-                        // this is helpful to generate code for just few entities, so we exlcude all and include just a few
-                        //if (!string.IsNullOrWhiteSpace(this.Settings.EntitiesToIncludeString))
-                        //{
-                        include = this.Settings.EntitiesSelected.Contains(r.LogicalName);
-                        //}
-                        //else
-                        //{
-                        //    include =  && !this.Settings.EntitiesToExclude.Contains(r.LogicalName) // make sure it's not forcefully excluded
-                        //        (r.IsCustomEntity == true || r.IsCustomizable.Value); // ignore the system entities, these are never used
-                        //}
-                        return include;
-
+                        if (this.Settings.IncludeNonStandard)
+                            return true;
+                        else
+                            return !EntityHelper.NonStandard.Contains(r.LogicalName);
                     })
-                    .Where(r => !forceIgnore.Contains(r.LogicalName))
                     .ToList();
 
             if (selectedEntities.Any(r => r.IsActivity == true || r.IsActivityParty == true))

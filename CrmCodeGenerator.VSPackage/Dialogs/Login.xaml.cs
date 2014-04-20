@@ -108,7 +108,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                                 if (settings.IncludeNonStandard)
                                     return true;
                                 else
-                                    return !settings.NonStandard.Contains(e.LogicalName);
+                                    return !EntityHelper.NonStandard.Contains(e.LogicalName);
                             });
 
             var origSelection = settings.EntitiesToIncludeString;
@@ -146,7 +146,8 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void IncludeNonStandardEntities_Click(object sender, RoutedEventArgs e)
         {
-            RefreshEntityList();
+            if(_AllEntities != null)
+                RefreshEntityList();  // if we don't have the entire list of entities don't do anything (eg if they havn't entered a username & password)
         }
 
         private void Logon_Click(object sender, RoutedEventArgs e)
