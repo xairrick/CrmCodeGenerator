@@ -1,6 +1,21 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.9
+CrmSvcUtil.tt is ready for production. All generated classes has been compared to(and match) the Output from CrmSvcUtil.exe
+[UPDATE] added more entities to the list of Non-Standard
+[UPDATE] updated Attributes1 to match naming used by CrmSvcUtil.exe
+[UPDATE] removed double underscore on Event, Namespace, & Abstract attributes to match CrmSvcUtil.exe
+[UPDATE] removed background color on checkbox
+[UPDATE] converted attributes name for SecondHalf & FirstHalf to match the title case used by CrmSvcUtil.exe
+[BUG] fixed name for InvoiceState.Closed
+[REFACTOR] Moved NonStandard entities to helper class
+[UPDATE] Added the ability to exclude the non-standard entities with a checkbox.
+[UPDATE] added summaries to XrmServiceContext class in CrmSvcUtil.tt
+[BUG] fixed false positive on self-referencing many to many relationships (eg CampaignItem  Campaign-to-Campaign is not self-referencing)
+[UPDATE] to only use base.Id on read only entities  (this is a template change if you have an old template delete and use the one from this version)
+[UPDATE] Dialogs now open in the center of Visual Studio
+
 Version 0.8.5
 [UPDATE] XML escaped the descriptions so they can be added into the summary of an class/property
 [UPDATE] force-excluded entities that aren't included in CrmSvcUtil.exe
