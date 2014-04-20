@@ -147,7 +147,7 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             // Normally we want to use the SchemaName as it has the capitalized names (Which is what CrmSvcUtil.exe does).  
             // HOWEVER, If you look at the 'annual' attributes on the annualfiscalcalendar you see it has schema name of Period1  
             // So if the logicalname & schema name don't match use the logical name and try to capitalize it 
-            // EXCEPT,  when it's RequiredAttendees/From/To/Cc/Bcc  (i have no idea how CrmSvcUtil knows to make those upper case)
+            // EXCEPT,  when it's RequiredAttendees/From/To/Cc/Bcc/SecondHalf/FirstHalf  (i have no idea how CrmSvcUtil knows to make those upper case)
             if (attribute.LogicalName == "requiredattendees")
                 return "RequiredAttendees";
             if (attribute.LogicalName == "from")
@@ -157,7 +157,15 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             if (attribute.LogicalName == "cc")
                 return "Cc";
             if (attribute.LogicalName == "bcc")
-                return "Bcc";  
+                return "Bcc";
+            if (attribute.LogicalName == "firsthalf")
+                return "FirstHalf";
+            if (attribute.LogicalName == "secondhalf")
+                return "SecondHalf";
+            if (attribute.LogicalName == "firsthalf_base")
+                return "FirstHalf_Base";
+            if (attribute.LogicalName == "secondhalf_base")
+                return "SecondHalf_Base";
 
             if(attribute.LogicalName.Equals(attribute.SchemaName, StringComparison.InvariantCultureIgnoreCase))
                 return Clean(attribute.SchemaName);
@@ -168,7 +176,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         {
             if (string.IsNullOrWhiteSpace(p))
                 return "Empty";
-
+            if (p == "Closed (deprecated)")   //Invoice
+                return "Closed";
             //return Clean(Capitalize(p, true));
             return Clean(p);
         }
