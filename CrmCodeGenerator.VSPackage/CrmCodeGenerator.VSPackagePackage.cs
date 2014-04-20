@@ -134,6 +134,7 @@ namespace CrmCodeGenerator.VSPackage
         private const string _strDomain = "Domain";
         private const string _strOrganization = "Organization";
         private const string _strIncludeEntities = "IncludeEntities";
+        private const string _strIncludeNonStandard = "IncludeNonStandard";
 
         #region Solution Properties
         public int QuerySaveSolutionProps(IVsHierarchy pHierarchy, VSQUERYSAVESLNPROPS[] pqsspSave)
@@ -169,6 +170,7 @@ namespace CrmCodeGenerator.VSPackage
             //pPropBag.Write(_strPassword, settings.Password);
             pPropBag.Write(_strOrganization, settings.CrmOrg);
             pPropBag.Write(_strIncludeEntities, settings.EntitiesToIncludeString);
+            pPropBag.Write(_strIncludeNonStandard, settings.IncludeNonStandard.ToString());
             settings.Dirty = false;
 
             return VSConstants.S_OK;
@@ -183,6 +185,13 @@ namespace CrmCodeGenerator.VSPackage
                 settings.Domain = pPropBag.Read(_strDomain, "");
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
+                
+                 bool flag;
+                 if (Boolean.TryParse(pPropBag.Read(_strIncludeNonStandard, "false"), out flag))
+                     settings.IncludeNonStandard = flag;
+                 else
+                     settings.IncludeNonStandard = false;
+
                 settings.Dirty = false;
             }
             return VSConstants.S_OK;

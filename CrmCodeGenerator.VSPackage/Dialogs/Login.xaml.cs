@@ -26,6 +26,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     {
         public Context Context;
         Settings settings;
+        private EntityMetadata[] _AllEntities;
         public Login(EnvDTE80.DTE2 dte, Settings settings)
         {
             InitializeComponent();
@@ -68,7 +69,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Orgs", true);
-            
+
             try
             {
                 var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
@@ -90,36 +91,29 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             var origCursor = this.Cursor;
             UpdateStatus("Refreshing Entities...", true);
 
-            try
-            {
-                EntitiesRefreshCore();
-            }
-            catch (Exception ex)
-            {
-                var error = "[ERROR] " +  ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
-                UpdateStatus(error);
-                UpdateStatus("Unable to refresh entities, check connection information");
-            }
+            RefreshEntityList();
 
             Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
             UpdateStatus("");
         }
-
-
-        private void EntitiesRefreshCore()
+        
+        private void RefreshEntityList()
         {
-            var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-
-            RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
+            if (_AllEntities == null)
             {
-                EntityFilters = EntityFilters.Default,
-                RetrieveAsIfPublished = true,
-            };
-            RetrieveAllEntitiesResponse response = (RetrieveAllEntitiesResponse)connection.Execute(request);
+                Update_AllEntities();
+            }
+            var entities = _AllEntities.Where(e =>
+                            {
+                                if (settings.IncludeNonStandard)
+                                    return true;
+                                else
+                                    return !settings.NonStandard.Contains(e.LogicalName);
+                            });
 
             var origSelection = settings.EntitiesToIncludeString;
             var newList = new ObservableCollection<string>();
-            foreach (var entity in response.EntityMetadata.OrderBy(e => e.LogicalName))
+            foreach (var entity in entities.OrderBy(e => e.LogicalName))
             {
                 newList.Add(entity.LogicalName);
             }
@@ -127,6 +121,34 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             settings.EntityList = newList;
             settings.EntitiesToIncludeString = origSelection;
         }
+        private void Update_AllEntities()
+        {
+            try
+            {
+                var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+
+                RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
+                {
+                    EntityFilters = EntityFilters.Default,
+                    RetrieveAsIfPublished = true,
+                };
+                RetrieveAllEntitiesResponse response = (RetrieveAllEntitiesResponse)connection.Execute(request);
+                _AllEntities = response.EntityMetadata;
+            }
+            catch (Exception ex)
+            {
+                var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
+                UpdateStatus(error);
+                UpdateStatus("Unable to refresh entities, check connection information");
+            }
+
+        }
+
+        private void IncludeNonStandardEntities_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshEntityList();
+        }
+
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;   // PasswordBox doesn't allow 2 way binding, so we have to manually read it
@@ -162,11 +184,11 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void UpdateStatus(string message, bool working = false)
         {
-            if(working)
+            if (working)
                 Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
 
             Dispatcher.BeginInvoke(new Action(() => { Status.Update(message); }));
-            
+
             System.Windows.Forms.Application.DoEvents();
             //TODO  something with the message
         }

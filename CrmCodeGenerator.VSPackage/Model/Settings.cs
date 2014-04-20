@@ -11,6 +11,29 @@ namespace CrmCodeGenerator.VSPackage.Model
 {
     public class Settings : INotifyPropertyChanged
     {
+
+        public string[] NonStandard = new string[] {
+                        "attachment" // Not included with CrmSvcUtil 6.0.0001.0061
+		                , "authorizationserver" // Not included with CrmSvcUtil 6.0.0001.0061
+                        , "businessprocessflowinstance" // Not included with CrmSvcUtil 2013  http://community.dynamics.com/crm/f/117/t/117642.aspx
+                        , "businessunitmap" // Not included with CrmSvcUtil 2013
+                        , "clientupdate"  // Not included with CrmSvcUtil 2013
+                        , "commitment" // Not included with CrmSvcUtil 2013
+                        , "competitoraddress" //Not Included with CrmSvcUtil 2013
+                        , "complexcontrol" //Not Included with CrmSvcUtil 2013
+                        , "dependencynode" //Not Included with CrmSvcUtil 2013
+                        , "displaystringmap" // Not Included with CrmSvcUtil 2013
+                        , "documentindex"  // Not Included with CrmSvcUtil 2013
+                        , "emailhash"  // Not Included with CrmSvcUtil 2013
+                        , "emailsearch" // Not Included with CrmSvcUtil 2013
+                        , "filtertemplate" // Not Included with CrmSvcUtil 2013
+                        , "sqlencryptionaudit", "subscriptionsyncinfo", "subscriptiontrackingdeletedobject", "applicationfile"
+                        , "postregarding"  // Not included with CrmSvcUtil 2013
+                        , "postrole"  // Not included with CrmSvcUtil 2013
+                        , "imagedescriptor"  // Not included with CrmSvcUtil 2013
+                        , "owner"   // Not included with CrmSvcUtil 2013
+                            };
+
         public Settings()
         {
             EntityList = new ObservableCollection<string>();
@@ -46,6 +69,8 @@ namespace CrmCodeGenerator.VSPackage.Model
         private string _CrmSdkUrl;
         private string _Template;
         private string _T4Path;
+        private bool _IncludeNonStandard;
+
         private string _ProjectName;
         public string ProjectName
         {
@@ -254,6 +279,19 @@ namespace CrmCodeGenerator.VSPackage.Model
                 SetField(ref _EntitiesSelected, value);
             }
         }
+
+        public bool IncludeNonStandard
+        {
+            get
+            {
+                return _IncludeNonStandard;
+            }
+            set
+            {
+                SetField(ref _IncludeNonStandard, value);
+            }
+        }
+
 
         public string Namespace
         {
