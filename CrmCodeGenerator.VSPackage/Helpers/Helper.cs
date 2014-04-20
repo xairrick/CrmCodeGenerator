@@ -67,7 +67,7 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         {
             if (p.Equals("public", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("private", StringComparison.InvariantCultureIgnoreCase)
-                || p.Equals("event", StringComparison.InvariantCultureIgnoreCase)
+                // || p.Equals("event", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("single", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("new", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("partial", StringComparison.InvariantCultureIgnoreCase)
@@ -77,8 +77,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 || p.Equals("case", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("object", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("global", StringComparison.InvariantCultureIgnoreCase)
-                || p.Equals("namespace", StringComparison.InvariantCultureIgnoreCase)
-                || p.Equals("abstract", StringComparison.InvariantCultureIgnoreCase)
+                // || p.Equals("namespace", StringComparison.InvariantCultureIgnoreCase)
+                // || p.Equals("abstract", StringComparison.InvariantCultureIgnoreCase)
                 )
             {
                 return "__" + p;
@@ -166,6 +166,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 return "FirstHalf_Base";
             if (attribute.LogicalName == "secondhalf_base")
                 return "SecondHalf_Base";
+            if (attribute.LogicalName == "attributes")
+                return "Attributes1";
 
             if(attribute.LogicalName.Equals(attribute.SchemaName, StringComparison.InvariantCultureIgnoreCase))
                 return Clean(attribute.SchemaName);
