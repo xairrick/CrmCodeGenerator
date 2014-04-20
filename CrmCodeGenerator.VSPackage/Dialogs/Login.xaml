@@ -33,6 +33,7 @@
         <Style TargetType="CheckBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
             <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
+            <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
             <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
@@ -46,6 +47,7 @@
             <Setter Property="Margin" Value="5,0,0,0" />
         </Style>
         <Style TargetType="TextBlock">
+            <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
             <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
@@ -119,7 +121,7 @@
         </Grid>
 
         <Label Content="Include Entities" />
-        <Grid>
+        <Grid Background="Transparent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -130,12 +132,18 @@
             </Grid.ColumnDefinitions>
             <control:MultiSelectComboBox Grid.Column="0" Width="auto" ItemsSource="{Binding Path=EntityList, Mode=TwoWay}" SelectedItems="{Binding Path=EntitiesSelected, Mode=TwoWay}" x:Name="Entities" ToolTip="{Binding Path=Text, RelativeSource={RelativeSource Self}}"/>
             <Button Grid.Column="1" x:Name="EntitiesRefresh"  HorizontalAlignment="Right" Content="Refresh" Click="EntitiesRefresh_Click"  CommandParameter="{Binding ElementName=txtPassword}"></Button>
-            <CheckBox Grid.Column="0" Grid.Row="1" Content="Include NON-Standard Entities" IsChecked="{Binding Path=IncludeNonStandard, Mode=TwoWay}" Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click">
+            <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=IncludeNonStandard, Mode=TwoWay}" Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click" ToolTipService.ShowDuration="30000">
+                <!--  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}" -->
+                <TextBlock Background="Transparent">
+                    Include NON-Standard Entities
+                </TextBlock>
                 <CheckBox.ToolTip>
                     <ToolTip>
                         <StackPanel>
                             <TextBlock FontWeight="Bold">NON-Standard Entities</TextBlock>
-                            <TextBlock>The CRMSRVUTIL.exe program excludes a lot of NON-Standard entities.&#x0a;  Some are clearly not meant for end user development (eg replicationbacklog, multientitysearchentities, integrationstatus).&#x0a;  Some may be useful, but would have to be considered "Microsoft Unsupported" (eg attachment, notification, subscription).</TextBlock>
+                            <TextBlock>The CrmSvcUtil.exe program excludes a lot of NON-Standard entities.<LineBreak /> 
+                                Some are clearly not meant for end user development (eg replicationbacklog, multientitysearchentities, integrationstatus).<LineBreak /> 
+                                Some may be useful, but would have to be considered "Microsoft Unsupported" (eg attachment, notification, subscription).</TextBlock>
                         </StackPanel>
                     </ToolTip>
                 </CheckBox.ToolTip>
