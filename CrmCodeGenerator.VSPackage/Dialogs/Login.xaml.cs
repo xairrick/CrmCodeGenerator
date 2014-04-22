@@ -157,14 +157,11 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             try
             {
-                UpdateStatus("Connection to CRM...", true);
+                
+                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
                 if (settings.CrmConnection == null)
-                {
-                    settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
-                    if (settings.CrmConnection == null)
-                        throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
-                }
-
+                     throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
+                
                 UpdateStatus("Mapping entities, this might take a while depending on CRM server/connection speed... ", true);
                 var mapper = new Mapper(settings);
                 Context = mapper.MapContext();
