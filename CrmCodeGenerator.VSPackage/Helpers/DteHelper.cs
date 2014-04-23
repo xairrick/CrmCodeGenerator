@@ -131,5 +131,9 @@ namespace CrmCodeGenerator.VSPackage.Helpers
 
             return (System.Windows.Window)hwndSource.RootVisual;
         }
+        public static System.Windows.Forms.Screen CurrentScreen(this Window window)
+        {
+            return System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)window.Left, (int)window.Top));
+        }
     }
 }
