@@ -185,12 +185,12 @@ namespace CrmCodeGenerator.VSPackage
                 settings.Domain = pPropBag.Read(_strDomain, "");
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
-                
-                 bool flag;
-                 if (Boolean.TryParse(pPropBag.Read(_strIncludeNonStandard, "false"), out flag))
-                     settings.IncludeNonStandard = flag;
-                 else
-                     settings.IncludeNonStandard = false;
+
+                bool flag;
+                if (Boolean.TryParse(pPropBag.Read(_strIncludeNonStandard, "false"), out flag))
+                    settings.IncludeNonStandard = flag;
+                else
+                    settings.IncludeNonStandard = false;
 
                 settings.Dirty = false;
             }
@@ -323,47 +323,55 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             var m = new AddTemplate(dte2, project);
-            if (m.ShowDialog() == false)
-                return;
-
-            var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), m.Props.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
-
-            if (System.IO.File.Exists(templatePath))
+            m.Closed += (sender, e) =>
             {
-                var results = VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "'" + templatePath + "' already exists, are you sure you want to overwrite?", "Overwrite", OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                if (results != 6)
+                // logic here Will be called after the child window is closed
+                if (((AddTemplate)sender).Canceled == true)
                     return;
-            }
 
-            var templateSamplesPath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates");
-            var defaultTemplatePath = System.IO.Path.Combine(templateSamplesPath, m.DefaultTemplate.SelectedValue.ToString());
-            if (!System.IO.File.Exists(defaultTemplatePath))
-            {
-                throw new UserException("T4Path: " + defaultTemplatePath + " is missing or you can access it.");
-            }
+                var templatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(project.GetProjectDirectory(), m.Props.Template));  //GetFullpath removes un-needed relative paths  (ie if you are putting something in the solution directory)
 
-            var dir = System.IO.Path.GetDirectoryName(templatePath);
-            if (!System.IO.Directory.Exists(dir))
-            {
-                System.IO.Directory.CreateDirectory(dir);
-            }
+                if (System.IO.File.Exists(templatePath))
+                {
+                    var results = VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "'" + templatePath + "' already exists, are you sure you want to overwrite?", "Overwrite", OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    if (results != 6)
+                        return;
 
-            Status.Update("Adding " + templatePath + " to project");
-            // When you add a TT file to visual studio, it will try to automatically compile it, 
-            // if there is error (and there will be error because we have custom generator) 
-            // the error will persit until you close Visual Studio. The solution is to add 
-            // a blank file, then overwrite it
-            // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
-            var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
-            System.IO.File.Copy(blankTemplatePath, templatePath, true);
+                    //if the window is open we have to close it before we overwrite it.
+                    var pi = project.GetProjectItem(m.Props.Template);
+                    if(pi.Document != null)
+                        pi.Document.Close(vsSaveChanges.vsSaveChangesNo);
+                }
 
-            var p = project.ProjectItems.AddFromFile(templatePath);
-            p.Properties.SetValue("CustomTool", "");
+                var templateSamplesPath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates");
+                var defaultTemplatePath = System.IO.Path.Combine(templateSamplesPath, m.DefaultTemplate.SelectedValue.ToString());
+                if (!System.IO.File.Exists(defaultTemplatePath))
+                {
+                    throw new UserException("T4Path: " + defaultTemplatePath + " is missing or you can access it.");
+                }
 
-            System.IO.File.Copy(defaultTemplatePath, templatePath, true);
-            p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
+                var dir = System.IO.Path.GetDirectoryName(templatePath);
+                if (!System.IO.Directory.Exists(dir))
+                {
+                    System.IO.Directory.CreateDirectory(dir);
+                }
 
-            m = null;
+                Status.Update("Adding " + templatePath + " to project");
+                // When you add a TT file to visual studio, it will try to automatically compile it, 
+                // if there is error (and there will be error because we have custom generator) 
+                // the error will persit until you close Visual Studio. The solution is to add 
+                // a blank file, then overwrite it
+                // http://stackoverflow.com/questions/17993874/add-template-file-without-custom-tool-to-project-programmatically
+                var blankTemplatePath = System.IO.Path.Combine(DteHelper.AssemblyDirectory(), @"Resources\Templates\Blank.tt");
+                System.IO.File.Copy(blankTemplatePath, templatePath, true);
+
+                var p = project.ProjectItems.AddFromFile(templatePath);
+                p.Properties.SetValue("CustomTool", "");
+
+                System.IO.File.Copy(defaultTemplatePath, templatePath, true);
+                p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
+            };
+            m.Show();
         }
 
         #region SolutionEvents

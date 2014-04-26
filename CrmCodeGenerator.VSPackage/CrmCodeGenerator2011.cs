@@ -118,8 +118,10 @@ namespace CrmCodeGenerator.VSPackage
             {
                 var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE80.DTE2;
                 var m = new Login(dte, settings);
-                m.ShowDialog();
+                m.ShowDialog();  
                 context = m.Context;
+                m = null;
+                
                 if (context == null)
                 {
                     // TODO  pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
@@ -133,6 +135,7 @@ namespace CrmCodeGenerator.VSPackage
                     }
                     return VSConstants.S_OK;
                 }
+                
             }
 
             Status.Update("Generating code from template... ");

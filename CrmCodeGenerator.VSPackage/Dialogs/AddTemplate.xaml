@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:control="clr-namespace:CrmCodeGenerator.Controls;assembly=CrmCodeGenerator.Controls"
         xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.11.0"
-        Title="Add CRM Code Generator Template to Project" Width="300" SizeToContent="Height" Loaded="Window_Loaded">
+        Title="Add CRM Code Generator Template to Project" Width="300" SizeToContent="Height" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <Style TargetType="Grid" >
             <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>

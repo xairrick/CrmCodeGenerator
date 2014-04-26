@@ -28,15 +28,25 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     /// </summary>
     public partial class Login : Window
     {
+        
         public Context Context;
         Settings settings;
         private EntityMetadata[] _AllEntities;
+        private bool _StillOpen = true;
+        public bool StillOpen
+        {
+            get
+            {
+                return _StillOpen;
+            }
+        }
         public Login(EnvDTE80.DTE2 dte, Settings settings)
         {
             InitializeComponent();
 
             var main = dte.GetMainWindow();
-            Loaded += delegate  { this.CenterWindow(main); };
+            this.Owner = main;
+            //Loaded += delegate  { this.CenterWindow(main); };
 
             this.settings = settings;
             this.txtPassword.Password = settings.Password;  // PasswordBox doesn't allow 2 way binding
@@ -61,7 +71,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            _StillOpen = false;
             this.Close();
         }
 
@@ -169,7 +179,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                 Context = mapper.MapContext();
 
                 settings.Dirty = true;  //  TODO Because the EntitiesSelected is a collection, the Settings class can't see when an item is added or removed.  when I have more time need to get the observable to bubble up.
-                this.DialogResult = true;
+                _StillOpen = false;
                 this.Close();
             }
             catch (Exception ex)

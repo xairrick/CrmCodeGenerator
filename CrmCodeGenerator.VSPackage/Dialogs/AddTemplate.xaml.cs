@@ -34,12 +34,21 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             }
         }
 
+        private bool _Canceled = true;
+        public bool Canceled {
+            get
+            {
+                return _Canceled;
+            }
+        }
+
         public AddTemplate(EnvDTE80.DTE2 dte, Project project)
         {
             InitializeComponent();
 
             var main = dte.GetMainWindow();
-            Loaded += delegate { this.CenterWindow(main); };
+            this.Owner = main;
+            //Loaded += delegate { this.CenterWindow(main); };
 
             _Props = new AddTemplateProp();
             this.DataContext = Props;
@@ -62,13 +71,15 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            //this.DialogResult = false;
+            _Canceled = true;
             this.Close();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            //this.DialogResult = true;
+            _Canceled = false;
             this.Close();
         }
     }
