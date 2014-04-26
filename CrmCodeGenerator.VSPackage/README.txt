@@ -1,6 +1,12 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.9.1
+[BUG] fixed bug when existing template window was open in the editor and it was being replaced.
+[UPDATE] changed AddTemplate window to non-modal (Login window has to be modal)
+[BUG] fixed window position to center on Visual Studio
+[BUG] removed connection cache as it may not renew itself (eg leave VS open over night and you wont be able to re-generate code)
+
 Version 0.9
 CrmSvcUtil.tt is ready for production. All generated classes has been compared to(and match) the Output from CrmSvcUtil.exe
 [UPDATE] added more entities to the list of Non-Standard
