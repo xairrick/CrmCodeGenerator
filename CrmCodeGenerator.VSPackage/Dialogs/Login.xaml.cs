@@ -36,38 +36,14 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             InitializeComponent();
 
             var main = dte.GetMainWindow();
-            Loaded += delegate
-            {
-                double newLeft = main.Left + (main.Width / 2) - (this.Width / 2);
-                double newTop = main.Top + (main.Height / 2) - (this.Height / 2);
-                this.Left = newLeft;
-                this.Top = newTop;
-                if (main.WindowState == System.Windows.WindowState.Maximized)
-                {
-                    var screen = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)this.Left, (int)this.Top));
-
-                    var left = screen.WorkingArea.Left;
-                    var top = screen.WorkingArea.Top;
-                    var width = screen.WorkingArea.Width;
-                    var height = screen.WorkingArea.Height;
-
-                    newLeft = left + (width / 2) - (this.Width / 2);
-                    newTop = top + (height / 2) - (this.Height / 2);
-
-                    UpdateStatus(left + " " + width + " " + this.Width + " = " + newLeft);
-                    UpdateStatus(top + " " + height + " " + this.Height + " = " + newTop);
-
-                    this.Left = newLeft;
-                    this.Top = newTop;
-                }
-            };
+            Loaded += delegate  { this.CenterWindow(main); };
 
             this.settings = settings;
             this.txtPassword.Password = settings.Password;  // PasswordBox doesn't allow 2 way binding
             this.DataContext = settings;
         }
-        
 
+        
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
