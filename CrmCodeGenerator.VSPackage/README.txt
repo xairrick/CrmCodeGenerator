@@ -1,6 +1,11 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.9.2
+[BUG] Reverted back to modal dialog, as Visual Studio will send control keys (eg backspace, home, end) to text editor window with a modeless dialog.
+[BUG] now showing the wait cursor sooner when logging into CRM to retrieve the entities.
+[UPDATE] updated templates so that they would convert any Carriage Return in descriptions to CRLF
+
 Version 0.9.1
 [BUG] fixed bug when existing template window was open in the editor and it was being replaced.
 [UPDATE] changed AddTemplate window to non-modal (Login window has to be modal)
