@@ -371,7 +371,7 @@ namespace CrmCodeGenerator.VSPackage
                 System.IO.File.Copy(defaultTemplatePath, templatePath, true);
                 p.Properties.SetValue("CustomTool", typeof(CrmCodeGenerator2011).Name);
             };
-            m.Show();
+            m.ShowModal();
         }
 
         #region SolutionEvents
