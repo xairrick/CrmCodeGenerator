@@ -26,7 +26,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     /// <summary>
     /// Interaction logic for Login.xaml
     /// </summary>
-    public partial class Login : Window
+    public partial class Login : Microsoft.VisualStudio.PlatformUI.DialogWindow
     {
         
         public Context Context;

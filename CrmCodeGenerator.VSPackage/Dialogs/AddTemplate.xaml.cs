@@ -23,7 +23,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
     /// <summary>
     /// Interaction logic for AddTemplate.xaml
     /// </summary>
-    public partial class AddTemplate : System.Windows.Window
+    public partial class AddTemplate : Microsoft.VisualStudio.PlatformUI.DialogWindow
     {
         private AddTemplateProp _Props;
         public AddTemplateProp Props
