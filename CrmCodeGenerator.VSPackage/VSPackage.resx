@@ -132,7 +132,7 @@
     <value>CrmCodeGenerator.VSPackage</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Allows you to generate CRM 2011/2013 schema files based on a T4 template.  Blah Blah Blah Blah</value>
+    <value>Allows you to generate CRM 2011/2013 schema files based on a T4 template. Much like the CrmSrvUtil.exe, but with a lot of enhancements.</value>
   </data>
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Package.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

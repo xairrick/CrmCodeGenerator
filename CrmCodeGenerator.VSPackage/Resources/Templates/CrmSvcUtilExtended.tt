@@ -11,35 +11,44 @@ using Microsoft.Xrm.Sdk.Client;
 [assembly: Microsoft.Xrm.Sdk.Client.ProxyTypesAssemblyAttribute()]
 namespace <#= Context.Namespace #>
 {
-<# foreach (var entity in Context.Entities)
-{
-#>
-<# if (entity.States != null) { #>
+<# foreach (var entity in Context.Entities) { #>
+<#	if (entity.States != null) { #>
+
 	[System.Runtime.Serialization.DataContractAttribute()]
 	public enum <#=entity.StateName#>
 	{
 <# foreach (var itm in entity.States.Items) { #>
+		
 		[System.Runtime.Serialization.EnumMemberAttribute()]
 		<#=itm.Name#> = <#=itm.Value#>,
 <#}#>
 	}
 <#}#>
 
+	/// <summary>
+	/// <#=entity.DescriptionXmlSafe.Replace("\n","").Replace("\r", " \r\n\t/// ") #>
+	/// </summary>
 	[System.Runtime.Serialization.DataContractAttribute()]
-	[EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
+	[Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute("<#=entity.LogicalName#>")]
 	public partial class <#=entity.HybridName#> : Microsoft.Xrm.Sdk.Entity, System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
 	{
-		public <#=entity.HybridName#>()
-			: base(EntityLogicalName)
+		
+		/// <summary>
+		/// Default Constructor.
+		/// </summary>
+		public <#=entity.HybridName#>() : 
+				base(EntityLogicalName)
 		{
 		}
-
+		
 		public const string EntityLogicalName = "<#=entity.LogicalName#>";
+		
 		public const int EntityTypeCode = <#=entity.TypeCode#>;
-	
+		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
 		public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
-	
+		
 		private void OnPropertyChanged(string propertyName)
 		{
 			if ((this.PropertyChanged != null))
@@ -47,7 +56,7 @@ namespace <#= Context.Namespace #>
 				this.PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 			}
 		}
-	
+		
 		private void OnPropertyChanging(string propertyName)
 		{
 			if ((this.PropertyChanging != null))
@@ -55,26 +64,43 @@ namespace <#= Context.Namespace #>
 				this.PropertyChanging(this, new System.ComponentModel.PropertyChangingEventArgs(propertyName));
 			}
 		}
-
-		[AttributeLogicalNameAttribute("<#=entity.LogicalName#>id")]
-		public override Guid Id
+		
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=entity.PrimaryKey.LogicalName#>")]
+		public override System.Guid Id
 		{
-			get { return base.Id; }
-			set { this.<#=entity.PrimaryKey.DisplayName#> = value; }
+			get
+			{
+				return base.Id;
+			}
+			set
+			{
+<# if(entity.PrimaryKey.IsValidForCreate) { #>
+				this.<#=entity.PrimaryKey.DisplayName#> = value;
+<# } else { #>
+				base.Id = value;
+<# } #>
+			}
 		}
-
-<#
-	foreach(var attribute in entity.Fields)	{#>
+<#	foreach(var attribute in entity.Fields)	{#>
 <# if(attribute.Attribute.IsEntityReferenceHelper != true) { #>
-
-		[AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
-        public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
+		
+<# if(attribute.Description != "") { #>
+		/// <summary>
+		/// <#=attribute.DescriptionXmlSafe.Replace("\n","").Replace("\r", " \r\n\t\t/// ") #>
+		/// </summary>
+<# } #>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.Attribute.LogicalName#>")]
+<# if(attribute.IsDeprecated) { #>
+		[System.ObsoleteAttribute()]
+<# } #>
+		public <#=attribute.TargetTypeForCrmSvcUtil#> <#=attribute.DisplayName#>
 		{
 <# if(attribute.IsActivityParty) { #>
 			get
 			{
 				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("<#=attribute.Attribute.LogicalName#>");
-				if (((collection != null) && (collection.Entities != null)))
+				if (((collection != null) 
+							&& (collection.Entities != null)))
 				{
 					return System.Linq.Enumerable.Cast<ActivityParty>(collection.Entities);
 				}
@@ -83,6 +109,7 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
 			set
 			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
@@ -96,6 +123,7 @@ namespace <#= Context.Namespace #>
 				}
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
+<# } #>
 <# } else if(attribute.IsStateCode) { #>
 			get
 			{
@@ -109,13 +137,32 @@ namespace <#= Context.Namespace #>
 					return null;
 				}
 			}
-<# } else { #>
-			get { return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>"); }
-<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
-			set 
-			{ 
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
+			set
+			{
 				this.OnPropertyChanging("<#=attribute.DisplayName#>");
-				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value); 
+				if ((value == null))
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", null);
+				}
+				else
+				{
+					this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", new Microsoft.Xrm.Sdk.OptionSetValue(((int)(value))));
+				}
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<# } #>
+<# } else { #>
+			get
+			{
+				return this.GetAttributeValue<<#=attribute.TargetTypeForCrmSvcUtil#>>("<#=attribute.Attribute.LogicalName#>");
+			}
+<# // if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true || attribute == entity.PrimaryKey) { #>
+<# if(attribute.IsValidForUpdate == true || attribute.IsValidForCreate == true) { #>
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetAttributeValue("<#=attribute.Attribute.LogicalName#>", value);
 <# if(attribute == entity.PrimaryKey) { #>
 				if (value.HasValue)
 				{
@@ -133,6 +180,111 @@ namespace <#= Context.Namespace #>
 		}
 <#}#>
 <#}#>
+<# //BEGIN// 1:N Realationships  #>
+<#	foreach(var attribute in entity.RelationshipsOneToMany)	{#>
+		
+		/// <summary>
+		/// 1:N <#=attribute.SchemaName#>
+		/// </summary>
+<# if(attribute.SchemaName == "calendar_calendar_rules" || attribute.SchemaName == "service_calendar_rules") { #>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("calendarrules")]
+		public System.Collections.Generic.IEnumerable<CalendarRule> CalendarRules
+		{
+			get
+			{
+				Microsoft.Xrm.Sdk.EntityCollection collection = this.GetAttributeValue<Microsoft.Xrm.Sdk.EntityCollection>("calendarrules");
+				if (((collection != null) 
+							&& (collection.Entities != null)))
+				{
+					return System.Linq.Enumerable.Cast<CalendarRule>(collection.Entities);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				this.OnPropertyChanging("CalendarRules");
+				if ((value == null))
+				{
+					this.SetAttributeValue("calendarrules", value);
+				}
+				else
+				{
+					this.SetAttributeValue("calendarrules", new Microsoft.Xrm.Sdk.EntityCollection(new System.Collections.Generic.List<Microsoft.Xrm.Sdk.Entity>(value)));
+				}
+				this.OnPropertyChanged("CalendarRules");
+			}
+		}
+<# } else { #>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
+		{
+			get
+			{
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+		}
+<# } #>
+<#}#>
+<# 
+//END// 1:N Realationships
+
+//BEGIN// N:1 Realationships 
+	foreach(var attribute in entity.RelationshipsManyToOne)	{
+#>
+		
+		/// <summary>
+		/// N:1 <#=attribute.SchemaName#>
+		/// </summary>
+		[Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute("<#=attribute.LogicalName#>")]
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		public <#=attribute.ToEntity.HybridName#> <#=attribute.DisplayName#>
+		{
+			get
+			{
+				return this.GetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
+			}
+<# if(attribute.Property.IsValidForCreate || attribute.Property.IsValidForUpdate) { #>
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntity<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+<# } #>
+		}
+<#} //END// N:1 Realationships 
+
+//BEGIN// N:N Realationships 
+	foreach(var attribute in entity.RelationshipsManyToMany)	{
+#>
+		
+		/// <summary>
+		/// N:N <#=attribute.SchemaName#>
+		/// </summary>
+		[Microsoft.Xrm.Sdk.RelationshipSchemaNameAttribute("<#=attribute.SchemaName#>"<#=attribute.EntityRole=="null" ? "" :", " + attribute.EntityRole#>)]
+		public System.Collections.Generic.IEnumerable<<#=attribute.ToEntity.HybridName#>> <#=attribute.DisplayName#>
+		{
+			get
+			{
+				return this.GetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>);
+			}
+			set
+			{
+				this.OnPropertyChanging("<#=attribute.DisplayName#>");
+				this.SetRelatedEntities<<#=attribute.ToEntity.HybridName#>>("<#=attribute.SchemaName#>", <#=attribute.EntityRole#>, value);
+				this.OnPropertyChanged("<#=attribute.DisplayName#>");
+			}
+		}
+<#} //END// N:N Realationships  #>
 	}
 	public class <#=entity.DisplayName#>Enums
 		{
@@ -155,14 +307,24 @@ namespace <#= Context.Namespace #>
 <#}#>
 		}
 <#}#>
+
+	/// <summary>
+	/// Represents a source of entities bound to a CRM service. It tracks and manages changes made to the retrieved entities.
+	/// </summary>
 	public partial class XrmServiceContext : Microsoft.Xrm.Sdk.Client.OrganizationServiceContext
 	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		public XrmServiceContext(Microsoft.Xrm.Sdk.IOrganizationService service) : 
 				base(service)
 		{
 		}
 
 <# foreach (var entity in Context.Entities){#>
+		/// <summary>
+		/// Gets a binding to the set of all <see cref="<#=entity.HybridName#>"/> entities.
+		/// </summary>
 		public System.Linq.IQueryable<<#=entity.HybridName#>> <#=entity.HybridName#>Set
 		{
 			get
