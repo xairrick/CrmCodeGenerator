@@ -166,7 +166,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;   // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             var origCursor = this.Cursor;
-
+            UpdateStatus("Logging in to CRM...", true);
             try
             {
                 
