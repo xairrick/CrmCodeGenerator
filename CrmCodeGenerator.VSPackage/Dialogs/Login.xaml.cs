@@ -1,21 +1,16 @@
 ﻿using CrmCodeGenerator.VSPackage.Helpers;
 using CrmCodeGenerator.VSPackage.Model;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CrmCodeGenerator.VSPackage.Dialogs
 {
@@ -115,6 +110,12 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             {
                 Update_AllEntities();
             }
+            if (_AllEntities == null)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "Will this lock vs", "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return;
+            }
+
             var entities = _AllEntities.Where(e =>
                             {
                                 if (settings.IncludeNonStandard)
