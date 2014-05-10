@@ -339,7 +339,7 @@ namespace CrmCodeGenerator.VSPackage
 
                     //if the window is open we have to close it before we overwrite it.
                     var pi = project.GetProjectItem(m.Props.Template);
-                    if(pi.Document != null)
+                    if(pi != null && pi.Document != null)
                         pi.Document.Close(vsSaveChanges.vsSaveChangesNo);
                 }
 

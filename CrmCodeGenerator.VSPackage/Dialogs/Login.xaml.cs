@@ -14,10 +14,6 @@ using System.Windows.Input;
 
 namespace CrmCodeGenerator.VSPackage.Dialogs
 {
-
-
-   
-
     /// <summary>
     /// Interaction logic for Login.xaml
     /// </summary>
@@ -112,7 +108,6 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             }
             if (_AllEntities == null)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider.GlobalProvider, "Will this lock vs", "Error", OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return;
             }
 
