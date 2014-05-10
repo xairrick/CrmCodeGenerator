@@ -52,8 +52,8 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system");
-            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc");
+            UpdateStatus("In order to generate code from this template, you need to provide login credentials for your CRM system", null);
+            UpdateStatus("The Discovery URL is the URL to your Discovery Service, you can find this URL in CRM -> Settings -> Customizations -> Developer Resources.  \n    eg " + @"https://dsc.yourdomain.com/XRMServices/2011/Discovery.svc", null);
             if (settings.OrgList.Contains(settings.CrmOrg) == false)
             {
                 settings.OrgList.Add(settings.CrmOrg);
@@ -70,7 +70,6 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void RefreshOrgs(object sender, RoutedEventArgs e)
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
-            var origCursor = this.Cursor;
             UpdateStatus("Refreshing Orgs", true);
 
             try
@@ -82,22 +81,21 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             catch (Exception ex)
             {
                 var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
-                UpdateStatus(error);
-                UpdateStatus("Unable to refresh organizations, check connection information");
+                UpdateStatus(error, false);
+                UpdateStatus("Unable to refresh organizations, check connection information", false);
             }
 
-            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
+            UpdateStatus("", false);
         }
         private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
-            var origCursor = this.Cursor;
+
             UpdateStatus("Refreshing Entities...", true);
 
             RefreshEntityList();
 
-            Dispatcher.BeginInvoke(new Action(() => { this.Cursor = origCursor; }));
-            UpdateStatus("");
+            UpdateStatus("", false);
         }
         
         private void RefreshEntityList()
@@ -146,8 +144,8 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             catch (Exception ex)
             {
                 var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
-                UpdateStatus(error);
-                UpdateStatus("Unable to refresh entities, check connection information");
+                UpdateStatus(error,false);
+                UpdateStatus("Unable to refresh entities, check connection information", false);
             }
 
         }
@@ -161,7 +159,6 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         private void Logon_Click(object sender, RoutedEventArgs e)
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;   // PasswordBox doesn't allow 2 way binding, so we have to manually read it
-            var origCursor = this.Cursor;
             UpdateStatus("Logging in to CRM...", true);
             try
             {
@@ -181,22 +178,37 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             catch (Exception ex)
             {
                 var error = "[ERROR] " + ex.Message + (ex.InnerException != null ? "\n" + "[ERROR] " + ex.InnerException.Message : "");
-                UpdateStatus(error);
-                UpdateStatus(ex.StackTrace);
-                UpdateStatus("Unable to map entities, see error above.");
+                UpdateStatus(error, false);
+                UpdateStatus(ex.StackTrace,false);
+                UpdateStatus("Unable to map entities, see error above.",false);
+            }
+            UpdateStatus("", false);
+        }
+        private void UpdateStatus(string message, bool? working)
+        {
+            if (working == true)
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    this.Cursor = Cursors.Wait;
+                    Inputs.IsEnabled = false;
+                }));
+            }
+            if (working == false)
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    this.Cursor = null;
+                    Inputs.IsEnabled = true;
+                }));
             }
 
-            this.Cursor = origCursor;
-        }
-        private void UpdateStatus(string message, bool working = false)
-        {
-            if (working)
-                Dispatcher.BeginInvoke(new Action(() => { this.Cursor = Cursors.Wait; }));
+            if(!string.IsNullOrWhiteSpace(message))
+            {
+                Dispatcher.BeginInvoke(new Action(() => { Status.Update(message); }));
+            }
 
-            Dispatcher.BeginInvoke(new Action(() => { Status.Update(message); }));
-
-            System.Windows.Forms.Application.DoEvents();
-            //TODO  something with the message
+            System.Windows.Forms.Application.DoEvents();  // Needed to allow the output window to update (also allows the cursor wait and form disable to show up)
         }
     }
 }
