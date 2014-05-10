@@ -1,6 +1,11 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 0.9.3
+[UPDATE] disabling login form while retrieving data from the server.
+[BUG] Fixed, when you have an existing .tt file on disk but not in the project and you were adding a .tt file with the same name to the project Visual Studio would get set stuck in a loop
+[BUG] Fixed, when an error occurred while refreshing the entities the hourglass cursor would be stuck.
+
 Version 0.9.2
 [BUG] Reverted back to modal dialog, as Visual Studio will send control keys (eg backspace, home, end) to text editor window with a modeless dialog.
 [BUG] now showing the wait cursor sooner when logging into CRM to retrieve the entities.
