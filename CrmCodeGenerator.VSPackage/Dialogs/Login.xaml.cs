@@ -71,11 +71,18 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
             UpdateStatus("Refreshing Orgs", true);
-
             try
             {
-                var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
-                var newOrgs = new ObservableCollection<String>(orgs);
+                //var orgs = QuickConnection.GetOrganizations(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password);
+                //var newOrgs = new ObservableCollection<String>(orgs);
+                //settings.OrgList = newOrgs;
+
+                var connection = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetDiscoveryCrmConnectionString());
+                var service = new Microsoft.Xrm.Client.Services.DiscoveryService(connection);
+
+                var request = new Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsRequest();
+                var response = (Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsResponse)service.Execute(request);
+                var newOrgs = new ObservableCollection<String>(response.Details.Select(d => d.FriendlyName).ToList());
                 settings.OrgList = newOrgs;
             }
             catch (Exception ex)

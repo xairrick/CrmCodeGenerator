@@ -6,14 +6,12 @@ using Microsoft.Xrm.Sdk;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using Microsoft.Xrm.Sdk.Client;
 
 namespace CrmCodeGenerator.VSPackage.Model
 {
     public class Settings : INotifyPropertyChanged
     {
-
-        
-
         public Settings()
         {
             EntityList = new ObservableCollection<string>();
@@ -22,14 +20,13 @@ namespace CrmCodeGenerator.VSPackage.Model
             Dirty = false;
         }
 
-        // boiler-plate
+        #region boiler-plate INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
-        //protected bool SetField<T>(ref T field, T value, string propertyName)
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
@@ -38,7 +35,12 @@ namespace CrmCodeGenerator.VSPackage.Model
             OnPropertyChanged(propertyName);
             return true;
         }
+        #endregion
 
+        private bool _UseSSL;
+        private bool _UseIFD;
+        private bool _UseOnline;
+        private bool _UseOffice365;
         private string _OutputPath;
         private string _Namespace;
         private string _EntitiesToIncludeString;
@@ -179,6 +181,73 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
         }
 
+
+        private ObservableCollection<String> _OnLineServers = new ObservableCollection<String>();
+        public ObservableCollection<String> OnLineServers
+        {
+            get
+            {
+                return _OnLineServers;
+            }
+            set
+            {
+                SetField(ref _OnLineServers, value);
+            }
+        }
+        //private string _OnlineServer;
+        //public string OnlineServer
+        //{
+        //    get
+        //    {
+        //        return _OnlineServer;
+        //    }
+        //    set
+        //    {
+        //        SetField(ref _OnlineServer, value);
+        //    }
+        //}
+        private string _ServerName;
+        public string ServerName
+        {
+            get
+            {
+                return _ServerName;
+            }
+            set
+            {
+                SetField(ref _ServerName, value);
+            }
+        }
+        private string _ServerPort;
+        public string ServerPort
+        {
+            get
+            {
+                if (UseOnline || UseOffice365)
+                {
+                    return "";
+                }
+                return _ServerPort;
+            }
+            set
+            {
+                SetField(ref _ServerPort, value);
+            }
+        }
+        private string _HomeRealm;
+        public string HomeRealm
+        {
+            get
+            {
+                return _HomeRealm;
+            }
+            set
+            {
+                SetField(ref _HomeRealm, value);
+            }
+        }
+
+
         private ObservableCollection<String> _OrgList = new ObservableCollection<String>();
         public ObservableCollection<String> OrgList
         {
@@ -191,6 +260,8 @@ namespace CrmCodeGenerator.VSPackage.Model
                 SetField(ref _OrgList, value);
             }
         }
+
+
         private ObservableCollection<String> _TemplateList = new ObservableCollection<String>();
         public ObservableCollection<String> TemplateList
         {
@@ -260,19 +331,6 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
         }
 
-        public bool IncludeNonStandard
-        {
-            get
-            {
-                return _IncludeNonStandard;
-            }
-            set
-            {
-                SetField(ref _IncludeNonStandard, value);
-            }
-        }
-
-
         public string Namespace
         {
             get
@@ -286,5 +344,309 @@ namespace CrmCodeGenerator.VSPackage.Model
         }
 
         public bool Dirty { get; set; }
+
+
+        public bool IncludeNonStandard
+        {
+            get
+            {
+                return _IncludeNonStandard;
+            }
+            set
+            {
+                SetField(ref _IncludeNonStandard, value);
+            }
+        }
+        public bool UseSSL
+        {
+            get { return _UseSSL; }
+            set
+            {
+                if (SetField(ref _UseSSL, value))
+                {
+                    ReEvalReadOnly();
+                }
+            }
+        }
+        public bool UseIFD
+        {
+            get { return _UseIFD; }
+            set
+            {
+                if (SetField(ref _UseIFD, value))
+                {
+                    if (value)
+                    {
+                        UseOnline = false;
+                        UseOffice365 = false;
+                        UseSSL = true;
+                        UseCustomAuth = true;
+                    }
+                    ReEvalReadOnly();
+                }
+            }
+        }
+        public bool UseOnline
+        {
+            get { return _UseOnline; }
+            set
+            {
+                if (SetField(ref _UseOnline, value))
+                {
+                    if (value)
+                    {
+                        UseIFD = false;
+                        UseOffice365 = true;
+                        UseSSL = true;
+                        UseCustomAuth = true;
+                    }
+                    ReEvalReadOnly();
+                }
+            }
+        }
+        public bool UseOffice365
+        {
+            get { return _UseOffice365; }
+            set
+            {
+                if (SetField(ref _UseOffice365, value))
+                {
+                    if (value)
+                    {
+                        UseIFD = false;
+                        UseOnline = true;
+                        UseSSL = true;
+                        UseCustomAuth = true;
+                    }
+                    ReEvalReadOnly();
+                }
+            }
+        }
+        private bool _UseCustomAuth;
+        public bool UseCustomAuth
+        {
+            get { return _UseCustomAuth; }
+            set
+            {
+                SetField(ref _UseCustomAuth, value);
+            }
+        }
+
+
+        #region Read Only Properties
+        private void ReEvalReadOnly()
+        {
+            OnPropertyChanged("NeedServer");
+            OnPropertyChanged("NeedOnlineServer");
+            OnPropertyChanged("NeedServerPort");
+            OnPropertyChanged("NeedHomeRealm");
+            OnPropertyChanged("CanUseSSL");
+        }
+        public bool NeedServer
+        {
+            get
+            {
+                return !(UseOnline || UseOffice365);
+            }
+        }
+        public bool NeedOnlineServer
+        {
+            get
+            {
+                return (UseOnline || UseOffice365);
+            }
+        }
+        public bool NeedServerPort
+        {
+            get
+            {
+                return !(UseOffice365 || UseOnline);
+            }
+        }
+        public bool NeedHomeRealm
+        {
+            get
+            {
+                return !(UseIFD || UseOffice365 || UseOnline);
+            }
+        }
+        public bool CanUseSSL
+        {
+            get
+            {
+                return !(UseOnline || UseOffice365 || UseIFD);
+            }
+        }
+        #endregion
+
+
+        #region Conntection Strings
+
+        public AuthenticationProviderType AuthType
+        {
+            get {
+                if (UseIFD)
+                {
+                    return AuthenticationProviderType.Federation;
+                }
+                else if (UseOffice365)
+                {
+                    return AuthenticationProviderType.OnlineFederation;
+                }
+                else if (UseOnline)
+                {
+                    return AuthenticationProviderType.LiveId;
+                }
+                
+                return AuthenticationProviderType.ActiveDirectory;
+            }
+        }
+
+        public string GetDiscoveryCrmConnectionString()
+        {
+            var connectionString = string.Format("Url={0}://{1}:{2};",
+                UseSSL ? "https" : "http",
+                UseIFD ? ServerName : UseOffice365 ? "disco." + ServerName : UseOnline ? "dev." + ServerName : ServerName,
+                ServerPort.Length == 0 ? (UseSSL ? 443 : 80) : int.Parse(ServerPort));
+
+            if (UseCustomAuth)
+            {
+                if (!UseIFD)
+                {
+                    if (!string.IsNullOrEmpty(Domain))
+                    {
+                        connectionString += string.Format("Domain={0};", Domain);
+                    }
+                }
+
+                string sUsername = Username;
+                if (UseIFD)
+                {
+                    if (!string.IsNullOrEmpty(Domain))
+                    {
+                        sUsername = string.Format("{0}\\{1}", Domain, Username);
+                    }
+                }
+
+                connectionString += string.Format("Username={0};Password={1};", sUsername, Password);
+            }
+
+            if (UseOnline && !UseOffice365)
+            {
+                System.ServiceModel.Description.ClientCredentials deviceCredentials;
+
+                do
+                {
+                    deviceCredentials = Microsoft.Crm.Services.Utility.DeviceIdManager.LoadDeviceCredentials() ??
+                                        Microsoft.Crm.Services.Utility.DeviceIdManager.RegisterDevice();
+                } while (deviceCredentials.UserName.Password.Contains(";")
+                         || deviceCredentials.UserName.Password.Contains("=")
+                         || deviceCredentials.UserName.Password.Contains(" ")
+                         || deviceCredentials.UserName.UserName.Contains(";")
+                         || deviceCredentials.UserName.UserName.Contains("=")
+                         || deviceCredentials.UserName.UserName.Contains(" "));
+
+                connectionString += string.Format("DeviceID={0};DevicePassword={1};",
+                                                  deviceCredentials.UserName.UserName,
+                                                  deviceCredentials.UserName.Password);
+            }
+
+            if (UseIFD && !string.IsNullOrEmpty(HomeRealm))
+            {
+                connectionString += string.Format("HomeRealmUri={0};", HomeRealm);
+            }
+
+            return connectionString;
+        }
+
+        // TODO 
+        /*
+        public string GetOrganizationCrmConnectionString()
+        {
+            var currentServerName = string.Empty;
+
+            if (UseOffice365 || UseOnline)
+            {
+                currentServerName = string.Format("{0}.{1}", OrganizationUrlName, ServerName);
+            }
+            else if (UseIFD)
+            {
+                var serverNameParts = ServerName.Split('.');
+
+                serverNameParts[0] = OrganizationUrlName;
+
+
+                currentServerName = string.Format("{0}:{1}",
+                                                  string.Join(".", serverNameParts),
+                                                  ServerPort.Length == 0 ? (UseSSL ? 443 : 80) : int.Parse(ServerPort));
+            }
+            else
+            {
+                currentServerName = string.Format("{0}:{1}/{2}",
+                                                  ServerName,
+                                                  ServerPort.Length == 0 ? (UseSSL ? 443 : 80) : int.Parse(ServerPort),
+                                                  Organization);
+            }
+
+            //var connectionString = string.Format("Url={0}://{1};",
+            //                                     UseSSL ? "https" : "http",
+            //                                     currentServerName);
+
+            var connectionString = string.Format("Url={0};", OrganizationServiceUrl.Replace("/XRMServices/2011/Organization.svc", ""));
+
+            if (UseCustomAuth)
+            {
+                if (!UseIFD)
+                {
+                    if (!string.IsNullOrEmpty(Domain))
+                    {
+                        connectionString += string.Format("Domain={0};", Domain);
+                    }
+                }
+
+                string Username = Username;
+                if (UseIFD)
+                {
+                    if (!string.IsNullOrEmpty(Domain))
+                    {
+                        Username = string.Format("{0}\\{1}", Domain, Username);
+                    }
+                }
+
+                connectionString += string.Format("Username={0};Password={1};", Username, Password);
+            }
+
+            if (UseOnline)
+            {
+                ClientCredentials deviceCredentials;
+
+                do
+                {
+                    deviceCredentials = DeviceIdManager.LoadDeviceCredentials() ??
+                                        DeviceIdManager.RegisterDevice();
+                } while (deviceCredentials.Username.Password.Contains(";")
+                         || deviceCredentials.Username.Password.Contains("=")
+                         || deviceCredentials.Username.Password.Contains(" ")
+                         || deviceCredentials.Username.Username.Contains(";")
+                         || deviceCredentials.Username.Username.Contains("=")
+                         || deviceCredentials.Username.Username.Contains(" "));
+
+                connectionString += string.Format("DeviceID={0};DevicePassword={1};",
+                                                  deviceCredentials.Username.Username,
+                                                  deviceCredentials.Username.Password);
+            }
+
+            if (UseIFD && !string.IsNullOrEmpty(HomeRealm))
+            {
+                connectionString += string.Format("HomeRealmUri={0};", HomeRealm);
+            }
+
+            //append timeout in seconds to connectionstring
+            connectionString += string.Format("Timeout={0};", Timeout.ToString(@"hh\:mm\:ss"));
+            return connectionString;
+        }
+        */
+        #endregion
+
     }
 }

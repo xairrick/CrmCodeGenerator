@@ -4,7 +4,8 @@
         xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.11.0"
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.11.0"                 
         xmlns:control="clr-namespace:CrmCodeGenerator.Controls;assembly=CrmCodeGenerator.Controls"
-        Title="CRM Code Generator Configuration" Width="300" SizeToContent="Height" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
+        xmlns:converter="clr-namespace:CrmCodeGenerator.VSPackage.Dialogs.Converters"
+        Title="CRM Code Generator Configuration" Width="470" SizeToContent="Height" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" Height="460">
 
     <Window.Resources>
         <Style TargetType="Grid" >
@@ -22,7 +23,7 @@
             <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
             <!--<Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
-            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="Margin" Value="5,7,0,0" />
         </Style>
         <Style TargetType="PasswordBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
@@ -38,14 +39,14 @@
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogTextBrushKey}}"/>
             <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
-            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="Margin" Value="5,0,20,0" />
         </Style>
         <Style TargetType="ComboBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
             <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>-->
             <!--<Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
-            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="Margin" Value="5,5,0,0" />
         </Style>
         <!--<Style TargetType="TextBlock">
             <Setter Property="Background"  Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}"/>
@@ -57,15 +58,16 @@
             <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />
             <Setter Property="Padding" Value="5" />-->
-            <!--<Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowButtonInactiveBrushKey}}" />-->
-            <!--<Style.Triggers>
+        <!--<Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowButtonInactiveBrushKey}}" />-->
+        <!--<Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarBorderBrushKey}}" />
                     <Setter Property="Background" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarMouseOverBackgroundGradientBrushKey}}" />-->
-                    <!--<Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarTextHoverBrushKey}}"/>-->
-                <!--</Trigger>
+        <!--<Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarTextHoverBrushKey}}"/>-->
+        <!--</Trigger>
             </Style.Triggers>
         </Style>-->
+        <converter:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" TrueValue="Visible" FalseValue="Collapsed"/>
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="Close" Executed="Cancel_Click" />
@@ -73,18 +75,57 @@
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="Close" />
     </Window.InputBindings>
-    
+
     <StackPanel x:Name="Inputs" Grid.Column="0" Grid.Row="0" Margin="5,0,10,0" >
+        <Label>CRM Connection</Label>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <CheckBox IsChecked="{Binding UseSSL, Mode=TwoWay}" IsEnabled="{Binding CanUseSSL}" x:Name="UseSSL">Use SSL</CheckBox>
+            <CheckBox IsChecked="{Binding UseIFD, Mode=TwoWay}"  IsEnabled="{Binding CanUseIfd}" x:Name="UseIFD">Use IFD</CheckBox>
+            <CheckBox IsChecked="{Binding UseOnline, Mode=TwoWay}" x:Name="UseOnline">Use CRM Online</CheckBox>
+            <CheckBox IsChecked="{Binding UseOffice365, Mode=TwoWay}" x:Name="UseOffice365">Use Office 365</CheckBox>
+        </StackPanel>
+        <Grid Margin="0,5,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!---->
+                <Label Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" >Server Name</Label>
+                <TextBox Grid.Column="1"  Grid.Row="0"  Text="{Binding ServerName, Mode=TwoWay}" Visibility="{Binding NeedServer, Converter={StaticResource BoolToHiddenConverter} }" ></TextBox>
+            <ComboBox Grid.Column="1"  Grid.Row="0" 
+        		IsTextSearchEnabled="True" 
+        		Text="{Binding ServerName, Mode=TwoWay}"
+                Visibility="{Binding NeedOnlineServer, Converter={StaticResource BoolToHiddenConverter} }"
+        		x:Name="OnlineServer">
+                <!--ItemsSource="{Binding OnLineServers, Mode=TwoWay}"-->
+            <ComboBoxItem IsSelected="True">crm.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm2.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm4.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm5.dynamics.com</ComboBoxItem>
+            </ComboBox>
+            <Label Grid.Column="0"  Grid.Row="1"  IsEnabled="{Binding NeedServerPort }">Server Port</Label>
+            <TextBox Grid.Column="1"  Grid.Row="1" IsEnabled="{Binding NeedServerPort }" Text="{Binding ServerPort, Mode=TwoWay}"></TextBox>
+            <Label Grid.Column="0"  Grid.Row="2" IsEnabled="{Binding NeedHomeRealm}" >Home Realm Url</Label>
+            <TextBox Grid.Column="1"  Grid.Row="2" IsEnabled="{Binding NeedHomeRealm}" Text="{Binding HomeRealm, Mode=TwoWay}"  HorizontalAlignment="Stretch"></TextBox>
+        </Grid>
+
+
+
 
         <Label Content="Discorvy URL" />
-        <TextBox  Name="DiscoryURL" Text="{Binding Path=CrmSdkUrl, Mode=TwoWay}" />
+        <TextBox  x:Name="DiscoryURL" Text="{Binding CrmSdkUrl, Mode=TwoWay}" IsEnabled="False" />
         <Label Content="Username" />
-        <TextBox Text="{Binding Path=Username, Mode=TwoWay}" Name="Username"   />
+        <TextBox Text="{Binding Username, Mode=TwoWay}" x:Name="Username"   />
         <Label Content="Password"  />
         <!--<TextBox Text="{Binding Path=Password, Mode=TwoWay}" Name="Password"   />-->
-        <PasswordBox Name="txtPassword"></PasswordBox>
+        <PasswordBox x:Name="txtPassword"/>
         <Label Content="Domain" />
-        <TextBox Text="{Binding Path=Domain, Mode=TwoWay}" Name="Domain"  />
+        <TextBox Text="{Binding Domain, Mode=TwoWay}" x:Name="Domain"  />
         <Label Content="Organization" />
         <Grid>
             <Grid.ColumnDefinitions>
@@ -92,15 +133,15 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="0"  
-                          IsTextSearchEnabled="True" 
-                          IsEditable="True" 
-                          ItemsSource="{Binding Path=OrgList, Mode=TwoWay}"
-                          Text="{Binding Path=CrmOrg, Mode=TwoWay}"
-                          Name="Organization" />
+        		IsTextSearchEnabled="True" 
+        		IsEditable="True" 
+        		ItemsSource="{Binding OrgList, Mode=TwoWay}"
+        		Text="{Binding CrmOrg, Mode=TwoWay}"
+        		x:Name="Organization" />
             <!--ItemsSource="{Binding Items}" 
                           SelectedValuePath="Text"
                           Text="{Binding SelectedItemText, Mode=TwoWay}"-->
-            <Button Grid.Column="1" x:Name="Logon"  HorizontalAlignment="Right" Content="Refresh" Click="RefreshOrgs"  CommandParameter="{Binding ElementName=txtPassword}"></Button>
+            <Button Grid.Column="1" x:Name="Logon"  HorizontalAlignment="Right" Content="Refresh" Click="RefreshOrgs"  CommandParameter="{Binding ElementName=txtPassword}"/>
         </Grid>
 
 
@@ -131,29 +172,25 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <control:MultiSelectComboBox Grid.Column="0" Width="auto" ItemsSource="{Binding Path=EntityList, Mode=TwoWay}" SelectedItems="{Binding Path=EntitiesSelected, Mode=TwoWay}" x:Name="Entities" ToolTip="{Binding Path=Text, RelativeSource={RelativeSource Self}}"/>
-            <Button Grid.Column="1" x:Name="EntitiesRefresh"  HorizontalAlignment="Right" Content="Refresh" Click="EntitiesRefresh_Click"  CommandParameter="{Binding ElementName=txtPassword}"></Button>
-            <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=IncludeNonStandard, Mode=TwoWay}" Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click" ToolTipService.ShowDuration="30000">
-                <!--  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}" -->
-                <TextBlock Background="Transparent">
-                    Include NON-Standard Entities
-                </TextBlock>
+            <control:MultiSelectComboBox Grid.Column="0" Width="auto" ItemsSource="{Binding EntityList, Mode=TwoWay}" SelectedItems="{Binding EntitiesSelected, Mode=TwoWay}" x:Name="Entities" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+            <Button Grid.Column="1" x:Name="EntitiesRefresh"  HorizontalAlignment="Right" Content="Refresh" Click="EntitiesRefresh_Click"  CommandParameter="{Binding ElementName=txtPassword}"/>
+            <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding IncludeNonStandard, Mode=TwoWay}" x:Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click" ToolTipService.ShowDuration="30000">
                 <CheckBox.ToolTip>
                     <ToolTip>
                         <StackPanel>
-                            <TextBlock FontWeight="Bold">NON-Standard Entities</TextBlock>
-                            <TextBlock>The CrmSvcUtil.exe program excludes a lot of NON-Standard entities.<LineBreak /> 
-                                Some are clearly not meant for end user development (eg replicationbacklog, multientitysearchentities, integrationstatus).<LineBreak /> 
-                                Some may be useful, but would have to be considered "Microsoft Unsupported" (eg attachment, notification, subscription).</TextBlock>
+                            <TextBlock FontWeight="Bold"><Run Text="NON-Standard Entities"/></TextBlock>
+                            <TextBlock><Run Text="The CrmSvcUtil.exe program excludes a lot of NON-Standard entities."/><LineBreak /><Run Text="Some are clearly not meant for end user development (eg replicationbacklog, multientitysearchentities, integrationstatus)."/><LineBreak /><Run Text="Some may be useful, but would have to be considered &quot;Microsoft Unsupported&quot; (eg attachment, notification, subscription)."/></TextBlock>
                         </StackPanel>
                     </ToolTip>
                 </CheckBox.ToolTip>
+                <!--  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}" -->
+                <TextBlock Background="Transparent"><Run Text="Include NON-Standard Entities"/></TextBlock>
             </CheckBox>
         </Grid>
 
 
-        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Right">
-            <Button Click="Logon_Click" CommandParameter="{Binding ElementName=txtPassword}" >Generate Code</Button>
+        <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Right">
+            <Button Click="Logon_Click" CommandParameter="{Binding ElementName=txtPassword}" Content="Generate Code" />
         </StackPanel>
     </StackPanel>
 </ui:DialogWindow>

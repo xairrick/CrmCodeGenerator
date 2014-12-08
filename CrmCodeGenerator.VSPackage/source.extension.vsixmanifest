@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="d57cc223-384b-41cc-b5d0-814a71ce8d61" Version="0.9.3" Language="en-US" Publisher="Eric Labashosky" />
+    <Identity Id="d57cc223-384b-41cc-b5d0-814a71ce8d61" Version="1.0.0.2" Language="en-US" Publisher="Eric Labashosky" />
     <DisplayName>CrmCodeGenerator.VSPackage</DisplayName>
     <Description xml:space="preserve">Allows you to generate CRM 2011/2013 schema files.  Much like CrmSrvUtil.exe but with a lot more features; select entities (smaller code/assembly), runs in VisualStudio, T4 templates for control of how code is generated (also allows other languages),  Template is saved to project,   connection info save to SUO &amp;  so that you can modify it as needed. 
 </Description>
@@ -14,6 +14,7 @@
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />

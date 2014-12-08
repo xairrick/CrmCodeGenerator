@@ -25,11 +25,32 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 throw;
             }
         }
-        public static void Write(this IPropertyBag prop, String key, String value)
+        public static bool Read(this IPropertyBag prop, string key, bool defaultValue)
+        {
+            object pVar;
+            try
+            {
+                prop.Read(key, out pVar, null, 0, null);
+                return bool.Parse(pVar.ToString());
+
+            }
+            catch (Exception)
+            {
+                return defaultValue;
+                throw;
+            }
+        }
+        public static void Write(this IPropertyBag prop, String key, string value)
         {
             object obj = value;
             prop.Write(key, ref obj);
         }
+        public static void WriteBool(this IPropertyBag prop, String key, bool value)
+        {
+            object obj = value.ToString();
+            prop.Write(key, ref obj);
+        }
+
     }
     class IDontCare : IErrorLog
     {

@@ -129,6 +129,13 @@ namespace CrmCodeGenerator.VSPackage
 
         private const string _strSolutionPersistanceKey = "CrmCodeGeneration";
         private const string _strCrmUrl = "CrmUrl";
+        private const string _strUseSSL = "UseSSL";
+        private const string _strUseIFD = "UseIFD";
+        private const string _strUseOnline = "UseOnline";
+        private const string _strUseOffice365 = "UseOffice365";
+        private const string _strServerPort = "ServerPort";
+        private const string _strServerName = "ServerName";
+        private const string _strHomeRealm = "HomeRealm";
         private const string _strUsername = "Username";
         private const string _strPassword = "Password";
         private const string _strDomain = "Domain";
@@ -164,13 +171,24 @@ namespace CrmCodeGenerator.VSPackage
         }
         public int WriteSolutionProps([InAttribute] IVsHierarchy pHierarchy, [InAttribute] string pszKey, [InAttribute] IPropertyBag pPropBag)
         {
+            pPropBag.WriteBool(_strUseSSL, settings.UseSSL);
+            pPropBag.WriteBool(_strUseIFD, settings.UseIFD);
+            pPropBag.WriteBool(_strUseOnline, settings.UseOnline);
+            pPropBag.WriteBool(_strUseOffice365, settings.UseOffice365);
+            pPropBag.WriteBool(_strUseOffice365, settings.UseOffice365);
+            
+            pPropBag.Write(_strServerName, settings.ServerName);
+            pPropBag.Write(_strServerPort, settings.ServerPort);
+            pPropBag.Write(_strHomeRealm, settings.HomeRealm);
+
             pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
             //pPropBag.Write(_strUsername, settings.Username);
             //pPropBag.Write(_strPassword, settings.Password);
+            
             pPropBag.Write(_strOrganization, settings.CrmOrg);
             pPropBag.Write(_strIncludeEntities, settings.EntitiesToIncludeString);
-            pPropBag.Write(_strIncludeNonStandard, settings.IncludeNonStandard.ToString());
+            pPropBag.WriteBool(_strIncludeNonStandard, settings.IncludeNonStandard);
             settings.Dirty = false;
 
             return VSConstants.S_OK;
@@ -179,6 +197,15 @@ namespace CrmCodeGenerator.VSPackage
         {
             if (_strSolutionPersistanceKey.CompareTo(pszKey) == 0)
             {
+                settings.UseSSL = pPropBag.Read(_strUseSSL, false);
+                settings.UseIFD = pPropBag.Read(_strUseIFD, false);
+                settings.UseOnline = pPropBag.Read(_strUseOnline, true);
+                settings.UseOffice365 = pPropBag.Read(_strUseOffice365, true);
+
+                settings.ServerName = pPropBag.Read(_strServerName, "crm.dynamics.com");
+                settings.ServerPort = pPropBag.Read(_strServerPort, "");
+                settings.HomeRealm = pPropBag.Read(_strHomeRealm, "");
+
                 settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
                 //settings.Username = pPropBag.Read(_strUsername, "");
                 //settings.Password = pPropBag.Read(_strPassword, "");
@@ -186,11 +213,7 @@ namespace CrmCodeGenerator.VSPackage
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
 
-                bool flag;
-                if (Boolean.TryParse(pPropBag.Read(_strIncludeNonStandard, "false"), out flag))
-                    settings.IncludeNonStandard = flag;
-                else
-                    settings.IncludeNonStandard = false;
+                settings.IncludeNonStandard = pPropBag.Read(_strIncludeNonStandard, false);
 
                 settings.Dirty = false;
             }

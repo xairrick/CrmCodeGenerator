@@ -1,15 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.VSPackage", "CrmCodeGenerator.VSPackage\CrmCodeGenerator.VSPackage.csproj", "{474A5BC2-BEFF-4F74-A029-7ED81B6633A8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.Controls", "CrmCodeGenerator.Controls\CrmCodeGenerator.Controls.csproj", "{CE17A54E-0661-429F-AFDC-272E8668B14E}"
-EndProject
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{FE93ED76-041D-4F4C-8569-FC05C2D982B7}"
 	ProjectSection(SolutionItems) = preProject
 		lib\microsoft.crm.sdk.proxy.dll = lib\microsoft.crm.sdk.proxy.dll
+		lib\microsoft.xrm.client.dll = lib\microsoft.xrm.client.dll
 		lib\microsoft.xrm.sdk.dll = lib\microsoft.xrm.sdk.dll
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.VSPackage", "CrmCodeGenerator.VSPackage\CrmCodeGenerator.VSPackage.csproj", "{474A5BC2-BEFF-4F74-A029-7ED81B6633A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.Controls", "CrmCodeGenerator.Controls\CrmCodeGenerator.Controls.csproj", "{CE17A54E-0661-429F-AFDC-272E8668B14E}"
 EndProject
 Global
 	GlobalSection(CrmCodeGeneration) = preSolution
@@ -17,6 +20,7 @@ Global
 		Domain = 
 		Organization = DEV-CRM
 		IncludeEntities = account,contact,lead,opportunity,systemuser
+		IncludeNonStandard = False
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
