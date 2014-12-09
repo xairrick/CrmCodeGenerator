@@ -206,7 +206,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         //        SetField(ref _OnlineServer, value);
         //    }
         //}
-        private string _ServerName;
+        private string _ServerName = "";
         public string ServerName
         {
             get
@@ -218,7 +218,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 SetField(ref _ServerName, value);
             }
         }
-        private string _ServerPort;
+        private string _ServerPort = "";
         public string ServerPort
         {
             get
@@ -234,7 +234,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 SetField(ref _ServerPort, value);
             }
         }
-        private string _HomeRealm;
+        private string _HomeRealm = "";
         public string HomeRealm
         {
             get
@@ -380,7 +380,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         UseOnline = false;
                         UseOffice365 = false;
                         UseSSL = true;
-                        UseCustomAuth = true;
+                        UseWindowsAuth = false;
                     }
                     ReEvalReadOnly();
                 }
@@ -398,7 +398,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                         UseIFD = false;
                         UseOffice365 = true;
                         UseSSL = true;
-                        UseCustomAuth = true;
+                        UseWindowsAuth = false;
                     }
                     ReEvalReadOnly();
                 }
@@ -416,19 +416,20 @@ namespace CrmCodeGenerator.VSPackage.Model
                         UseIFD = false;
                         UseOnline = true;
                         UseSSL = true;
-                        UseCustomAuth = true;
+                        UseWindowsAuth = false;
                     }
                     ReEvalReadOnly();
                 }
             }
         }
-        private bool _UseCustomAuth;
-        public bool UseCustomAuth
+        private bool _UseWindowsAuth;
+        public bool UseWindowsAuth
         {
-            get { return _UseCustomAuth; }
+            get { return _UseWindowsAuth; }
             set
             {
-                SetField(ref _UseCustomAuth, value);
+                SetField(ref _UseWindowsAuth, value);
+                ReEvalReadOnly();
             }
         }
 
@@ -440,6 +441,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             OnPropertyChanged("NeedOnlineServer");
             OnPropertyChanged("NeedServerPort");
             OnPropertyChanged("NeedHomeRealm");
+            OnPropertyChanged("NeedCredentials");
+            OnPropertyChanged("CanUseWindowsAuth");
             OnPropertyChanged("CanUseSSL");
         }
         public bool NeedServer
@@ -468,6 +471,20 @@ namespace CrmCodeGenerator.VSPackage.Model
             get
             {
                 return !(UseIFD || UseOffice365 || UseOnline);
+            }
+        }
+        public bool NeedCredentials
+        {
+            get
+            {
+                return !UseWindowsAuth;
+            }
+        }
+        public bool CanUseWindowsAuth
+        {
+            get
+            {
+                return !(UseIFD || UseOnline || UseOffice365);
             }
         }
         public bool CanUseSSL
@@ -509,7 +526,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 UseIFD ? ServerName : UseOffice365 ? "disco." + ServerName : UseOnline ? "dev." + ServerName : ServerName,
                 ServerPort.Length == 0 ? (UseSSL ? 443 : 80) : int.Parse(ServerPort));
 
-            if (UseCustomAuth)
+            if (!UseWindowsAuth)
             {
                 if (!UseIFD)
                 {
