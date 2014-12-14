@@ -134,7 +134,9 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             try
             {
-                var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+                // TODO REMOVE THIS var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+                var connString = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetOrganizationCrmConnectionString());
+                var connection = new Microsoft.Xrm.Client.Services.OrganizationService(connString);
 
                 RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
                 {
