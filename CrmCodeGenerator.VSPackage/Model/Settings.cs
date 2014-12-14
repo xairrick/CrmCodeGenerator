@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using Microsoft.Xrm.Sdk.Client;
+using CrmCodeGenerator.VSPackage.Helpers;
+using Microsoft.Xrm.Sdk.Discovery;
 
 namespace CrmCodeGenerator.VSPackage.Model
 {
@@ -554,8 +556,8 @@ namespace CrmCodeGenerator.VSPackage.Model
 
                 do
                 {
-                    deviceCredentials = Microsoft.Crm.Services.Utility.DeviceIdManager.LoadDeviceCredentials() ??
-                                        Microsoft.Crm.Services.Utility.DeviceIdManager.RegisterDevice();
+                    deviceCredentials = DeviceIdManager.LoadDeviceCredentials() ??
+                                        DeviceIdManager.RegisterDevice();
                 } while (deviceCredentials.UserName.Password.Contains(";")
                          || deviceCredentials.UserName.Password.Contains("=")
                          || deviceCredentials.UserName.Password.Contains(" ")
@@ -576,21 +578,21 @@ namespace CrmCodeGenerator.VSPackage.Model
             return connectionString;
         }
 
-        // TODO 
-        /*
+
         public string GetOrganizationCrmConnectionString()
         {
             var currentServerName = string.Empty;
 
+            var orgDetails  = ConnectionHelper.GetOrganizationDetails(this);
             if (UseOffice365 || UseOnline)
             {
-                currentServerName = string.Format("{0}.{1}", OrganizationUrlName, ServerName);
+                currentServerName = string.Format("{0}.{1}", orgDetails.UrlName, ServerName);
             }
             else if (UseIFD)
             {
                 var serverNameParts = ServerName.Split('.');
 
-                serverNameParts[0] = OrganizationUrlName;
+                serverNameParts[0] = orgDetails.UrlName;
 
 
                 currentServerName = string.Format("{0}:{1}",
@@ -602,16 +604,16 @@ namespace CrmCodeGenerator.VSPackage.Model
                 currentServerName = string.Format("{0}:{1}/{2}",
                                                   ServerName,
                                                   ServerPort.Length == 0 ? (UseSSL ? 443 : 80) : int.Parse(ServerPort),
-                                                  Organization);
+                                                  CrmOrg);
             }
 
             //var connectionString = string.Format("Url={0}://{1};",
             //                                     UseSSL ? "https" : "http",
             //                                     currentServerName);
 
-            var connectionString = string.Format("Url={0};", OrganizationServiceUrl.Replace("/XRMServices/2011/Organization.svc", ""));
+            var connectionString = string.Format("Url={0};", orgDetails.Endpoints[EndpointType.OrganizationService].Replace("/XRMServices/2011/Organization.svc", ""));
 
-            if (UseCustomAuth)
+            if (!UseWindowsAuth)
             {
                 if (!UseIFD)
                 {
@@ -621,36 +623,36 @@ namespace CrmCodeGenerator.VSPackage.Model
                     }
                 }
 
-                string Username = Username;
+                string username = Username;
                 if (UseIFD)
                 {
                     if (!string.IsNullOrEmpty(Domain))
                     {
-                        Username = string.Format("{0}\\{1}", Domain, Username);
+                        username = string.Format("{0}\\{1}", Domain, Username);
                     }
                 }
 
-                connectionString += string.Format("Username={0};Password={1};", Username, Password);
+                connectionString += string.Format("Username={0};Password={1};", username, Password);
             }
 
             if (UseOnline)
             {
-                ClientCredentials deviceCredentials;
+                System.ServiceModel.Description.ClientCredentials deviceCredentials;
 
                 do
                 {
                     deviceCredentials = DeviceIdManager.LoadDeviceCredentials() ??
                                         DeviceIdManager.RegisterDevice();
-                } while (deviceCredentials.Username.Password.Contains(";")
-                         || deviceCredentials.Username.Password.Contains("=")
-                         || deviceCredentials.Username.Password.Contains(" ")
-                         || deviceCredentials.Username.Username.Contains(";")
-                         || deviceCredentials.Username.Username.Contains("=")
-                         || deviceCredentials.Username.Username.Contains(" "));
+                } while (deviceCredentials.UserName.Password.Contains(";")
+                         || deviceCredentials.UserName.Password.Contains("=")
+                         || deviceCredentials.UserName.Password.Contains(" ")
+                         || deviceCredentials.UserName.UserName.Contains(";")
+                         || deviceCredentials.UserName.UserName.Contains("=")
+                         || deviceCredentials.UserName.UserName.Contains(" "));
 
                 connectionString += string.Format("DeviceID={0};DevicePassword={1};",
-                                                  deviceCredentials.Username.Username,
-                                                  deviceCredentials.Username.Password);
+                                                  deviceCredentials.UserName.UserName,
+                                                  deviceCredentials.UserName.Password);
             }
 
             if (UseIFD && !string.IsNullOrEmpty(HomeRealm))
@@ -659,11 +661,9 @@ namespace CrmCodeGenerator.VSPackage.Model
             }
 
             //append timeout in seconds to connectionstring
-            connectionString += string.Format("Timeout={0};", Timeout.ToString(@"hh\:mm\:ss"));
+            //connectionString += string.Format("Timeout={0};", Timeout.ToString(@"hh\:mm\:ss"));
             return connectionString;
         }
-        */
         #endregion
-
     }
 }

@@ -162,8 +162,10 @@
     <Compile Include="Dialogs\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ConnectionHelper.cs" />
     <Compile Include="Helpers\DteHelper.cs" />
     <Compile Include="Helpers\EntityHelper.cs" />
+    <Compile Include="Helpers\IEnumerablesExtensions.cs" />
     <Compile Include="Helpers\PropertyBagExtensions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Helpers\SimpleAES.cs" />

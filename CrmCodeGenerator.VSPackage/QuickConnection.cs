@@ -13,18 +13,16 @@ namespace CrmCodeGenerator.VSPackage
     {
         public static IOrganizationService Connect(string url, string domain, string username, string password, string organization)
         {
-
             //var connectionString = @"Url=" + url + "; Username=" + username + "; password=" + password + ";";
             //var connection = new Microsoft.Xrm.Client.CrmConnection(connectionString);
             //var test = new Microsoft.Xrm.Client.Services.OrganizationService(connection);
             //return test;
             
-
             var credentials = GetCredentials(url, domain, username, password);
             ClientCredentials deviceCredentials = null;
             if (url.IndexOf("dynamics.com", StringComparison.InvariantCultureIgnoreCase) > -1)
             {
-                deviceCredentials = Microsoft.Crm.Services.Utility.DeviceIdManager.LoadOrRegisterDevice();
+                deviceCredentials = DeviceIdManager.LoadOrRegisterDevice(new Guid());
             }
 
             Uri orgUri = null;
@@ -64,7 +62,7 @@ namespace CrmCodeGenerator.VSPackage
             ClientCredentials deviceCredentials = null;
             if (url.IndexOf("dynamics.com", StringComparison.InvariantCultureIgnoreCase) > -1)
             {
-                deviceCredentials = Microsoft.Crm.Services.Utility.DeviceIdManager.LoadOrRegisterDevice();   // TODO this may fail with some online connections
+                deviceCredentials = DeviceIdManager.LoadOrRegisterDevice(new Guid());   // TODO this was failing with some online connections
             }
 
             using (DiscoveryServiceProxy disco = new DiscoveryServiceProxy(new Uri(url), null, credentials, deviceCredentials))

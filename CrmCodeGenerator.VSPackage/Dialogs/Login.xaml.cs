@@ -77,12 +77,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
                 //var newOrgs = new ObservableCollection<String>(orgs);
                 //settings.OrgList = newOrgs;
 
-                var connection = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetDiscoveryCrmConnectionString());
-                var service = new Microsoft.Xrm.Client.Services.DiscoveryService(connection);
-
-                var request = new Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsRequest();
-                var response = (Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsResponse)service.Execute(request);
-                var newOrgs = new ObservableCollection<String>(response.Details.Select(d => d.FriendlyName).ToList());
+                var newOrgs = ConnectionHelper.GetOrgList(settings);
                 settings.OrgList = newOrgs;
             }
             catch (Exception ex)
@@ -94,6 +89,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
 
             UpdateStatus("", false);
         }
+
         private void EntitiesRefresh_Click(object sender, RoutedEventArgs events)
         {
             settings.Password = ((PasswordBox)((Button)sender).CommandParameter).Password;  // PasswordBox doesn't allow 2 way binding, so we have to manually read it
@@ -169,8 +165,10 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             UpdateStatus("Logging in to CRM...", true);
             try
             {
-                
-                settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
+
+                var connection = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetOrganizationCrmConnectionString());
+                settings.CrmConnection = new Microsoft.Xrm.Client.Services.OrganizationService(connection);
+                // TODO remove the QuickConnection class -->  settings.CrmConnection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
                 if (settings.CrmConnection == null)
                      throw new UserException("Unable to login to CRM, check to ensure you have the right organization");
                 
