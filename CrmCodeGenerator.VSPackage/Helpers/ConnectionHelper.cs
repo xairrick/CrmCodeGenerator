@@ -31,7 +31,7 @@ namespace CrmCodeGenerator.VSPackage.Helpers
 
             var request = new RetrieveOrganizationsRequest();
             var response = (RetrieveOrganizationsResponse)service.Execute(request);
-            var details = response.Details.Where(d => d.UniqueName == settings.CrmOrg).FirstOrDefault();
+            var details = response.Details.Where(d => d.UrlName == settings.CrmOrg).FirstOrDefault();
             return details;
         }
 
