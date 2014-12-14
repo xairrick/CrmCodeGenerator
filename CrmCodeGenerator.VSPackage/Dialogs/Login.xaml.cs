@@ -103,10 +103,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         
         private void RefreshEntityList()
         {
-            if (_AllEntities == null)
-            {
-                Update_AllEntities();
-            }
+            Update_AllEntities();
             if (_AllEntities == null)
             {
                 return;

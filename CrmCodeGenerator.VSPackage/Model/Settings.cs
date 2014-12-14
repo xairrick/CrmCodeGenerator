@@ -402,6 +402,10 @@ namespace CrmCodeGenerator.VSPackage.Model
                         UseSSL = true;
                         UseWindowsAuth = false;
                     }
+                    else
+                    {
+                        UseOffice365 = false;
+                    }
                     ReEvalReadOnly();
                 }
             }

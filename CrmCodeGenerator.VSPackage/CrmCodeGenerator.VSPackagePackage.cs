@@ -181,7 +181,7 @@ namespace CrmCodeGenerator.VSPackage
             pPropBag.Write(_strServerPort, settings.ServerPort);
             pPropBag.Write(_strHomeRealm, settings.HomeRealm);
 
-            pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
+            //pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
             //pPropBag.Write(_strUsername, settings.Username);
             //pPropBag.Write(_strPassword, settings.Password);
@@ -197,16 +197,33 @@ namespace CrmCodeGenerator.VSPackage
         {
             if (_strSolutionPersistanceKey.CompareTo(pszKey) == 0)
             {
-                settings.UseSSL = pPropBag.Read(_strUseSSL, false);
-                settings.UseIFD = pPropBag.Read(_strUseIFD, false);
-                settings.UseOnline = pPropBag.Read(_strUseOnline, true);
-                settings.UseOffice365 = pPropBag.Read(_strUseOffice365, true);
+                var defaultServer = "crm.dynamics.com";
+                var defaultSSL = false;
+                var defaultPort = "";
+                var defaultOnline = true;
 
-                settings.ServerName = pPropBag.Read(_strServerName, "crm.dynamics.com");
-                settings.ServerPort = pPropBag.Read(_strServerPort, "");
+
+                // This is to convert the earlier 
+                var oldServerSetting = pPropBag.Read(_strCrmUrl, "");
+                if (!string.IsNullOrWhiteSpace(oldServerSetting))
+                {
+                    Uri oldServer = new Uri(oldServerSetting);   
+                    defaultServer = oldServer.Host;
+                    defaultSSL = (oldServer.Scheme == "https");
+                    defaultPort = oldServer.Port.ToString();
+                    defaultOnline = (oldServer.Host.ToLower() == "crm.dynamics.com");
+                }
+
+
+                settings.ServerName = pPropBag.Read(_strServerName, defaultServer);
+                settings.UseSSL = pPropBag.Read(_strUseSSL, defaultSSL);
+                settings.UseIFD = pPropBag.Read(_strUseIFD, false);
+                settings.UseOnline = pPropBag.Read(_strUseOnline, defaultOnline);
+                settings.UseOffice365 = pPropBag.Read(_strUseOffice365, defaultOnline);
+                settings.ServerPort = pPropBag.Read(_strServerPort, defaultPort);
                 settings.HomeRealm = pPropBag.Read(_strHomeRealm, "");
 
-                settings.CrmSdkUrl = pPropBag.Read(_strCrmUrl, @"https://dscdev.benco.com/XRMServices/2011/Discovery.svc");
+                
                 //settings.Username = pPropBag.Read(_strUsername, "");
                 //settings.Password = pPropBag.Read(_strPassword, "");
                 settings.Domain = pPropBag.Read(_strDomain, "");

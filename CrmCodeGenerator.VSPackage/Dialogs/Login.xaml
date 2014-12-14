@@ -24,6 +24,7 @@
             <!--<Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
             <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Height" Value="20" />
         </Style>
         <Style TargetType="PasswordBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
@@ -31,6 +32,7 @@
             <!--<Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
             <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Height" Value="20" />
         </Style>
         <Style TargetType="CheckBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
@@ -40,6 +42,7 @@
             <Setter Property="FontFamily" Value="{DynamicResource VsFont.EnvironmentFontFamily}" />
             <Setter Property="FontSize" Value="{DynamicResource VsFont.EnvironmentFontSize}" />-->
             <Setter Property="Margin" Value="0,0,15,0" />
+            
         </Style>
         <Style TargetType="ComboBox">
             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
@@ -88,9 +91,11 @@
             <Grid.Resources>
                 <Style TargetType="{x:Type TextBox}">
                     <Setter Property="Margin" Value="0,3,0,2" />
+                    <Setter Property="Height" Value="20" />
                 </Style>
                 <Style TargetType="{x:Type ComboBox}">
                     <Setter Property="Margin" Value="0,3,0,2" />
+                    <Setter Property="Height" Value="20" />
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
@@ -105,10 +110,10 @@
             <!---->
                 <Label Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" >Server Name</Label>
                 <TextBox  Grid.Column="1"  Grid.Row="0"  Text="{Binding ServerName, Mode=TwoWay}" Visibility="{Binding NeedServer, Converter={StaticResource BoolToHiddenConverter} }" ></TextBox>
-            <ComboBox Margin="0,3,0,3" Grid.Column="1"  Grid.Row="0" 
+            <ComboBox Margin="0,3,0,2" Grid.Column="1"  Grid.Row="0" 
         		IsTextSearchEnabled="True" 
         		Text="{Binding ServerName, Mode=TwoWay}"
-                Visibility="{Binding NeedOnlineServer, Converter={StaticResource BoolToHiddenConverter} }"
+                Visibility="{Binding NeedOnlineServer, Converter={StaticResource BoolToHiddenConverter} }"            
         		x:Name="OnlineServer">
                 <!--ItemsSource="{Binding OnLineServers, Mode=TwoWay}"-->
             <ComboBoxItem IsSelected="True">crm.dynamics.com</ComboBoxItem>
