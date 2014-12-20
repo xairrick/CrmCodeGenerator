@@ -1,6 +1,10 @@
 ﻿Allows you to generate CRM 2011/2013 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 1.0.0.3 Beta
+[UPDATED] to Visual Studio 2013 (still works on VS2012)  
+[UPDATED] to CRM 2015
+
 Version 0.9.3
 [UPDATE] disabling login form while retrieving data from the server.
 [BUG] Fixed, when you have an existing .tt file on disk but not in the project and you were adding a .tt file with the same name to the project Visual Studio would get set stuck in a loop
