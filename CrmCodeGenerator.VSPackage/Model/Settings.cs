@@ -54,6 +54,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         private string _Template;
         private string _T4Path;
         private bool _IncludeNonStandard;
+        private bool _IncludeUnpublish;
 
         private string _ProjectName;
         public string ProjectName
@@ -357,6 +358,17 @@ namespace CrmCodeGenerator.VSPackage.Model
             set
             {
                 SetField(ref _IncludeNonStandard, value);
+            }
+        }
+        public bool IncludeUnpublish
+        {
+            get
+            {
+                return _IncludeUnpublish;
+            }
+            set
+            {
+                SetField(ref _IncludeUnpublish, value);
             }
         }
         public bool UseSSL

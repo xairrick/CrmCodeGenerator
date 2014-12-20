@@ -131,14 +131,13 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         {
             try
             {
-                // TODO REMOVE THIS var connection = QuickConnection.Connect(settings.CrmSdkUrl, settings.Domain, settings.Username, settings.Password, settings.CrmOrg);
                 var connString = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetOrganizationCrmConnectionString());
                 var connection = new Microsoft.Xrm.Client.Services.OrganizationService(connString);
 
                 RetrieveAllEntitiesRequest request = new RetrieveAllEntitiesRequest()
                 {
                     EntityFilters = EntityFilters.Default,
-                    RetrieveAsIfPublished = true,
+                    RetrieveAsIfPublished = settings.IncludeUnpublish,
                 };
                 RetrieveAllEntitiesResponse response = (RetrieveAllEntitiesResponse)connection.Execute(request);
                 _AllEntities = response.EntityMetadata;

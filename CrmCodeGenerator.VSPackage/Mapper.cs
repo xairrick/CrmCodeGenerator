@@ -93,7 +93,7 @@ namespace CrmCodeGenerator.VSPackage
 
         internal MappingEntity[] GetEntities(IOrganizationService service)
         {
-            var entities = GetMetaDataFromServer(service);
+            var entities = GetMetadataFromServer(service);
 
             var selectedEntities = entities
                 .Where(r => this.Settings.EntitiesSelected.Contains(r.LogicalName))
@@ -135,10 +135,10 @@ namespace CrmCodeGenerator.VSPackage
             return mappedEntities.ToArray();
         }
 
-        private EntityMetadata[] GetMetaDataFromServer(IOrganizationService service)
+        private EntityMetadata[] GetMetadataFromServer(IOrganizationService service)
         {
             OnMessage("Gathering metadata, this may take a few minutes...");
-            if (this.Settings.EntitiesSelected.Count > 100)
+            if (this.Settings.EntitiesSelected.Count > 20)
             {
                 return GetAllMetadataFromServer(service);
             }
@@ -152,19 +152,19 @@ namespace CrmCodeGenerator.VSPackage
                 var req = new RetrieveEntityRequest();
                 req.EntityFilters = EntityFilters.All;
                 req.LogicalName = entity;
-                req.RetrieveAsIfPublished = false;
+                req.RetrieveAsIfPublished = this.Settings.IncludeUnpublish;
                 var res = (RetrieveEntityResponse)service.Execute(req);
                 results.Add(res.EntityMetadata);
             }
             return results.ToArray();
         }
 
-        private static EntityMetadata[] GetAllMetadataFromServer(IOrganizationService service)
+        private EntityMetadata[] GetAllMetadataFromServer(IOrganizationService service)
         {
             //TODO should change this to early binding RetrieveAllEntitiesRequest
             OrganizationRequest request = new OrganizationRequest("RetrieveAllEntities");
             request.Parameters["EntityFilters"] = EntityFilters.All;
-            request.Parameters["RetrieveAsIfPublished"] = true;
+            request.Parameters["RetrieveAsIfPublished"] = this.Settings.IncludeUnpublish;
 
             //var entities = sdk.Execute(request).Results["EntityMetadata"] as EntityMetadata[];
             var results = service.Execute(request);

@@ -174,7 +174,8 @@
                 </Grid.ColumnDefinitions>
                 <control:MultiSelectComboBox Grid.Column="0" Width="auto" ItemsSource="{Binding EntityList, Mode=TwoWay}" SelectedItems="{Binding EntitiesSelected, Mode=TwoWay}" x:Name="Entities" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
                 <Button Grid.Column="1" x:Name="EntitiesRefresh"  HorizontalAlignment="Right" Content="Refresh" Click="EntitiesRefresh_Click"  CommandParameter="{Binding ElementName=txtPassword}"/>
-                <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding IncludeNonStandard, Mode=TwoWay}" x:Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click" ToolTipService.ShowDuration="30000">
+                <StackPanel  Grid.Column="0" Grid.Row="1"  Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding IncludeNonStandard, Mode=TwoWay}" x:Name="IncludeNonStandard" Checked="IncludeNonStandardEntities_Click" Unchecked="IncludeNonStandardEntities_Click" ToolTipService.ShowDuration="30000">
                     <CheckBox.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -186,6 +187,18 @@
                     <!--  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.DialogBrushKey}}" -->
                     <TextBlock Background="Transparent"><Run Text="Include NON-Standard Entities"/></TextBlock>
                 </CheckBox>
+                    <CheckBox IsChecked="{Binding IncludeUnpublished, Mode=TwoWay}" ToolTipService.ShowDuration="30000">
+                        <CheckBox.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold"><Run Text="Unpublished changes"/></TextBlock>
+                                    <TextBlock><Run Text="Leave unchecked to ignore the changes that haven't yet been published."/><LineBreak /><Run Text="Some are clearly not meant for end user development (eg replicationbacklog, multientitysearchentities, integrationstatus)."/><LineBreak /><Run Text="Some may be useful, but would have to be considered &quot;Microsoft Unsupported&quot; (eg attachment, notification, subscription)."/></TextBlock>
+                                </StackPanel>
+                            </ToolTip>
+                        </CheckBox.ToolTip>
+                        <TextBlock Background="Transparent"><Run Text="Unpublished changes"/></TextBlock>
+                    </CheckBox>
+                </StackPanel>
             </Grid>
         </StackPanel>
 
