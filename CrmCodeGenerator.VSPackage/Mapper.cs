@@ -91,18 +91,9 @@ namespace CrmCodeGenerator.VSPackage
             return;
         }
 
-        internal MappingEntity[] GetEntities(IOrganizationService sdk)
+        internal MappingEntity[] GetEntities(IOrganizationService service)
         {
-            OnMessage("Gathering metadata, this may take a few minutes...");
-
-            //TODO should change this to early binding RetrieveAllEntitiesRequest
-            OrganizationRequest request = new OrganizationRequest("RetrieveAllEntities");
-            request.Parameters["EntityFilters"] = EntityFilters.All;
-            request.Parameters["RetrieveAsIfPublished"] = true;
-
-            //var entities = sdk.Execute(request).Results["EntityMetadata"] as EntityMetadata[];
-            var results = sdk.Execute(request);
-            var entities = results["EntityMetadata"] as EntityMetadata[];
+            var entities = GetMetaDataFromServer(service);
 
             var selectedEntities = entities
                 .Where(r => this.Settings.EntitiesSelected.Contains(r.LogicalName))
@@ -142,6 +133,43 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             return mappedEntities.ToArray();
+        }
+
+        private EntityMetadata[] GetMetaDataFromServer(IOrganizationService service)
+        {
+            OnMessage("Gathering metadata, this may take a few minutes...");
+            if (this.Settings.EntitiesSelected.Count > 100)
+            {
+                return GetAllMetadataFromServer(service);
+            }
+
+            var entitiesToRetreive = this.Settings.EntitiesSelected.Select(x => x).ToList();
+            entitiesToRetreive.Add("activityparty");
+
+            var results = new List<EntityMetadata>();
+            foreach (var entity in entitiesToRetreive)
+            {
+                var req = new RetrieveEntityRequest();
+                req.EntityFilters = EntityFilters.All;
+                req.LogicalName = entity;
+                req.RetrieveAsIfPublished = false;
+                var res = (RetrieveEntityResponse)service.Execute(req);
+                results.Add(res.EntityMetadata);
+            }
+            return results.ToArray();
+        }
+
+        private static EntityMetadata[] GetAllMetadataFromServer(IOrganizationService service)
+        {
+            //TODO should change this to early binding RetrieveAllEntitiesRequest
+            OrganizationRequest request = new OrganizationRequest("RetrieveAllEntities");
+            request.Parameters["EntityFilters"] = EntityFilters.All;
+            request.Parameters["RetrieveAsIfPublished"] = true;
+
+            //var entities = sdk.Execute(request).Results["EntityMetadata"] as EntityMetadata[];
+            var results = service.Execute(request);
+            var entities = results["EntityMetadata"] as EntityMetadata[];
+            return entities;
         }
         private static void ExcludeRelationshipsNotIncluded(List<MappingEntity> mappedEntities)
         {
