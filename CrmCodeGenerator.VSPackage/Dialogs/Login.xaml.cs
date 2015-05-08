@@ -33,6 +33,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
         }
         public Login(EnvDTE80.DTE2 dte, Settings settings)
         {
+            WifDetector.CheckForWifInstall();
             InitializeComponent();
 
             var main = dte.GetMainWindow();
@@ -42,6 +43,7 @@ namespace CrmCodeGenerator.VSPackage.Dialogs
             this.settings = settings;
             this.txtPassword.Password = settings.Password;  // PasswordBox doesn't allow 2 way binding
             this.DataContext = settings;
+         
         }
 
         

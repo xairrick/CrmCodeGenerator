@@ -42,7 +42,7 @@ namespace CrmCodeGenerator.VSPackage
     [ProvideObject(typeof(CrmCodeGenerator2011))]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVCSProject, GeneratesDesignTimeSource = true)]
     [CodeGeneratorRegistration(typeof(CrmCodeGenerator2011), "CrmCodeGenerator2011", vsContextGuids.vsContextGuidVBProject, GeneratesDesignTimeSource = true)]
-    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite, IDisposable 
+    public class CrmCodeGenerator2011 : IVsSingleFileGenerator, IObjectWithSite, IDisposable
     {
         private object site = null;
         private CodeDomProvider codeDomProvider = null;
@@ -112,16 +112,19 @@ namespace CrmCodeGenerator.VSPackage
             var originalFile = GetOriginalFile(wszInputFilePath);
 
 
+
+
             PromptToRefreshEntities();
 
             if (context == null)
             {
+
                 var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE80.DTE2;
                 var m = new Login(dte, settings);
-                m.ShowDialog();  
+                m.ShowDialog();
                 context = m.Context;
                 m = null;
-                
+
                 if (context == null)
                 {
                     // TODO  pGenerateProgress.GeneratorError(1, (uint)1, "Code generation for CRM Template aborted", uint.MaxValue, uint.MaxValue);
@@ -135,7 +138,7 @@ namespace CrmCodeGenerator.VSPackage
                     }
                     return VSConstants.S_OK;
                 }
-                
+
             }
 
             Status.Update("Generating code from template... ");
@@ -206,7 +209,7 @@ namespace CrmCodeGenerator.VSPackage
             {
                 // It possible for the project item to be corrupt. (ie project has a reference to a file, but the file is gone).  
                 //  when this happens the item will have a NULL document.
-                if (item.Document != null)   
+                if (item.Document != null)
                     return item.Document.FullName;
             }
             return null;

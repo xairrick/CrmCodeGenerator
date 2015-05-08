@@ -139,6 +139,7 @@ namespace CrmCodeGenerator.VSPackage
         private const string _strUsername = "Username";
         private const string _strPassword = "Password";
         private const string _strDomain = "Domain";
+        private const string _strUseWindowsAuth = "WindowsAuthorization";
         private const string _strOrganization = "Organization";
         private const string _strIncludeEntities = "IncludeEntities";
         private const string _strIncludeNonStandard = "IncludeNonStandard";
@@ -183,6 +184,7 @@ namespace CrmCodeGenerator.VSPackage
 
             //pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
+            pPropBag.Write(_strUseWindowsAuth, settings.UseWindowsAuth);
             //pPropBag.Write(_strUsername, settings.Username);
             //pPropBag.Write(_strPassword, settings.Password);
             
@@ -222,11 +224,11 @@ namespace CrmCodeGenerator.VSPackage
                 settings.UseOffice365 = pPropBag.Read(_strUseOffice365, defaultOnline);
                 settings.ServerPort = pPropBag.Read(_strServerPort, defaultPort);
                 settings.HomeRealm = pPropBag.Read(_strHomeRealm, "");
-
                 
                 //settings.Username = pPropBag.Read(_strUsername, "");
                 //settings.Password = pPropBag.Read(_strPassword, "");
                 settings.Domain = pPropBag.Read(_strDomain, "");
+                settings.UseWindowsAuth = pPropBag.Read(_strUseWindowsAuth, false);
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
 

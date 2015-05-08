@@ -144,7 +144,12 @@ namespace CrmCodeGenerator.VSPackage
             }
 
             var entitiesToRetreive = this.Settings.EntitiesSelected.Select(x => x).ToList();
-            entitiesToRetreive.Add("activityparty");
+            if (!entitiesToRetreive.Any(x => x.Equals("activityparty")))
+            {
+                entitiesToRetreive.Add("activityparty");
+            }
+            
+            
 
             var results = new List<EntityMetadata>();
             foreach (var entity in entitiesToRetreive)
