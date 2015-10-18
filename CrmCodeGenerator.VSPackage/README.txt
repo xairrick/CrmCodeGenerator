@@ -1,6 +1,11 @@
 ﻿Allows you to generate CRM 2011/2013/2015 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 1.0.0.21 Alpha
+[NOTE] compiled on new machine, so it's alpha until more tests can be done
+[BUG] fixed saving properties on solutions.
+
+
 Version 1.0.0.4 Beta
 [UPDATE] Improvement to entity metadata rerieval 
 [UPDATE] option to get unpublished changes

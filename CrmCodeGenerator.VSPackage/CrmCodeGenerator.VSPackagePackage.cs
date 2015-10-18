@@ -165,7 +165,9 @@ namespace CrmCodeGenerator.VSPackage
             // When the solution will be reopened, the IDE will call our package to load them back before the projects in the solution are actually open
             // This could help if the source control package needs to persist information like projects translation tables, that should be read from the suo file
             // and should be available by the time projects are opened and the shell start calling IVsSccEnlistmentPathTranslation functions.
-            pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
+            if(settings.Dirty)
+                pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
+
             settings.Dirty = false;
 
             return VSConstants.S_OK;
@@ -184,7 +186,7 @@ namespace CrmCodeGenerator.VSPackage
 
             //pPropBag.Write(_strCrmUrl, settings.CrmSdkUrl);
             pPropBag.Write(_strDomain, settings.Domain);
-            pPropBag.Write(_strUseWindowsAuth, settings.UseWindowsAuth);
+            pPropBag.Write(_strUseWindowsAuth, settings.UseWindowsAuth.ToString());
             //pPropBag.Write(_strUsername, settings.Username);
             //pPropBag.Write(_strPassword, settings.Password);
             
