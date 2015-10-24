@@ -165,7 +165,8 @@ namespace CrmCodeGenerator.VSPackage
             // When the solution will be reopened, the IDE will call our package to load them back before the projects in the solution are actually open
             // This could help if the source control package needs to persist information like projects translation tables, that should be read from the suo file
             // and should be available by the time projects are opened and the shell start calling IVsSccEnlistmentPathTranslation functions.
-            if(settings.Dirty)
+            //if(settings.Dirty)
+            if(settings.IsActive)
                 pPersistence.SavePackageSolutionProps(1, null, this, _strSolutionPersistanceKey);
 
             settings.Dirty = false;
@@ -207,7 +208,7 @@ namespace CrmCodeGenerator.VSPackage
                 var defaultOnline = true;
 
 
-                // This is to convert the earlier 
+                // This is to convert the earlier settings
                 var oldServerSetting = pPropBag.Read(_strCrmUrl, "");
                 if (!string.IsNullOrWhiteSpace(oldServerSetting))
                 {
@@ -231,6 +232,7 @@ namespace CrmCodeGenerator.VSPackage
                 //settings.Password = pPropBag.Read(_strPassword, "");
                 settings.Domain = pPropBag.Read(_strDomain, "");
                 settings.UseWindowsAuth = pPropBag.Read(_strUseWindowsAuth, false);
+                settings.IsActive = pPropBag.HasSetting(_strOrganization);
                 settings.CrmOrg = pPropBag.Read(_strOrganization, "DEV-CRM");
                 settings.EntitiesToIncludeString = pPropBag.Read(_strIncludeEntities, "account, contact, systemuser");
 
@@ -344,6 +346,7 @@ namespace CrmCodeGenerator.VSPackage
             try
             {
                 AddTemplate();
+                settings.IsActive = true;  // start saving the properties to the *.sln
             }
             catch (UserException e)
             {
@@ -419,7 +422,7 @@ namespace CrmCodeGenerator.VSPackage
         }
 
         #region SolutionEvents
-        public int OnAfterCloseSolution(object pUnkReserved) { return VSConstants.S_OK; }
+        public int OnAfterCloseSolution(object pUnkReserved) { settings.IsActive = false; return VSConstants.S_OK; }
         public int OnAfterClosingChildren(IVsHierarchy pHierarchy) { return VSConstants.S_OK; }
         public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) { return VSConstants.S_OK; }
         public int OnAfterMergeSolution(object pUnkReserved) { return VSConstants.S_OK; }

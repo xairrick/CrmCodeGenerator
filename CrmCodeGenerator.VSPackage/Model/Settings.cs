@@ -681,5 +681,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             return connectionString;
         }
         #endregion
+
+        public bool IsActive { get; set; }
     }
 }

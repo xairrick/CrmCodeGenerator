@@ -25,6 +25,23 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 throw;
             }
         }
+
+        public static bool HasSetting(this IPropertyBag prop, string key)
+        {
+            object pVar;
+            try
+            {
+                prop.Read(key, out pVar, null, 0, null);
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
         public static bool Read(this IPropertyBag prop, string key, bool defaultValue)
         {
             object pVar;
