@@ -27,12 +27,26 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         }
         public static OrganizationDetailCollection GetOrganizations(Settings settings)
         {
-            var connection = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetDiscoveryCrmConnectionString());
-            var service = new Microsoft.Xrm.Client.Services.DiscoveryService(connection);
+            try
+            {
+                var connection = Microsoft.Xrm.Client.CrmConnection.Parse(settings.GetDiscoveryCrmConnectionString());
+                var service = new Microsoft.Xrm.Client.Services.DiscoveryService(connection);
 
-            var request = new Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsRequest();
-            var response = (Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsResponse)service.Execute(request);
-            return response.Details;
+                var request = new Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsRequest();
+                var response = (Microsoft.Xrm.Sdk.Discovery.RetrieveOrganizationsResponse)service.Execute(request);
+                return response.Details;
+            }
+            catch (System.IO.FileNotFoundException e)
+            {
+                if (e.Message.Contains("Microsoft.IdentityModel"))
+                {
+                    throw new Exception("Unable to load Windows Identity Foundation 3.5.  This is a feature that can be enabled on windows 8+ or downloaded for earlier versions ->  https://www.microsoft.com/en-nz/download/details.aspx?id=17331 ", e);
+                }
+                else
+                {
+                    throw e;
+                }
+            }
         }
     }
 }
