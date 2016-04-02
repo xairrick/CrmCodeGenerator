@@ -23,6 +23,8 @@ namespace CrmCodeGenerator.VSPackage.Model
         public bool IsActivityParty { get; set; }
         public bool IsStateCode { get; set; }
         public bool IsDeprecated { get; set; }
+        public bool IsOptionSet { get; private set; }
+        public bool IsTwoOption { get; private set; }
         public string DeprecatedVersion {get ; set; }
         public string LookupSingleType { get; set; }
         bool IsPrimaryKey { get; set; }
@@ -63,6 +65,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsValidForUpdate = (bool)attribute.IsValidForUpdate;
             result.IsActivityParty = attribute.AttributeType == AttributeTypeCode.PartyList ? true : false;
             result.IsStateCode = attribute.AttributeType == AttributeTypeCode.State ? true : false;
+            result.IsOptionSet = attribute.AttributeType == AttributeTypeCode.Picklist;
+            result.IsTwoOption = attribute.AttributeType == AttributeTypeCode.Boolean;
             result.DeprecatedVersion = attribute.DeprecatedVersion;
             result.IsDeprecated = !string.IsNullOrWhiteSpace(attribute.DeprecatedVersion); 
             

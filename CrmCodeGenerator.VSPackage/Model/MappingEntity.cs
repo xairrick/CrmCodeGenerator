@@ -89,10 +89,10 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             entity.Fields = fields.ToArray();
             entity.States = entityMetadata.Attributes.Where(a => a is StateAttributeMetadata).Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).FirstOrDefault();
+
             entity.Enums = entityMetadata.Attributes
-                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata)
-                .Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).ToArray();
-            //.Select(a => MapperEnum.Parse(a as PicklistAttributeMetadata)).ToArray();
+                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata || a is BooleanAttributeMetadata)
+                .Select(a => MappingEnum.Parse(a)).ToArray();
 
             entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
             entity.PrimaryKeyProperty = entity.PrimaryKey.DisplayName;

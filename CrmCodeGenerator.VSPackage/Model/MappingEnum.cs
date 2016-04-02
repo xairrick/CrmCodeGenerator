@@ -13,6 +13,17 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string DisplayName { get; set; }
         public MapperEnumItem[] Items { get; set; }
 
+        public static MappingEnum Parse(object attribute )
+        {
+            if (attribute is EnumAttributeMetadata)
+                return Parse(attribute as EnumAttributeMetadata);
+
+            if (attribute is BooleanAttributeMetadata)
+                return Parse(attribute as BooleanAttributeMetadata);
+
+            return null;
+        }
+
         public static MappingEnum Parse(EnumAttributeMetadata picklist)
         {
             var enm = new MappingEnum
@@ -32,8 +43,24 @@ namespace CrmCodeGenerator.VSPackage.Model
                     ).ToArray()
             };
 
-            Dictionary<string, int> duplicates = new Dictionary<string, int>();
+            RenameDuplicates(enm);
 
+            return enm;
+        }
+        public static MappingEnum Parse(BooleanAttributeMetadata twoOption)
+        {
+            var enm = new MappingEnum();
+            enm.DisplayName = Naming.GetProperVariableName(Naming.GetProperVariableName(twoOption.SchemaName));
+            enm.Items = new MapperEnumItem[2];
+            enm.Items[0] = MapBoolOption(twoOption.OptionSet.TrueOption);
+            enm.Items[1] = MapBoolOption(twoOption.OptionSet.FalseOption);
+            RenameDuplicates(enm);
+
+            return enm;
+        }
+        private static void RenameDuplicates(MappingEnum enm)
+        {
+            Dictionary<string, int> duplicates = new Dictionary<string, int>();
             foreach (var i in enm.Items)
                 if (duplicates.ContainsKey(i.Name))
                 {
@@ -42,9 +69,22 @@ namespace CrmCodeGenerator.VSPackage.Model
                 }
                 else
                     duplicates[i.Name] = 1;
-
-            return enm;
         }
+
+        private static MapperEnumItem MapBoolOption(OptionMetadata option)
+        {
+            var results = new MapperEnumItem()
+            {
+                Attribute = new CrmPicklistAttribute()
+                {
+                    DisplayName = option.Label.UserLocalizedLabel.Label,
+                    Value = (int)option.Value
+                },
+                Name = Naming.GetProperVariableName(option.Label.UserLocalizedLabel.Label)
+            };
+            return results;
+        }
+
     }
 
     [Serializable]
