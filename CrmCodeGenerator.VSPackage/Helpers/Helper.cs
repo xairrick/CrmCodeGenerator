@@ -77,6 +77,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 || p.Equals("case", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("object", StringComparison.InvariantCultureIgnoreCase)
                 || p.Equals("global", StringComparison.InvariantCultureIgnoreCase)
+                || p.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                || p.Equals("false", StringComparison.InvariantCultureIgnoreCase)
                 // || p.Equals("namespace", StringComparison.InvariantCultureIgnoreCase)
                 // || p.Equals("abstract", StringComparison.InvariantCultureIgnoreCase)
                 )
