@@ -5,6 +5,7 @@ using System.Text;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml;
+using CrmCodeGenerator.VSPackage.Model;
 
 namespace CrmCodeGenerator.VSPackage.Helpers
 {
@@ -116,6 +117,25 @@ namespace CrmCodeGenerator.VSPackage.Helpers
             return string.Join("_", parts);
         }
 
+        internal static string GetUniqueName(MappingEntity entity, string requestedName)
+        {
+            if (entity.DisplayName != requestedName)
+            {
+                if(entity.Fields != null)
+                {
+                    if (!entity.Fields.Any(x => requestedName.Equals(x.DisplayName)))
+                        return requestedName;
+                }
+            }
+            for (int i = 1; i < 999; i++)
+            {
+                var newName = requestedName + i;
+                if (!entity.Fields.Any(x => x.DisplayName == newName))
+                    return newName;
+            }
+            return requestedName;
+        }
+
         public static string GetProperEntityName(string entityName)
         {
                 return Clean(Capitalize(entityName, true));
@@ -170,6 +190,10 @@ namespace CrmCodeGenerator.VSPackage.Helpers
                 return "SecondHalf_Base";
             if (attribute.LogicalName == "attributes")
                 return "Attributes1";
+            if (attribute.LogicalName == "id")
+                return "__Id";  // LocalConfigStore has an attribute named Id, the template will already add and Id
+            if (attribute.LogicalName == "entitytypecode")
+                return "__EntityTypeCode";  // PrincipalSyncAttributeMap has a field called EntityTypeCode, the template will already have a property called EntityTypeCode which refers to the entity's type code.
 
             if(attribute.LogicalName.Equals(attribute.SchemaName, StringComparison.InvariantCultureIgnoreCase))
                 return Clean(attribute.SchemaName);

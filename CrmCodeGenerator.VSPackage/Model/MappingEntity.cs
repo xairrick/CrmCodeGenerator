@@ -101,8 +101,33 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.RelationshipsOneToMany = entityMetadata.OneToManyRelationships.Select(r =>
                 MappingRelationship1N.Parse(r, entity.Fields)).ToArray();
 
+            entity.RelationshipsOneToMany.ToList().ForEach(r => {
+                var newName = r.DisplayName;
+
+                if (newName  == entity.DisplayName)
+                    newName = r.DisplayName += "1";
+
+                if(entity.Fields.Any(e => e.DisplayName == newName))
+                {
+                    newName = r.DisplayName += "2";
+                }
+            });
+
+
             entity.RelationshipsManyToOne = entityMetadata.ManyToOneRelationships.Select(r =>
                 MappingRelationshipN1.Parse(r, entity.Fields)).ToArray();
+
+            entity.RelationshipsManyToOne.ToList().ForEach(r => {
+                var newName = r.DisplayName;
+
+                if (newName == entity.DisplayName)
+                    newName = r.DisplayName += "1";
+
+                if (entity.Fields.Any(e => e.DisplayName == newName))
+                {
+                    newName = r.DisplayName += "2";
+                }
+            });
 
             var RelationshipsManyToMany = entityMetadata.ManyToManyRelationships.Select(r => MappingRelationshipMN.Parse(r, entity.LogicalName)).ToList();
             var selfReferenced = RelationshipsManyToMany.Where(r => r.IsSelfReferenced).ToList();
@@ -113,6 +138,17 @@ namespace CrmCodeGenerator.VSPackage.Model
                 referencing.EntityRole = "Microsoft.Xrm.Sdk.EntityRole.Referencing";
                 RelationshipsManyToMany.Add(referencing);
             }
+            RelationshipsManyToMany.ForEach(r => {
+                var newName = r.DisplayName;
+
+                if (newName == entity.DisplayName)
+                    newName = r.DisplayName += "1";
+
+                if (entity.Fields.Any(e => e.DisplayName == newName))
+                {
+                    newName = r.DisplayName += "2";
+                }
+            });
             entity.RelationshipsManyToMany = RelationshipsManyToMany.OrderBy(r => r.DisplayName).ToArray();
 
             return entity;
