@@ -1,5 +1,8 @@
-﻿Allows you to generate CRM 2011/2013/2015 schema files based on a T4 template. 
+﻿Allows you to generate CRM 2011/2013/2015/2016/8.2 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
+
+Version 1.0.4.0
+[UPDATED] to Dynamics 365 (aka CRM 8.2)
 
 Version 1.0.3.3
 [BUG] Fixed attributes named Id
