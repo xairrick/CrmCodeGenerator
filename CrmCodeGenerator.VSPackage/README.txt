@@ -1,6 +1,12 @@
 ﻿Allows you to generate CRM 2011/2013/2015 schema files based on a T4 template. 
 Template is saved to project so that you can modify it as needed. 
 
+Version 1.0.3.3
+[BUG] Fixed attributes named Id
+[BUG] Fixed attributes name EntityTypeCode
+[BUG] Fixed related entities having the same name as the entity or other fields
+[BUG] Fixed optionset item having lable of 'true' or 'false'
+
 Version 1.0.3.1 Beta
 [NEW] CrmSvcUtilExtendedV2 template.  Puts Enums & Fields names inside the Entity class.  New entity properties that will allow Option Sets & Two Option properties to be set/get directly with an Enum (making the code much easier to read).
 
