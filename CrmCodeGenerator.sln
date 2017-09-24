@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{FE93ED76-041D-4F4C-8569-FC05C2D982B7}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,21 +14,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.VSPackage"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.Controls", "CrmCodeGenerator.Controls\CrmCodeGenerator.Controls.csproj", "{CE17A54E-0661-429F-AFDC-272E8668B14E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D53929D0-932B-4D63-9736-AF3CE1F55339}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(CrmCodeGeneration) = preSolution
-		UseSSL = True
-		UseIFD = False
-		UseOnline = False
-		UseOffice365 = False
-		ServerName = disco.crm.dynamics.com
-		ServerPort = 443
-		HomeRealm = 
-		Domain = 
-		WindowsAuthorization = False
-		Organization = DEV-CRM
-		IncludeEntities = account,contact,lead,opportunity,systemuser
-		IncludeNonStandard = False
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -64,5 +55,19 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+	GlobalSection(CrmCodeGeneration) = preSolution
+		UseSSL = True
+		UseIFD = False
+		UseOnline = False
+		UseOffice365 = False
+		ServerName = disco.crm.dynamics.com
+		ServerPort = 443
+		HomeRealm = 
+		Domain = 
+		WindowsAuthorization = False
+		Organization = DEV-CRM
+		IncludeEntities = account,contact,lead,opportunity,systemuser
+		IncludeNonStandard = False
 	EndGlobalSection
 EndGlobal

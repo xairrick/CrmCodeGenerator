@@ -14,7 +14,8 @@ namespace CrmCodeGenerator.VSPackage.Helpers
         {
             //Configuration.Instance.DTE.ExecuteCommand("View.Output");
             var dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE.DTE;
-            var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            //var win = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            var win = dte.Windows.Item("{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}");
             win.Visible = true;
 
             IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
