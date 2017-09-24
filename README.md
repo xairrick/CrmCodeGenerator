@@ -18,7 +18,8 @@ The Developer Toolkit does allow you to stay inside Visual Studio but it wont al
 
 
 ## How To Use
-Install the VS extension –> [v1.15.0.0](https://github.com/xairrick/CrmCodeGenerator/raw/master/CrmCodeGenerator.VSPackage/bin/Debug/CrmCodeGenerator.vsix)
+Install the VS extension –> [Latest](https://github.com/xairrick/CrmCodeGenerator/raw/master/CrmCodeGenerator.VSPackage/bin/Debug/CrmCodeGenerator.vsix)  
+or get from Visual Stuido Marketplace -> https://marketplace.visualstudio.com/vsgallery/4d8db67c-66e9-4b30-bab9-a7f7d8b576b5
 
 
 #### Add a template to your project
