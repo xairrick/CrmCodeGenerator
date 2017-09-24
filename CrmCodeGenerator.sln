@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{FE93ED76-041D-4F4C-8569-FC05C2D982B7}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmCodeGenerator.Controls",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D53929D0-932B-4D63-9736-AF3CE1F55339}"
 	ProjectSection(SolutionItems) = preProject
+		Documentation\image_thumb_1.png = Documentation\image_thumb_1.png
+		Documentation\image_thumb_2.png = Documentation\image_thumb_2.png
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -54,6 +56,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6E84E50-393E-4D70-8B43-CF9CD3E460A2}
 		VisualSVNWorkingCopyRoot = .
 	EndGlobalSection
 	GlobalSection(CrmCodeGeneration) = preSolution
