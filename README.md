@@ -1,6 +1,6 @@
 # Dynamics CRM Code Generator for Visual Studio
 
-Visual Studio extension that will generated the early bound classes for for Microsoft Dynamics CRM 2011 / CRM 2013 / CRM 2015 / CRM 2016 / Dynamics 365.   Very Similar to what the CrmSvcUtil.exe does, which is also provided in the CRM Developer Toolkit as the ìGenerate Wrapperî function.
+Visual Studio extension that will generated the early bound classes for for Microsoft Dynamics CRM 2011 / CRM 2013 / CRM 2015 / CRM 2016 / Dynamics 365.   Very Similar to what the CrmSvcUtil.exe does, which is also provided in the CRM Developer Toolkit as the ‚ÄúGenerate Wrapper‚Äù function.
 
 ### Benefits of using this tool over the standard tool
 
@@ -11,47 +11,47 @@ This will keep the size of the generated code to a minimum.  If you use the CrmS
 You get a default T4 template for the code that gets generated.  This will give you full control how the code gets generated.
 
 ### Built for Visual Studio
-You never have to leave Visual Studio to regenerate the early bound classes.   All the configurations* are stored in the .SLN of the solution which allows you save them to Source Control.  This is very helpful if you are working with other developers.  (*username & password are stored in the .SUO file,  which typically isnít checked into Source Control)
+You never have to leave Visual Studio to regenerate the early bound classes.   All the configurations* are stored in the .SLN of the solution which allows you save them to Source Control.  This is very helpful if you are working with other developers.  (*username & password are stored in the .SUO file,  which typically isn‚Äôt checked into Source Control)
 
 The Developer Toolkit does allow you to stay inside Visual Studio but it wont allow you change connection settings  while in Visual Studio.  You have to exit Visual Studio, delete your .SUO file then restart Visual Studio.
 
 
 
 ## How To Use
-Install the VS extension ñ> [Latest](https://github.com/xairrick/CrmCodeGenerator/raw/master/CrmCodeGenerator.VSPackage/bin/Debug/CrmCodeGenerator.vsix)  
-or get from Visual Stuido Marketplace -> https://marketplace.visualstudio.com/vsgallery/4d8db67c-66e9-4b30-bab9-a7f7d8b576b5
+Install the VS extension ‚Äì> [Latest](https://github.com/xairrick/CrmCodeGenerator/raw/master/CrmCodeGenerator.VSPackage/bin/Debug/CrmCodeGenerator.vsix)  
+or get from Visual Stuido Marketplace -> https://marketplace.visualstudio.com/items?itemName=EricLabashosky.CrmCodeGenerator
 
 
 #### Add a template to your project
 
 Highlight the project where you want to store the template and generated code.   
-Tools ñ> Add CRM Code Generator Template...  (if you donít see this menu, then shutdwon visual studio and reinstall the extension)
+Tools ‚Äì> Add CRM Code Generator Template...  (if you don‚Äôt see this menu, then shutdwon visual studio and reinstall the extension)
 
 ![File](Documentation/image_thumb_2.png)
 
 Start with one of the provided templates
 
-- **CrmSvcUtil.tt** ñ Code generated from this will be exactly what is produced from CRmSvcUtil.exe
-- **CrmSvcUtilExtended.tt** ñ Adds fieldname & Option Sets values  (used v2 instead)
-- **CrmSvcUtilExtendedV2.tt** ñ Adds enum properties for all Two Option and Option Set fields (this is the one I use)
-- **JavaScript.tt** ñ Example of how to generate a JavaScript file from the CRM Schema (from https://crm2011codegen.codeplex.com )
-- **CSharp.tt** ñ POCO example of how to put C# data annotation on the fields.  (requires you to put a reference to  System.ComponentModel.DataAnnotations in your project)
-Sample.tt ñ Just another example of how to create a template for C#
+- **CrmSvcUtil.tt** ‚Äì Code generated from this will be exactly what is produced from CRmSvcUtil.exe
+- **CrmSvcUtilExtended.tt** ‚Äì Adds fieldname & Option Sets values  (used v2 instead)
+- **CrmSvcUtilExtendedV2.tt** ‚Äì Adds enum properties for all Two Option and Option Set fields (this is the one I use)
+- **JavaScript.tt** ‚Äì Example of how to generate a JavaScript file from the CRM Schema (from https://crm2011codegen.codeplex.com )
+- **CSharp.tt** ‚Äì POCO example of how to put C# data annotation on the fields.  (requires you to put a reference to  System.ComponentModel.DataAnnotations in your project)
+Sample.tt ‚Äì Just another example of how to create a template for C#
 Connection & Entities
 
 After a template is added to your project you will be prompted for CRM connection info.  Connection info is saved to the .SLN file (username & password are saved to .SUO).
 Pick the entities that you want to include. (NOTE: if you click refresh you must have all the connection information filled out)
-Click the ìGenerate Codeî button (this process takes about 45 seconds, but seems like 5 minutes)
-When the dialog goes away, itís done and the generated code is ready to use.
+Click the ‚ÄúGenerate Code‚Äù button (this process takes about 45 seconds, but seems like 5 minutes)
+When the dialog goes away, it‚Äôs done and the generated code is ready to use.
 Refreshing metadata from the server
 
-If you make schema changes in CRM and you want to refresh the code,   right click the template and select ìRun Custom Toolî
+If you make schema changes in CRM and you want to refresh the code,   right click the template and select ‚ÄúRun Custom Tool‚Äù
 
 ![File](Documentation/image_thumb_1.png)
 
 #### Changing the template
 
-When you make changes to the template and save, Visual Studio will automatically attempt to re-generate the code.   HINT: select ëNoí for fresh entities if you have just made changes in the template and donít need to refresh from the CRM server, it will be much faster
+When you make changes to the template and save, Visual Studio will automatically attempt to re-generate the code.   HINT: select ‚ÄòNo‚Äô for fresh entities if you have just made changes in the template and don‚Äôt need to refresh from the CRM server, it will be much faster
 
 
 
