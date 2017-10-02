@@ -120,6 +120,10 @@
             <ComboBoxItem >crm2.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm4.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm5.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm6.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm7.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm8.dynamics.com</ComboBoxItem>
+            <ComboBoxItem >crm9.dynamics.com</ComboBoxItem>
             </ComboBox>
             <Label Grid.Column="0"  Grid.Row="1"  IsEnabled="{Binding NeedServerPort }">Server Port</Label>
             <TextBox Grid.Column="1"  Grid.Row="1" IsEnabled="{Binding NeedServerPort }" Text="{Binding ServerPort, Mode=TwoWay}"></TextBox>

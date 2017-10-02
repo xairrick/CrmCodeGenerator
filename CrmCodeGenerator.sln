@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Documentation\image_thumb_1.png = Documentation\image_thumb_1.png
 		Documentation\image_thumb_2.png = Documentation\image_thumb_2.png
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -56,8 +57,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A6E84E50-393E-4D70-8B43-CF9CD3E460A2}
 		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {A6E84E50-393E-4D70-8B43-CF9CD3E460A2}
 	EndGlobalSection
 	GlobalSection(CrmCodeGeneration) = preSolution
 		UseSSL = True

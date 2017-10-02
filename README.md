@@ -59,6 +59,10 @@ When you make changes to the template and save, Visual Studio will automatically
 
 
 ### History
+
+##### 1.15.0.1 (Beta)
+- [UPDATED] added crm6.dynamics.com to the list of online servers
+
 ##### Version 1.15.0.0 Beta
 - [UPDATED] added VS2017 support
 
