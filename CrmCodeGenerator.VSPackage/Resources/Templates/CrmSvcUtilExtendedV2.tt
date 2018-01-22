@@ -268,6 +268,14 @@ namespace <#= Context.Namespace #>
 			}
 		}
 <# } #>
+        /// <summary>
+		/// Loads this 1:N relationship into the object 
+		/// </summary>
+        public void Load_<#=attribute.SchemaName#>(XrmServiceContext ctx)
+		{
+			ctx.LoadProperty(this, "<#=attribute.SchemaName#>");
+		}
+
 <#}#>
 <# 
 //END// 1:N Realationships
@@ -296,6 +304,15 @@ namespace <#= Context.Namespace #>
 			}
 <# } #>
 		}
+
+		/// <summary>
+		/// Loads the lookup record into the object 
+		/// </summary>
+        public void LoadLookup_<#=attribute.SchemaName#>(XrmServiceContext ctx)
+		{
+			ctx.LoadProperty(this, "<#=attribute.SchemaName#>");
+		}
+
 <#} //END// N:1 Realationships 
 
 //BEGIN// N:N Realationships 
@@ -319,6 +336,15 @@ namespace <#= Context.Namespace #>
 				this.OnPropertyChanged("<#=attribute.DisplayName#>");
 			}
 		}
+		/// <summary>
+		/// Loads this N:N relationship into the object 
+		/// </summary>
+        public void Load_<#=attribute.SchemaName#>(XrmServiceContext ctx)
+		{
+			ctx.LoadProperty(this, "<#=attribute.SchemaName#>");
+		}
+
+
 <#} //END// N:N Realationships  #>
 
 
@@ -335,6 +361,20 @@ namespace <#= Context.Namespace #>
 			}		
 <#}#>
 	}
+
+
+		public class OneToMany
+		{
+<#foreach(var f in entity.RelationshipsOneToMany){#>
+			public const string <#=f.SchemaName#> = "<#=f.SchemaName#>";
+<#}#>
+}
+		public class ManyToMany
+		{
+<#foreach(var f in entity.RelationshipsManyToMany){#>
+			public const string <#=f.SchemaName#> = "<#=f.SchemaName#>";
+<#}#>
+}
 
 		public class Fields
 		{

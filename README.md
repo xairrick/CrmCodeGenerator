@@ -60,6 +60,10 @@ When you make changes to the template and save, Visual Studio will automatically
 
 ### History
 
+##### 1.15.0.2 (Beta)
+- [BUG] fixed issues with navtive N:N entities that was causing a naming conflict 
+- [UPDATE] added some constants for the relationship names, needed when you call .LoadProperty
+
 ##### 1.15.0.1 (Beta)
 - [UPDATED] added crm6.dynamics.com to the list of online servers
 
