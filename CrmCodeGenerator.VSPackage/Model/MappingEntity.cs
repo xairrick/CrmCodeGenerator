@@ -104,7 +104,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.RelationshipsOneToMany.ToList().ForEach(r => {
                 var newName = r.DisplayName;
 
-                if (newName  == entity.DisplayName)
+                if (newName  == entity.DisplayName || newName == entity.HybridName)
                     newName = r.DisplayName += "1";
 
                 if(entity.Fields.Any(e => e.DisplayName == newName))
@@ -120,7 +120,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.RelationshipsManyToOne.ToList().ForEach(r => {
                 var newName = r.DisplayName;
 
-                if (newName == entity.DisplayName)
+                if (newName == entity.DisplayName || newName == entity.HybridName)
                     newName = r.DisplayName += "1";
 
                 if (entity.Fields.Any(e => e.DisplayName == newName))
@@ -141,7 +141,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             RelationshipsManyToMany.ForEach(r => {
                 var newName = r.DisplayName;
 
-                if (newName == entity.DisplayName)
+                if (newName == entity.DisplayName || newName == entity.HybridName)
                     newName = r.DisplayName += "1";
 
                 if (entity.Fields.Any(e => e.DisplayName == newName))
