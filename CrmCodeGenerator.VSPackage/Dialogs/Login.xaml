@@ -118,7 +118,8 @@
                 <!--ItemsSource="{Binding OnLineServers, Mode=TwoWay}"-->
             <ComboBoxItem IsSelected="True">crm.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm2.dynamics.com</ComboBoxItem>
-            <ComboBoxItem >crm4.dynamics.com</ComboBoxItem>
+			<ComboBoxItem >crm3.dynamics.com</ComboBoxItem>
+			<ComboBoxItem >crm4.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm5.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm6.dynamics.com</ComboBoxItem>
             <ComboBoxItem >crm7.dynamics.com</ComboBoxItem>

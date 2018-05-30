@@ -39,3 +39,8 @@ thumbs.db
 
 #NuGet Ignore packages  be sure to enable NuGet Package restore in Visual Studio and on your Solution
 packages*/
+/.vs/CrmCodeGenerator/v15/sqlite3
+/Backup
+/Backup1
+/UpgradeLog2.htm
+/UpgradeLog3.htm
