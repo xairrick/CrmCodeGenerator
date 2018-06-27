@@ -60,6 +60,9 @@ When you make changes to the template and save, Visual Studio will automatically
 
 ### History
 
+##### 1.15.0.4 (Beta)
+- [BUG] previous build cause the menu item to disappear.
+
 ##### 1.15.0.3 (Beta)
 - [UPDATED] added crm3.dynamics.com to the list of online servers 
 
