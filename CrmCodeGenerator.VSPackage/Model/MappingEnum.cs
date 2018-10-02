@@ -47,6 +47,7 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             return enm;
         }
+
         public static MappingEnum Parse(BooleanAttributeMetadata twoOption)
         {
             var enm = new MappingEnum();

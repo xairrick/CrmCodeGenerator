@@ -71,7 +71,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             if (entityMetadata.Description != null)
                 if (entityMetadata.Description.UserLocalizedLabel != null)
                     entity.Description = entityMetadata.Description.UserLocalizedLabel.Label;
-
+            //var d = entityMetadata.Attributes.Where(p=>p.LogicalName.Contains("sii_")).ToList();
+            //var d2 = entityMetadata.Attributes.Where(p=>p.LogicalName.Contains("sii_")).Select(p=>p.LogicalName).ToList();
             var fields = entityMetadata.Attributes
                 .Where(a => a.AttributeOf == null)
                 .Select(a => MappingField.Parse(a, entity)).ToList();
@@ -91,7 +92,7 @@ namespace CrmCodeGenerator.VSPackage.Model
             entity.States = entityMetadata.Attributes.Where(a => a is StateAttributeMetadata).Select(a => MappingEnum.Parse(a as EnumAttributeMetadata)).FirstOrDefault();
 
             entity.Enums = entityMetadata.Attributes
-                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata || a is BooleanAttributeMetadata)
+                .Where(a => a is PicklistAttributeMetadata || a is StateAttributeMetadata || a is StatusAttributeMetadata || a is BooleanAttributeMetadata || a is MultiSelectPicklistAttributeMetadata)
                 .Select(a => MappingEnum.Parse(a)).ToArray();
 
             entity.PrimaryKey = entity.Fields.First(f => f.Attribute.LogicalName == entity.Attribute.PrimaryKey);
