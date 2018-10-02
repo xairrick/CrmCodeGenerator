@@ -25,7 +25,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public bool IsDeprecated { get; set; }
         public bool IsOptionSet { get; private set; }
         public bool IsTwoOption { get; private set; }
-        public string DeprecatedVersion {get ; set; }
+        public string DeprecatedVersion { get; set; }
         public string LookupSingleType { get; set; }
         bool IsPrimaryKey { get; set; }
         public bool IsRequired { get; set; }
@@ -68,11 +68,15 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.IsOptionSet = attribute.AttributeType == AttributeTypeCode.Picklist;
             result.IsTwoOption = attribute.AttributeType == AttributeTypeCode.Boolean;
             result.DeprecatedVersion = attribute.DeprecatedVersion;
-            result.IsDeprecated = !string.IsNullOrWhiteSpace(attribute.DeprecatedVersion); 
-            
+            result.IsDeprecated = !string.IsNullOrWhiteSpace(attribute.DeprecatedVersion);
+
             if (attribute is PicklistAttributeMetadata)
                 result.EnumData =
                     MappingEnum.Parse(attribute as PicklistAttributeMetadata);
+
+            if (attribute is MultiSelectPicklistAttributeMetadata)
+                result.EnumData =
+                    MappingEnum.Parse(attribute as MultiSelectPicklistAttributeMetadata);
 
             if (attribute is LookupAttributeMetadata)
             {
@@ -86,6 +90,10 @@ namespace CrmCodeGenerator.VSPackage.Model
 
             if (attribute.AttributeType != null)
                 result.FieldType = attribute.AttributeType.Value;
+            if (attribute.AttributeTypeName != null)
+            {
+                result.AttributeTypeName = attribute.AttributeTypeName.Value;
+            }
 
             result.IsPrimaryKey = attribute.IsPrimaryId == true;
 
@@ -94,8 +102,8 @@ namespace CrmCodeGenerator.VSPackage.Model
             result.PrivatePropertyName = Naming.GetEntityPropertyPrivateName(attribute.SchemaName);
             result.HybridName = Naming.GetProperHybridFieldName(result.DisplayName, result.Attribute);
 
-            if(attribute.Description != null)
-                if(attribute.Description.UserLocalizedLabel != null)
+            if (attribute.Description != null)
+                if (attribute.Description.UserLocalizedLabel != null)
                     result.Description = attribute.Description.UserLocalizedLabel.Label;
 
             if (attribute.DisplayName != null)
@@ -195,11 +203,16 @@ namespace CrmCodeGenerator.VSPackage.Model
                 case AttributeTypeCode.Virtual:
                 case AttributeTypeCode.EntityName:
                 case AttributeTypeCode.String:
+                    if (field.AttributeTypeName == "MultiSelectPicklistType")
+                    {
+                        return "Microsoft.Xrm.Sdk.OptionSetValueCollection";
+                    }
                     return "string";
                 case AttributeTypeCode.PartyList:
                     return "System.Collections.Generic.IEnumerable<ActivityParty>";
                 case AttributeTypeCode.ManagedProperty:
                     return "Microsoft.Xrm.Sdk.BooleanManagedProperty";
+
                 default:
                     return "object";
             }
@@ -249,6 +262,10 @@ namespace CrmCodeGenerator.VSPackage.Model
                     case AttributeTypeCode.Virtual:
                     case AttributeTypeCode.EntityName:
                     case AttributeTypeCode.String:
+                        if (AttributeTypeName == "MultiSelectPicklistType")
+                        {
+                            return "Microsoft.Xrm.Sdk.OptionSetValueCollection";
+                        }
                         return "string";
 
                     default:
@@ -291,6 +308,10 @@ namespace CrmCodeGenerator.VSPackage.Model
                         methodName = "SetLookup"; break;
                     //methodName = "SetLookup"; break;
                     case AttributeTypeCode.Virtual:
+                        if (AttributeTypeName == "MultiSelectPicklistType")
+                        {
+                            return "SetValue<Microsoft.Xrm.Sdk.OptionSetValueCollection>";
+                        }
                         methodName = "SetValue<string>"; break;
                     case AttributeTypeCode.Customer:
                         methodName = "SetCustomer"; break;
@@ -319,5 +340,7 @@ namespace CrmCodeGenerator.VSPackage.Model
                 return string.Format("{0}(\"{1}\", value);", methodName, this.Attribute.LogicalName);
             }
         }
+
+        public string AttributeTypeName { get; private set; }
     }
 }

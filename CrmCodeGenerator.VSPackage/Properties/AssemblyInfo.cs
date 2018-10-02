@@ -33,5 +33,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Xrm.Sdk",  NewVersion = "8.0.0.0", OldVersionLowerBound = "1.0.0.0",  OldVersionUpperBound = "7.0.0.0")]
+[assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Xrm.Sdk",  NewVersion = "9.0.0.0", OldVersionLowerBound = "1.0.0.0",  OldVersionUpperBound = "7.0.0.0")]
 
