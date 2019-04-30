@@ -8,6 +8,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace <#= Context.Namespace #>
 {
+		public static class Enums
+		{
+<#foreach (var enm in Context.Enums) {#>
+			[DataContractAttribute]
+			public enum <#=enm.DisplayName#> 
+			{
+<#foreach(var item in enm.Items){#>
+				[EnumMemberAttribute]
+				<#= item.Name #> = <#= item.Value #>,
+<#}#>
+			}	
+<#}#>
+		}
 <# foreach (var entity in Context.Entities)
 {
 #>

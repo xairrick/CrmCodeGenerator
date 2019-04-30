@@ -21,6 +21,9 @@ namespace CrmCodeGenerator.VSPackage.Model
             if (attribute is BooleanAttributeMetadata)
                 return Parse(attribute as BooleanAttributeMetadata);
 
+            if (attribute is OptionSetMetadata)
+                return Parse(attribute as OptionSetMetadata);
+
             return null;
         }
 
@@ -54,6 +57,29 @@ namespace CrmCodeGenerator.VSPackage.Model
             enm.Items = new MapperEnumItem[2];
             enm.Items[0] = MapBoolOption(twoOption.OptionSet.TrueOption);
             enm.Items[1] = MapBoolOption(twoOption.OptionSet.FalseOption);
+            RenameDuplicates(enm);
+
+            return enm;
+        }
+        public static MappingEnum Parse(OptionSetMetadata optionSet)
+        {
+            var enm = new MappingEnum
+            {
+                DisplayName = Naming.GetProperVariableName(Naming.GetProperVariableName(optionSet.Name)),
+                Items =
+                    optionSet.Options.Select(
+                        o => new MapperEnumItem
+                        {
+                            Attribute = new CrmPicklistAttribute
+                            {
+                                DisplayName = o.Label.UserLocalizedLabel.Label,
+                                Value = o.Value ?? 1
+                            },
+                            Name = Naming.GetProperVariableName(o.Label.UserLocalizedLabel.Label)
+                        }
+                    ).ToArray()
+            };
+
             RenameDuplicates(enm);
 
             return enm;

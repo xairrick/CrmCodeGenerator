@@ -42,9 +42,11 @@ namespace CrmCodeGenerator.VSPackage
 
         public Context MapContext()
         {
+            var connection = GetConnection();
             var context = new Context();
-            context.Entities = GetEntities(GetConnection());
+            context.Entities = GetEntities(connection);
             SortEntities(context);
+            context.Enums = GetGlobalEnums(connection);
             return context;
         }
 
@@ -93,7 +95,7 @@ namespace CrmCodeGenerator.VSPackage
 
         internal MappingEntity[] GetEntities(IOrganizationService service)
         {
-            var entities = GetMetadataFromServer(service);
+            var entities = GetEntitiesMetadata(service);
 
             var selectedEntities = entities
                 .Where(r => this.Settings.EntitiesSelected.Contains(r.LogicalName))
@@ -135,12 +137,23 @@ namespace CrmCodeGenerator.VSPackage
             return mappedEntities.ToArray();
         }
 
-        private EntityMetadata[] GetMetadataFromServer(IOrganizationService service)
+        internal MappingEnum[] GetGlobalEnums(IOrganizationService service)
+        {
+            var enums = RetrieveGlobalOptionSetsMetadataFromServer(service);
+
+            OnMessage(string.Format("Found {0} option sets", enums.Count()));
+
+            var mappedEnums = enums.Select(e => MappingEnum.Parse(e)).OrderBy(e => e.DisplayName).ToList();
+
+            return mappedEnums.ToArray();
+        }
+
+        private EntityMetadata[] GetEntitiesMetadata(IOrganizationService service)
         {
             OnMessage("Gathering metadata, this may take a few minutes...");
             if (this.Settings.EntitiesSelected.Count > 20)
             {
-                return GetAllMetadataFromServer(service);
+                return RetrieveEntityMetadataFromServer(service);
             }
 
             var entitiesToRetreive = this.Settings.EntitiesSelected.Select(x => x).ToList();
@@ -148,8 +161,6 @@ namespace CrmCodeGenerator.VSPackage
             {
                 entitiesToRetreive.Add("activityparty");
             }
-            
-            
 
             var results = new List<EntityMetadata>();
             foreach (var entity in entitiesToRetreive)
@@ -164,7 +175,7 @@ namespace CrmCodeGenerator.VSPackage
             return results.ToArray();
         }
 
-        private EntityMetadata[] GetAllMetadataFromServer(IOrganizationService service)
+        private EntityMetadata[] RetrieveEntityMetadataFromServer(IOrganizationService service)
         {
             //TODO should change this to early binding RetrieveAllEntitiesRequest
             OrganizationRequest request = new OrganizationRequest("RetrieveAllEntities");
@@ -176,6 +187,37 @@ namespace CrmCodeGenerator.VSPackage
             var entities = results["EntityMetadata"] as EntityMetadata[];
             return entities;
         }
+        private OptionSetMetadata[] RetrieveGlobalOptionSetsMetadataFromServer(IOrganizationService service)
+        {
+            var results = new List<OptionSetMetadata>();
+            // Use RetrieveAllOptionSetsRequest to retrieve all global option sets.
+            // Create the request.
+            RetrieveAllOptionSetsRequest retrieveAllOptionSetsRequest = new RetrieveAllOptionSetsRequest();
+
+            // Execute the request
+            RetrieveAllOptionSetsResponse retrieveAllOptionSetsResponse = (RetrieveAllOptionSetsResponse)service.Execute(retrieveAllOptionSetsRequest);
+
+            //return retrieveAllOptionSetsResponse.OptionSetMetadata;
+            // Now you can use RetrieveAllOptionSetsResponse.OptionSetMetadata property to 
+            // work with all retrieved option sets.
+            if (retrieveAllOptionSetsResponse.OptionSetMetadata.Count() > 0)
+            {
+                Console.WriteLine("All the global option sets retrieved as below:");
+                foreach (OptionSetMetadataBase optionSetMetadata in retrieveAllOptionSetsResponse.OptionSetMetadata)
+                {
+                    if (!optionSetMetadata.IsManaged.Value && optionSetMetadata.IsGlobal.Value)
+                    {
+                        RetrieveOptionSetRequest retrieveOptionSetRequest = new RetrieveOptionSetRequest { Name = optionSetMetadata.Name };
+                        // Execute the request.
+                        RetrieveOptionSetResponse retrieveOptionSetResponse = (RetrieveOptionSetResponse)service.Execute(retrieveOptionSetRequest);
+                        results.Add((OptionSetMetadata)retrieveOptionSetResponse.OptionSetMetadata);
+                    }
+                }
+            }
+
+            return results.ToArray();
+        }
+
         private static void ExcludeRelationshipsNotIncluded(List<MappingEntity> mappedEntities)
         {
             foreach (var ent in mappedEntities)

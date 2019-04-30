@@ -11,5 +11,7 @@ namespace CrmCodeGenerator.VSPackage.Model
         public string Namespace { get; set; }
 
         public MappingEntity[] Entities { get; set; }
+
+        public MappingEnum[] Enums { get; set; }
     }
 }
